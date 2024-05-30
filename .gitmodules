@@ -1,0 +1,3 @@
+[submodule "speech_evaluation/utterance_metrics/visqol"]
+	path = speech_evaluation/utterance_metrics/visqol
+	url = https://github.com/google/visqol.git
