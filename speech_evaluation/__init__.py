@@ -5,8 +5,8 @@ from speech_evaluation.sequence_metrics.signal_metric import signal_metric
 try:
     from speech_evaluation.utterance_metrics.discrete_speech import discrete_speech_metric, discrete_speech_setup
 except ImportError:
-    logging.warning("Please pip install git+https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics.git and retry")
-    
+    logging.warning("Please pip install git+https://github.com/ftshijt/DiscreteSpeechMetrics.git and retry")
+
 from speech_evaluation.utterance_metrics.pseudo_mos import pseudo_mos_metric, pseudo_mos_setup
 
 try:
