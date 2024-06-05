@@ -4,11 +4,13 @@
 # Copyright 2024 Jiatong Shi
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
+import importlib
+import sys
+
 import librosa
 import numpy as np
 import torch
-import sys
-import importlib
+
 
 def pseudo_mos_setup(predictor_types, predictor_args, use_gpu=False):
     # Supported predictor types: utmos, dnsmos, aecmos, plcmos
@@ -19,12 +21,10 @@ def pseudo_mos_setup(predictor_types, predictor_args, use_gpu=False):
         device = "cuda"
     else:
         device = "cpu"
-    
+
     # first import utmos to resolve cross-import from the same model
     if "utmos" in predictor_types:
-        utmos = torch.hub.load("ftshijt/SpeechMOS:main", "utmos22_strong").to(
-            device
-        )
+        utmos = torch.hub.load("ftshijt/SpeechMOS:main", "utmos22_strong").to(device)
         predictor_dict["utmos"] = utmos.float()
         predictor_fs["utmos"] = 16000
 
@@ -55,7 +55,7 @@ def pseudo_mos_setup(predictor_types, predictor_args, use_gpu=False):
             else:
                 predictor_fs["plcmos"] = predictor_args["plcmos"]["fs"]
         elif predictor == "utmos":
-            continue # already initial
+            continue  # already initial
         else:
             raise NotImplementedError("Not supported {}".format(predictor))
 
@@ -108,10 +108,10 @@ if __name__ == "__main__":
     a = np.random.random(16000)
     print(a)
     predictor_dict, predictor_fs = pseudo_mos_setup(
-        ["utmos",  "dnsmos", "plcmos"],
+        ["utmos", "dnsmos", "plcmos"],
         predictor_args={
-            "dnsmos": {"fs":16000},
-            "plcmos": {"fs":16000},
+            "dnsmos": {"fs": 16000},
+            "plcmos": {"fs": 16000},
         },
     )
     scores = pseudo_mos_metric(

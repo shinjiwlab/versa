@@ -10,10 +10,8 @@ import numpy as np
 import pysptk
 import pyworld as pw
 import scipy
-from scipy.signal import firwin
-from scipy.signal import lfilter
-
 from fastdtw import fastdtw
+from scipy.signal import firwin, lfilter
 
 
 def low_cut_filter(x, fs, cutoff=70):

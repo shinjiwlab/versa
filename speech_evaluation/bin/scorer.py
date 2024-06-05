@@ -9,10 +9,11 @@ import argparse
 import fnmatch
 import logging
 import os
-import yaml
+from typing import Dict, List, Tuple
+
 import librosa
 import soundfile as sf
-from typing import Dict, List, Tuple
+import yaml
 
 
 def get_parser() -> argparse.Namespace:
@@ -57,6 +58,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
         if config["name"] == "mcd_f0":
             logging.info("Loading MCD & F0 evaluation...")
             from speech_evaluation import mcd_f0
+
             score_modules["mcd_f0"] = {
                 "module": mcd_f0,
                 "args": {
@@ -82,6 +84,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
 
             logging.info("Loading signal metric evaluation...")
             from speech_evaluation import signal_metric
+
             score_modules["signal_metric"] = {"module": signal_metric}
             logging.info("Initiate signal metric evaluation successfully.")
 
@@ -93,7 +96,9 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading discrete speech evaluation...")
-            from speech_evaluation import discrete_speech_metric, discrete_speech_setup
+            from speech_evaluation import (discrete_speech_metric,
+                                           discrete_speech_setup)
+
             score_modules["discrete_speech"] = {
                 "module": discrete_speech_metric,
                 "args": {
@@ -105,6 +110,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
         elif config["name"] == "pseudo_mos":
             logging.info("Loading pseudo MOS evaluation...")
             from speech_evaluation import pseudo_mos_metric, pseudo_mos_setup
+
             predictor_dict, predictor_fs = pseudo_mos_setup(
                 use_gpu=use_gpu,
                 predictor_types=config.get("predictor_types", ["utmos"]),
@@ -129,6 +135,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
 
             logging.info("Loadding pesq evaluation...")
             from speech_evaluation import pesq_metric
+
             score_modules["pesq"] = {"module": pesq_metric}
             logging.info("Initiate pesq evaluation successfully.")
 
@@ -141,6 +148,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
 
             logging.info("Loading stoi evaluation...")
             from speech_evaluation import stoi_metric
+
             score_modules["stoi"] = {"module": stoi_metric}
             logging.info("Initiate stoi evaluation successfully.")
 
@@ -153,14 +161,14 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
 
             logging.info("Loading visqol evaluation...")
             from speech_evaluation import visqol_metric, visqol_setup
+
             api, fs = visqol_setup(model=config.get("model", "default"))
             score_modules["visqol"] = {
                 "module": visqol_metric,
-                "args": {"api": api,
-                         "api_fs": fs},
+                "args": {"api": api, "api_fs": fs},
             }
             logging.info("Initiate visqol evaluation successfully.")
-        
+
         elif config["name"] == "speaker":
             if not use_gt:
                 logging.warning(
@@ -170,40 +178,61 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
 
             logging.info("Loading speaker evaluation...")
             from speech_evaluation import speaker_metric, speaker_model_setup
-            spk_model = speaker_model_setup(model_tag=config.get("model_tag", "default"), 
-                                            model_path=config.get("model_path", None),
-                                            model_config=config.get("model_config", None),
-                                            use_gpu=use_gpu)
+
+            spk_model = speaker_model_setup(
+                model_tag=config.get("model_tag", "default"),
+                model_path=config.get("model_path", None),
+                model_config=config.get("model_config", None),
+                use_gpu=use_gpu,
+            )
             score_modules["speaker"] = {
                 "module": speaker_metric,
                 "args": {"model": spk_model},
             }
             logging.info("Initiate speaker evaluation successfully.")
-        
+
     return score_modules
+
 
 def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
     utt_score = {}
     for key in score_modules.keys():
         if key == "mcd_f0":
-            score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr, **score_modules[key]["args"])
+            score = score_modules[key]["module"](
+                gen_wav, gt_wav, gen_sr, **score_modules[key]["args"]
+            )
         elif key == "signal_metric":
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
         elif key == "discrete_speech":
-            score = score_modules[key]["module"](score_modules[key]["args"]["discrete_speech_predictors"], gen_wav, gt_wav, gen_sr)
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["discrete_speech_predictors"],
+                gen_wav,
+                gt_wav,
+                gen_sr,
+            )
         elif key == "pseudo_mos":
-            score = score_modules[key]["module"](gen_wav, gen_sr, **score_modules[key]["args"])
+            score = score_modules[key]["module"](
+                gen_wav, gen_sr, **score_modules[key]["args"]
+            )
         elif key == "pesq":
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
         elif key == "stoi":
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
         elif key == "visqol":
-            score = score_modules[key]["module"](score_modules[key]["args"]["api"], score_modules[key]["args"]["api_fs"], gen_wav, gt_wav, gen_sr)
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["api"],
+                score_modules[key]["args"]["api_fs"],
+                gen_wav,
+                gt_wav,
+                gen_sr,
+            )
         elif key == "speaker":
-            score = score_modules[key]["module"](score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr)
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr
+            )
         else:
             raise NotImplementedError(f"Not supported {key}")
-        
+
         logging.info(f"Score for {key} is {score}")
         utt_score.update(score)
     return utt_score
@@ -212,7 +241,7 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
 def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
-    
+
     score_info = []
     for i in range(len(gen_files)):
         gen_wav, gen_sr = sf.read(gen_files[i])
@@ -220,16 +249,20 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
             gt_wav, gt_sr = sf.read(gt_files[i])
         else:
             gt_wav = None
-        
+
         if gen_sr > gt_sr:
-            logging.warning("Resampling the generated audio to match the ground truth audio")
+            logging.warning(
+                "Resampling the generated audio to match the ground truth audio"
+            )
             gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
         elif gen_sr < gt_sr:
-            logging.warning("Resampling the ground truth audio to match the generated audio")
+            logging.warning(
+                "Resampling the ground truth audio to match the generated audio"
+            )
             gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
-        
+
         utt_score = {"key": gen_files[i]}
-        
+
         utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr))
 
         if output_file is not None:
@@ -338,7 +371,9 @@ def main():
 
     assert len(score_config) > 0, "no scoring function is provided"
 
-    score_info = list_scoring(gen_files, score_modules, gt_files, output_file=args.output_file)
+    score_info = list_scoring(
+        gen_files, score_modules, gt_files, output_file=args.output_file
+    )
     logging.info("Summary: {}".format(load_summary(score_info)))
 
 

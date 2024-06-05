@@ -4,10 +4,10 @@
 # Mainly adpated from ESPnet-SE (https://github.com/espnet/espnet.git)
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
-import numpy as np
-import torch
 import ci_sdr
 import fast_bss_eval
+import numpy as np
+import torch
 from mir_eval.separation import bss_eval_sources
 
 
