@@ -8,6 +8,7 @@
 import argparse
 import json
 import logging
+from tqdm import tqdm
 
 
 def get_parser() -> argparse.Namespace:
@@ -48,7 +49,7 @@ def aggregate_results(logdir: str, scoredir: str, nj: int) -> None:
     with open("{}/utt_result.txt".format(scoredir), "w") as f, open(
         "{}/avg_result.txt".format(scoredir), "w"
     ) as f2:
-        for info in score_info:
+        for info in tqdm(score_info):
             f.write("{}\n".format(info))
         for key in score_info[0].keys():
             if key == "key":

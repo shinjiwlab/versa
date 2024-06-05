@@ -11,6 +11,7 @@ import logging
 import librosa
 import soundfile as sf
 import yaml
+from tqdm import tqdm
 
 
 def get_parser() -> argparse.Namespace:
@@ -240,7 +241,7 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         f = open(output_file, "w", encoding="utf-8")
 
     score_info = []
-    for key in gen_files.keys():
+    for key in tqdm(gen_files.keys()):
         gen_wav, gen_sr = sf.read(gen_files[key])
         assert key in gt_files.keys(), "key {} not found in ground truth files".format(
             key

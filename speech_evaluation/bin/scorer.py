@@ -9,7 +9,8 @@ import argparse
 import fnmatch
 import logging
 import os
-from typing import Dict, List, Tuple
+from typing import List
+from tqdm import tqdm
 
 import librosa
 import soundfile as sf
@@ -243,7 +244,7 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         f = open(output_file, "w", encoding="utf-8")
 
     score_info = []
-    for i in range(len(gen_files)):
+    for i in tqdm(range(len(gen_files))):
         gen_wav, gen_sr = sf.read(gen_files[i])
         if gt_files is not None:
             gt_wav, gt_sr = sf.read(gt_files[i])
