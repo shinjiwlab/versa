@@ -188,7 +188,7 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
         if key == "mcd_f0":
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr, **score_modules[key]["args"])
         elif key == "signal_metric":
-            score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
+            score = score_modules[key]["module"](gen_wav, gt_wav)
         elif key == "discrete_speech":
             score = score_modules[key]["module"](score_modules[key]["args"]["discrete_speech_predictors"], gen_wav, gt_wav, gen_sr)
         elif key == "pseudo_mos":
