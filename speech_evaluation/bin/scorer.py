@@ -54,8 +54,8 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
     score_modules = {}
     for config in score_config:
         if config["name"] == "mcd_f0":
+            logging.info("Loading MCD & F0 evaluation...")
             from speech_evaluation import mcd_f0
-
             score_modules["mcd_f0"] = {
                 "module": mcd_f0,
                 "args": {
@@ -70,6 +70,8 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                     "dtw": config.get("dtw", False),
                 },
             }
+            logging.info("Initiate MCD & F0 evaluation successfully.")
+
         elif config["name"] == "signal_metric":
             if not use_gt:
                 logging.warning(
@@ -77,9 +79,10 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 )
                 continue
 
+            logging.info("Loading signal metric evaluation...")
             from speech_evaluation import signal_metric
-
             score_modules["signal_metric"] = {"module": signal_metric}
+            logging.info("Initiate signal metric evaluation successfully.")
 
         elif config["name"] == "discrete_speech":
             if not use_gt:
@@ -88,18 +91,19 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 )
                 continue
 
+            logging.info("Loading discrete speech evaluation...")
             from speech_evaluation import discrete_speech_metric, discrete_speech_setup
-
             score_modules["discrete_speech"] = {
                 "module": discrete_speech_metric,
                 "args": {
                     "discrete_speech_predictors": discrete_speech_setup(use_gpu=use_gpu)
                 },
             }
+            logging.info("Initiate discrete speech evaluation successfully.")
 
         elif config["name"] == "pseudo_mos":
+            logging.info("Loading pseudo MOS evaluation...")
             from speech_evaluation import pseudo_mos_metric, pseudo_mos_setup
-
             predictor_dict, predictor_fs = pseudo_mos_setup(
                 use_gpu=use_gpu,
                 predictors=config.get("predictors", ["utmos"]),
@@ -113,6 +117,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                     "use_gpu": use_gpu,
                 },
             }
+            logging.info("Initiate pseudo MOS evaluation successfully.")
 
         elif config["name"] == "pesq":
             if not use_gt:
@@ -120,9 +125,11 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                     "Cannot use pesq metric because no gt audio is provided"
                 )
                 continue
-            from speech_evaluation import pesq_metric
 
+            logging.info("Loadding pesq evaluation...")
+            from speech_evaluation import pesq_metric
             score_modules["pesq"] = {"module": pesq_metric}
+            logging.info("Initiate pesq evaluation successfully.")
 
         elif config["name"] == "stoi":
             if not use_gt:
@@ -130,9 +137,11 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                     "Cannot use stoi metric because no gt audio is provided"
                 )
                 continue
-            from speech_evaluation import stoi_metric
 
+            logging.info("Loading stoi evaluation...")
+            from speech_evaluation import stoi_metric
             score_modules["stoi"] = {"module": stoi_metric}
+            logging.info("Initiate stoi evaluation successfully.")
 
         elif config["name"] == "visqol":
             if not use_gt:
@@ -140,6 +149,8 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                     "Cannot use visqol metric because no gt audio is provided"
                 )
                 continue
+
+            logging.info("Loading visqol evaluation...")
             from speech_evaluation import visqol_metric, visqol_setup
             api, fs = visqol_setup(model=config.get("model", "default"))
             score_modules["visqol"] = {
@@ -147,6 +158,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 "args": {"api": api,
                          "api_fs": fs},
             }
+            logging.info("Initiate visqol evaluation successfully.")
         
         elif config["name"] == "speaker":
             if not use_gt:
@@ -154,8 +166,9 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                     "Cannot use speaker metric because no gt audio is provided"
                 )
                 continue
-            from speech_evaluation import speaker_metric, speaker_model_setup
 
+            logging.info("Loading speaker evaluation...")
+            from speech_evaluation import speaker_metric, speaker_model_setup
             spk_model = speaker_model_setup(model_tag=config.get("model_tag", "default"), 
                                             model_path=config.get("model_path", None),
                                             model_config=config.get("model_config", None),
@@ -164,6 +177,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 "module": speaker_metric,
                 "args": {"model": spk_model},
             }
+            logging.info("Initiate speaker evaluation successfully.")
         
         return score_modules
 
@@ -321,3 +335,7 @@ def main():
 
     score_info = list_scoring(gen_files, score_modules, gt_files, output_file=args.output_file)
     logging.info("Summary: {}".format(load_summary(score_info)))
+
+
+if __name__ == "__main__":
+    main()
