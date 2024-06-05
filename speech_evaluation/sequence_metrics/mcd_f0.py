@@ -241,7 +241,7 @@ def mcd_f0(
         )
         mcd = np.mean(10 / np.log(10.0) * np.sqrt(2 * diff2sum), 0)
         f0rmse = np.sqrt(
-            np.mean((pred_feats["f0"][:min_len] - gßt_feats["f0"][:min_len]) ** 2)
+            np.mean((pred_feats["f0"][:min_len] - gt_feats["f0"][:min_len]) ** 2)
         )
         f0corr = scipy.stats.pearsonr(
             pred_feats["f0"][:min_len], gt_feats["f0"][:min_len]

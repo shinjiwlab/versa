@@ -43,7 +43,7 @@
 # -- plcmos: PLC-MOS score
 # -- aecmos: AEC-MOS score
 - name: pseudo_mos
-  predictors: ["utmos", "dnsmos", "plcmos", "aecmos"]
+  predictor_types: ["utmos", "dnsmos", "plcmos"]
   predictor_args:
     utmos:
       fs: 16000
@@ -51,13 +51,11 @@
       fs: 16000
     plcmos:
       fs: 16000
-    aecmos:
-      fs: 16000
 
 # visqol metric
 # -- visqol: visual quality of speech
-- name: visqol
-  model: speech
+# - name: visqol
+#   model: speech
 
 # speaker related metrics
 # -- spk_similarity: speaker cosine similarity

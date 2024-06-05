@@ -19,9 +19,9 @@ def get_parser() -> argparse.Namespace:
     """Get argument parser."""
     parser = argparse.ArgumentParser(description="Speech Evaluation Interface")
     parser.add_argument(
-        "pred",
+        "--pred",
         type=str,
-        help="Path of directory or wav.scp for generated waveforms.",
+        help="Wav.scp for generated waveforms.",
     )
     parser.add_argument(
         "--score_config", type=str, default=None, help="Configuration of Score Config"
@@ -30,7 +30,7 @@ def get_parser() -> argparse.Namespace:
         "--gt",
         type=str,
         default=None,
-        help="Path of directory or wav.scp for ground truth waveforms.",
+        help="Wav.scp for ground truth waveforms.",
     )
     parser.add_argument(
         "--output_file",
@@ -214,10 +214,11 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         f = open(output_file, "w", encoding="utf-8")
     
     score_info = []
-    for i in range(len(gen_files)):
-        gen_wav, gen_sr = sf.read(gen_files[i])
+    for key in gen_files.keys():
+        gen_wav, gen_sr = sf.read(gen_files[key])
+        assert key in gt_files.keys(), "key {} not found in ground truth files".format(key)
         if gt_files is not None:
-            gt_wav, gt_sr = sf.read(gt_files[i])
+            gt_wav, gt_sr = sf.read(gt_files[key])
         else:
             gt_wav = None
         
@@ -228,7 +229,7 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
             logging.warning("Resampling the ground truth audio to match the generated audio")
             gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
         
-        utt_score = {"key": gen_files[i]}
+        utt_score = {"key": key}
         
         utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr))
 
@@ -245,31 +246,6 @@ def load_summary(score_info):
         if key != "key":
             summary[key] = sum([score[key] for score in score_info]) / len(score_info)
     return summary
-
-
-def find_files(
-    root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
-) -> List[str]:
-    """Find files recursively.
-
-    Args:
-        root_dir (str): Root root_dir to find.
-        query (List[str]): Query to find.
-        include_root_dir (bool): If False, root_dir name is not included.
-
-    Returns:
-        List[str]: List of found filenames.
-
-    """
-    files = []
-    for root, _, filenames in os.walk(root_dir, followlinks=True):
-        for q in query:
-            for filename in fnmatch.filter(filenames, q):
-                files.append(os.path.join(root, filename))
-    if not include_root_dir:
-        files = [file_.replace(root_dir + "/", "") for file_ in files]
-
-    return files
 
 
 def main():
@@ -293,23 +269,24 @@ def main():
         )
         logging.warning("Skip DEBUG/INFO messages")
 
+    gen_files = {}
     # find files
-    if os.path.isdir(args.pred):
-        gen_files = sorted(find_files(args.pred))
-    else:
-        with open(args.pred) as f:
-            gen_files = [line.strip().split(None, 1)[1] for line in f.readlines()]
-        if gen_files[0].endswith("|"):
-            raise ValueError("Not supported wav.scp format.")
+    with open(args.pred) as f:
+        for line in f.readlines():
+            key, value = line.strip().split(maxsplit=1)
+            if value.endswith("|"):
+                raise ValueError("Not supported wav.scp format.")
+            gen_files[key] = value
 
     # find reference file
-    if os.path.isdir(args.gt):
-        gt_files = sorted(find_files(args.gt))
-    elif args.gt is not None:
+    if args.gt is not None:
+        gt_files = {}
         with open(args.gt) as f:
-            gt_files = [line.strip().split(None, 1)[1] for line in f.readlines()]
-        if gt_files[0].endswith("|"):
-            raise ValueError("Not supported wav.scp format.")
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                if value.endswith("|"):
+                    raise ValueError("Not supported wav.scp format.")
+                gt_files[key] = value
     else:
         gt_files = None
 
@@ -333,8 +310,6 @@ def main():
         use_gt=(True if gt_files is not None else False),
         use_gpu=args.use_gpu,
     )
-
-    print(score_modules, flush=True)
 
     assert len(score_config) > 0, "no scoring function is provided"
 
