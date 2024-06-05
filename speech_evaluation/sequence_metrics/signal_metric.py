@@ -17,13 +17,14 @@ def calculate_si_snr(pred_x, gt_x, zero_mean=None, clamp_db=None, pairwise=False
     gt_x = torch.from_numpy(gt_x).float()
 
     si_snr_loss = fast_bss_eval.si_sdr_loss(
-            est=pred_x,
-            ref=gt_x,
-            zero_mean=None,
-            clamp_db=None,
-            pairwise=False,
+        est=pred_x,
+        ref=gt_x,
+        zero_mean=zero_mean,
+        clamp_db=clamp_db,
+        pairwise=pairwise,
     )
     return -float(si_snr_loss)
+
 
 def calculate_ci_sdr(pred_x, gt_x, filter_length=512):
     # TODO(jiatong): pass filter_length to the function
@@ -31,9 +32,10 @@ def calculate_ci_sdr(pred_x, gt_x, filter_length=512):
     gt_x = torch.from_numpy(gt_x).float()
 
     ci_sdr_loss = ci_sdr.pt.ci_sdr_loss(
-            pred_x, gt_x, compute_permutation=False, filter_length=filter_length
-        )
+        pred_x, gt_x, compute_permutation=False, filter_length=filter_length
+    )
     return -float(ci_sdr_loss)
+
 
 def signal_metric(pred_x, gt_x):
     # Expected input: (channel, samples)
@@ -55,4 +57,3 @@ if __name__ == "__main__":
     b = np.random.random(16000)
     print(a, b)
     print("metrics: {}".format(signal_metric(a, b)))
-    

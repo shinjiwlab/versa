@@ -113,7 +113,7 @@ def extfrm(data, npow, power_threshold=-20):
 
     T = data.shape[0]
     if T != len(npow):
-        raise("Length of two vectors is different.")
+        raise ("Length of two vectors is different.")
 
     valid_index = np.where(npow > power_threshold)
     extdata = data[valid_index]
@@ -122,12 +122,22 @@ def extfrm(data, npow, power_threshold=-20):
     return extdata
 
 
-def world_extract(x, fs, f0min, f0max, mcep_shift=5, mcep_fftl=1024, mcep_dim=39, mcep_alpha=0.466, filter_cutoff=70):
+def world_extract(
+    x,
+    fs,
+    f0min,
+    f0max,
+    mcep_shift=5,
+    mcep_fftl=1024,
+    mcep_dim=39,
+    mcep_alpha=0.466,
+    filter_cutoff=70,
+):
     # scale from [-1, 1] to [-32768, 32767]
     x = x * np.iinfo(np.int16).max
-    
+
     x = np.array(x, dtype=np.float64)
-    x = low_cut_filter(x, fs, cutoff=70)
+    x = low_cut_filter(x, fs, cutoff=filter_cutoff)
 
     # extract features
     f0, time_axis = pw.harvest(
@@ -147,16 +157,41 @@ def world_extract(x, fs, f0min, f0max, mcep_shift=5, mcep_fftl=1024, mcep_dim=39
     }
 
 
-def mcd_f0(pred_x, gt_x, fs, f0min, f0max, mcep_shift=5, mcep_fftl=1024, mcep_dim=39, mcep_alpha=0.466, seq_mismatch_tolerance=0.1, power_threshold=-20, dtw=False):
+def mcd_f0(
+    pred_x,
+    gt_x,
+    fs,
+    f0min,
+    f0max,
+    mcep_shift=5,
+    mcep_fftl=1024,
+    mcep_dim=39,
+    mcep_alpha=0.466,
+    seq_mismatch_tolerance=0.1,
+    power_threshold=-20,
+    dtw=False,
+):
 
-    pred_feats = world_extract(pred_x, fs, f0min, f0max, mcep_shift, mcep_fftl, mcep_dim, mcep_alpha)
-    gt_feats = world_extract(gt_x, fs, f0min, f0max, mcep_shift, mcep_fftl, mcep_dim, mcep_alpha)
+    pred_feats = world_extract(
+        pred_x, fs, f0min, f0max, mcep_shift, mcep_fftl, mcep_dim, mcep_alpha
+    )
+    gt_feats = world_extract(
+        gt_x, fs, f0min, f0max, mcep_shift, mcep_fftl, mcep_dim, mcep_alpha
+    )
 
     if dtw:
         # VAD & DTW based on power
-        pred_mcep_nonsil_pow = extfrm(pred_feats["mcep"], pred_feats["npow"], power_threshold=-20)
-        gt_mcep_nonsil_pow = extfrm(gt_feats["mcep"], gt_feats["npow"], power_threshold=-20)
-        _, path = fastdtw(pred_mcep_nonsil_pow, gt_mcep_nonsil_pow, dist=scipy.spatial.distance.euclidean)
+        pred_mcep_nonsil_pow = extfrm(
+            pred_feats["mcep"], pred_feats["npow"], power_threshold=power_threshold
+        )
+        gt_mcep_nonsil_pow = extfrm(
+            gt_feats["mcep"], gt_feats["npow"], power_threshold=power_threshold
+        )
+        _, path = fastdtw(
+            pred_mcep_nonsil_pow,
+            gt_mcep_nonsil_pow,
+            dist=scipy.spatial.distance.euclidean,
+        )
         twf_pow = np.array(path).T
 
         # MCD using power-based DTW
@@ -171,7 +206,11 @@ def mcd_f0(pred_x, gt_x, fs, f0min, f0max, mcep_shift=5, mcep_fftl=1024, mcep_di
         try:
             gt_mcep_nonsil_f0 = gt_feats["mcep"][gt_nonsil_f0_idx]
             pred_mcep_nonsil_f0 = pred_feats["mcep"][pred_nonsil_f0_idx]
-            _, path = fastdtw(pred_mcep_nonsil_f0, gt_mcep_nonsil_f0, dist=scipy.spatial.distance.euclidean)
+            _, path = fastdtw(
+                pred_mcep_nonsil_f0,
+                gt_mcep_nonsil_f0,
+                dist=scipy.spatial.distance.euclidean,
+            )
             twf_f0 = np.array(path).T
 
             # f0RMSE, f0CORR using f0-based DTW
@@ -186,23 +225,34 @@ def mcd_f0(pred_x, gt_x, fs, f0min, f0max, mcep_shift=5, mcep_fftl=1024, mcep_di
             )
             f0rmse = np.nan
             f0corr = np.nan
-        
+
     else:
         # Use shorter sequence
         pred_seq_len = len(pred_feats["f0"])
         gt_seq_len = len(gt_feats["f0"])
         min_len = min(pred_seq_len, gt_seq_len)
-        assert (pred_seq_len + gt_seq_len - 2 * min_len) / (pred_seq_len + gt_seq_len) < seq_mismatch_tolerance, "two input sequence mismatch ratio over threshold {}".format(seq_mismatch_tolerance)
-        diff2sum = np.sum((pred_feats["mcep"][:min_len] - gt_feats["mcep"][:min_len]) ** 2, 1)
+        assert (pred_seq_len + gt_seq_len - 2 * min_len) / (
+            pred_seq_len + gt_seq_len
+        ) < seq_mismatch_tolerance, "two input sequence mismatch ratio over threshold {}".format(
+            seq_mismatch_tolerance
+        )
+        diff2sum = np.sum(
+            (pred_feats["mcep"][:min_len] - gt_feats["mcep"][:min_len]) ** 2, 1
+        )
         mcd = np.mean(10 / np.log(10.0) * np.sqrt(2 * diff2sum), 0)
-        f0rmse = np.sqrt(np.mean((pred_feats["f0"][:min_len] - gßt_feats["f0"][:min_len]) ** 2))
-        f0corr = scipy.stats.pearsonr(pred_feats["f0"][:min_len], gt_feats["f0"][:min_len])[0]
-    
+        f0rmse = np.sqrt(
+            np.mean((pred_feats["f0"][:min_len] - gßt_feats["f0"][:min_len]) ** 2)
+        )
+        f0corr = scipy.stats.pearsonr(
+            pred_feats["f0"][:min_len], gt_feats["f0"][:min_len]
+        )[0]
+
     return {
         "mcd": mcd,
         "f0rmse": f0rmse,
         "f0corr": f0corr,
     }
+
 
 # debug code
 if __name__ == "__main__":

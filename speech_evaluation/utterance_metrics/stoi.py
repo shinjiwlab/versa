@@ -13,7 +13,8 @@ except ImportError:
 
 def stoi_metric(pred_x, gt_x, fs):
     score = stoi(gt_x, pred_x, fs, extended=False)
-    return score
+    return {"stoi": score}
+
 
 if __name__ == "__main__":
     a = np.random.random(16000)
