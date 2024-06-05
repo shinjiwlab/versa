@@ -43,7 +43,7 @@ def aggregate_results(logdir: str, scoredir: str, nj: int) -> None:
     logging.info("Aggregating results...")
     score_info = []
     for i in range(nj):
-        with open("{}/log/result.{}.txt".format(logdir, i), "r") as f:
+        with open("{}/result.{}.txt".format(logdir, i + 1), "r") as f:
             for line in f:
                 score_info.append(json.load(line))
     with open("{}/utt_result.txt".format(scoredir), "w") as f, open(
