@@ -243,11 +243,19 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
     score_info = []
     for key in tqdm(gen_files.keys()):
         gen_wav, gen_sr = sf.read(gen_files[key])
+        if gen_wav.shape[0] / gen_sr < 0.25:
+            logging.warning("audio {} (generated) is too short to be evaluated with pesq or stoi, skipping".format(key))
+            continue
         assert key in gt_files.keys(), "key {} not found in ground truth files".format(
             key
         )
         if gt_files is not None:
             gt_wav, gt_sr = sf.read(gt_files[key])
+
+            if "pesq" in score_modules.keys() or "stoi" in score_modules.keys():
+                if gt_wav.shape[0] / gt_sr < 0.25:
+                    logging.warning("audio {} (ground truth) is too short to be evaluated with pesq or stoi, skipping".format(key))
+                    continue
         else:
             gt_wav = None
 
