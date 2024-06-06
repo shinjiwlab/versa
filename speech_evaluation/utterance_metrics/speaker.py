@@ -36,7 +36,7 @@ def speaker_metric(model, pred_x, gt_x, fs):
 
     embedding_gen = model(pred_x).squeeze(0).numpy()
     embedding_gt = model(gt_x).squeeze(0).numpy()
-    similarity = 1- np.dot(embedding_gen, embedding_gt) / (
+    similarity = np.dot(embedding_gen, embedding_gt) / (
         np.linalg.norm(embedding_gen) * np.linalg.norm(embedding_gt)
     )
     return {"spk_similarity": similarity}
