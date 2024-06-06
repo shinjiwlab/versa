@@ -39,6 +39,10 @@ def calculate_ci_sdr(pred_x, gt_x, filter_length=512):
 
 def signal_metric(pred_x, gt_x):
     # Expected input: (channel, samples)
+    if pred_x.ndim == 1:
+        pred_x = pred_x[np.newaxis, :]
+    if gt_x.ndim == 1:
+        gt_x = gt_x[np.newaxis, :]
     if pred_x.shape[1] != gt_x.shape[1]:
         min_audio_length = min(pred_x.shape[1], gt_x.shape[1])
         pred_x = pred_x[:, :min_audio_length]

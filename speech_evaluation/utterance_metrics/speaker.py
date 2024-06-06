@@ -34,9 +34,9 @@ def speaker_metric(model, pred_x, gt_x, fs):
         gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=16000)
         pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
 
-    embedding_gen = model(pred_x)
-    embedding_gt = model(gt_x)
-    similarity = np.dot(embedding_gen, embedding_gt) / (
+    embedding_gen = model(pred_x).squeeze(0).numpy()
+    embedding_gt = model(gt_x).squeeze(0).numpy()
+    similarity = 1- np.dot(embedding_gen, embedding_gt) / (
         np.linalg.norm(embedding_gen) * np.linalg.norm(embedding_gt)
     )
     return {"spk_similarity": similarity}
@@ -44,4 +44,6 @@ def speaker_metric(model, pred_x, gt_x, fs):
 
 if __name__ == "__main__":
     a = np.random.random(16000)
-    print("metrics: {}".format(speaker_metric(a, 16000)))
+    b = np.random.random(16000)
+    model = speaker_model_setup()
+    print("metrics: {}".format(speaker_metric(model, a, b, 16000)))

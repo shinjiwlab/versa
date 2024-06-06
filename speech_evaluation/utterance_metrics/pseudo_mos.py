@@ -85,18 +85,25 @@ def pseudo_mos_metric(pred, fs, predictor_dict, predictor_fs, use_gpu=False):
                 pred_dnsmos = librosa.resample(
                     pred, orig_sr=fs, target_sr=predictor_fs["dnsmos"]
                 )
+                fs = predictor_fs["dnsmos"]
             else:
                 pred_dnsmos = pred
-            score = predictor_dict["dnsmos"].run(pred_dnsmos, sr=fs)
+
+            max_val = np.max(np.abs(pred_dnsmos))
+            score = predictor_dict["dnsmos"].run(pred_dnsmos / max_val, sr=fs)
+
             scores.update(dns_overall=score["ovrl_mos"], dns_p808=score["p808_mos"])
         elif predictor == "plcmos":
             if fs != predictor_fs["plcmos"]:
                 pred_plcmos = librosa.resample(
                     pred, orig_sr=fs, target_sr=predictor_fs["plcmos"]
                 )
+                fs = predictor_fs["plcmos"]
             else:
                 pred_plcmos = pred
-            score = predictor_dict["plcmos"].run(pred_plcmos, sr=fs)
+
+            max_val = np.max(np.abs(pred_plcmos))
+            score = predictor_dict["plcmos"].run(pred_plcmos / max_val, sr=fs)
             scores.update(plcmos=score["plcmos"])
         else:
             raise NotImplementedError("Not supported {}".format(predictor))
@@ -117,4 +124,4 @@ if __name__ == "__main__":
     scores = pseudo_mos_metric(
         a, fs=16000, predictor_dict=predictor_dict, predictor_fs=predictor_fs
     )
-    print("metrics: {}".format())
+    print("metrics: {}".format(scores))

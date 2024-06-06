@@ -10,6 +10,7 @@ import numpy as np
 import visqol
 from visqol import visqol_lib_py
 from visqol.pb2 import visqol_config_pb2
+from visqol.pb2 import similarity_result_pb2
 
 
 def visqol_setup(model):
