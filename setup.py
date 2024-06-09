@@ -51,7 +51,7 @@ setup(
         "torch-complex>=0.4.3",
         "torchaudio>=2.1.0",
         "transformers>=4.41.2",
-        "discrete-speech-metrics @ git+ssh://git@github.com/Takaaki-Saeki/DiscreteSpeechMetrics.git@v1.0.1#egg=discrete-speech-metrics",
+        "discrete-speech-metrics @ git+https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics.git@v1.0.1",
     ],
     author='Jiatong Shi',
     author_email='ftshijt@gmail.com',

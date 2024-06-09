@@ -18,21 +18,24 @@ except ImportError:
 
 
 def pesq_metric(pred_x, gt_x, fs):
-    if fs == 8000:
-        pesq_value = pesq(8000, gt_x, pred_x, "nb")
-    elif fs < 16000:
-        logging.info("not support fs {}, resample to 8khz".format(fs))
-        new_gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=8000)
-        new_pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=8000)
-        pesq_value = pesq(16000, new_gt_x, new_pred_x, "nb")
-    elif fs == 16000:
-        pesq_value = pesq(16000, gt_x, pred_x, "wb")
-    else:
-        logging.info("not support fs {}, resample to 16khz".format(fs))
-        new_gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=16000)
-        new_pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
-        pesq_value = pesq(16000, new_gt_x, new_pred_x, "wb")
-
+    try:
+        if fs == 8000:
+            pesq_value = pesq(8000, gt_x, pred_x, "nb")
+        elif fs < 16000:
+            logging.info("not support fs {}, resample to 8khz".format(fs))
+            new_gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=8000)
+            new_pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=8000)
+            pesq_value = pesq(16000, new_gt_x, new_pred_x, "nb")
+        elif fs == 16000:
+            pesq_value = pesq(16000, gt_x, pred_x, "wb")
+        else:
+            logging.info("not support fs {}, resample to 16khz".format(fs))
+            new_gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=16000)
+            new_pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
+            pesq_value = pesq(16000, new_gt_x, new_pred_x, "wb")
+    except BaseException:
+        logging.warning("Error from pesq calculation. Please check the audio (likely due to silence)")
+        pesq_value = 0.0
     return {"pesq": pesq_value}
 
 

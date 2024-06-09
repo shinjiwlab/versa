@@ -59,7 +59,7 @@ def visqol_metric(api, api_fs, pred_x, gt_x, fs):
 
 
 if __name__ == "__main__":
-    a = np.random.random(16000)
-    b = np.random.random(16000)
+    a = np.random.random(int(16000 * 1))
+    b = np.random.random(int(16000 * 1))
     predictor, fs = visqol_setup("default")
     print(visqol_metric(predictor, fs, a, b, 16000))

@@ -94,8 +94,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading discrete speech evaluation...")
-            from speech_evaluation import (discrete_speech_metric,
-                                           discrete_speech_setup)
+            from speech_evaluation import discrete_speech_metric, discrete_speech_setup
 
             score_modules["discrete_speech"] = {
                 "module": discrete_speech_metric,
@@ -236,6 +235,22 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
     return utt_score
 
 
+def check_minimum_length(length, key_info):
+    if "stoi" in key_info:
+        # NOTE(jiatong): explicitly 0.256s as in https://github.com/mpariente/pystoi/pull/24
+        if length < 0.3:
+            return False
+    if "pesq" in key_info:
+        # NOTE(jiatong): check https://github.com/ludlows/PESQ/blob/master/pesq/cypesq.pyx#L37-L46
+        if length < 0.25:
+            return False
+    if "visqol" in key_info:
+        # NOTE(jiatong): check https://github.com/google/visqol/blob/master/src/image_patch_creator.cc#L50-L72 
+        if length < 1.0:
+            return False
+    return True
+
+
 def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
@@ -243,8 +258,13 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
     score_info = []
     for key in tqdm(gen_files.keys()):
         gen_wav, gen_sr = sf.read(gen_files[key])
-        if gen_wav.shape[0] / gen_sr < 0.25:
-            logging.warning("audio {} (generated) is too short to be evaluated with pesq or stoi, skipping".format(key))
+        logging.warning(gen_wav.shape[0])
+        if not check_minimum_length(gen_wav.shape[0] / gen_sr, score_modules.keys()):
+            logging.warning(
+                "audio {} (generated, length {}) is too short to be evaluated with some metric metrics, skipping".format(
+                    key, gen_wav.shape[0] / gen_sr
+                )
+            )
             continue
         assert key in gt_files.keys(), "key {} not found in ground truth files".format(
             key
@@ -252,10 +272,15 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         if gt_files is not None:
             gt_wav, gt_sr = sf.read(gt_files[key])
 
-            if "pesq" in score_modules.keys() or "stoi" in score_modules.keys():
-                if gt_wav.shape[0] / gt_sr < 0.25:
-                    logging.warning("audio {} (ground truth) is too short to be evaluated with pesq or stoi, skipping".format(key))
-                    continue
+            if not check_minimum_length(
+                gt_wav.shape[0] / gt_sr, score_modules.keys()
+            ):
+                logging.warning(
+                    "audio {} (ground truth, length {}) is too short to be evaluated with many metrics, skipping".format(
+                        key, gt_wav.shape[0] / gt_sr
+                    )
+                )
+                continue
         else:
             gt_wav = None
 
@@ -283,6 +308,9 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
 
 def load_summary(score_info):
     summary = {}
+    if len(score_info) == 0:
+        logging.warning("empty scoring")
+        return {}
     for key in score_info[0].keys():
         if key != "key":
             summary[key] = sum([score[key] for score in score_info]) / len(score_info)

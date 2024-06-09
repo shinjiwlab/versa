@@ -97,8 +97,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading discrete speech evaluation...")
-            from speech_evaluation import (discrete_speech_metric,
-                                           discrete_speech_setup)
+            from speech_evaluation import discrete_speech_metric, discrete_speech_setup
 
             score_modules["discrete_speech"] = {
                 "module": discrete_speech_metric,
@@ -239,6 +238,22 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
     return utt_score
 
 
+def check_minimum_length(length, key_info):
+    if "stoi" in key_info:
+        # NOTE(jiatong): explicitly 0.256s as in https://github.com/mpariente/pystoi/pull/24
+        if length < 0.3:
+            return False
+    if "pesq" in key_info:
+        # NOTE(jiatong): check https://github.com/ludlows/PESQ/blob/master/pesq/cypesq.pyx#L37-L46
+        if length < 0.25:
+            return False
+    if "visqol" in key_info:
+        # NOTE(jiatong): empirical number
+        if length < 1.0:
+            return False
+    return True
+
+
 def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
@@ -248,6 +263,15 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         gen_wav, gen_sr = sf.read(gen_files[i])
         if gt_files is not None:
             gt_wav, gt_sr = sf.read(gt_files[i])
+            if not check_minimum_length(
+                gt_wav.shape[0] / gt_sr, score_modules.keys()
+            ):
+                logging.warning(
+                    "audio {} (ground truth, length {}) is too short to be evaluated with many metrics, skipping".format(
+                        key, gt_wav.shape[0] / gt_sr
+                    )
+                )
+                continue
         else:
             gt_wav = None
 
