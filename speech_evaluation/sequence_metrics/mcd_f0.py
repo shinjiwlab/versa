@@ -247,8 +247,8 @@ def mcd_f0(
 
     return {
         "mcd": mcd,
-        "f0rmse": f0rmse,
-        "f0corr": f0corr,
+        "logf0rmse": f0rmse,
+        "logf0corr": f0corr,
     }
 
 
