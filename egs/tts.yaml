@@ -19,7 +19,7 @@
 # -- speech_bert: speech bert score
 # -- speech_bleu: speech bleu score
 # -- speech_token_distance: speech token distance score
-- name: discrete_speech_metric
+- name: discrete_speech
 
 # pseudo subjective metrics
 # -- utmos: UT-MOS score
