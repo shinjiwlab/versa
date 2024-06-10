@@ -55,7 +55,7 @@
 # visqol metric
 # -- visqol: visual quality of speech
 - name: visqol
-  model: speech
+  model: default
 
 # speaker related metrics
 # -- spk_similarity: speaker cosine similarity

@@ -247,14 +247,14 @@ def mcd_f0(
 
     return {
         "mcd": mcd,
-        "logf0rmse": f0rmse,
-        "logf0corr": f0corr,
+        "f0rmse": f0rmse,
+        "f0corr": f0corr,
     }
 
 
 # debug code
 if __name__ == "__main__":
     a = np.random.random(16000)
-    b = np.random.random(18000)
+    b = np.random.random(16000)
     print(a, b)
-    print("metrics: {}".format(mcd_f0(a, b, 16000, 0, 8000, dtw=True)))
+    print("metrics: {}".format(mcd_f0(a, b, 16000, 1, 8000, dtw=True)))
