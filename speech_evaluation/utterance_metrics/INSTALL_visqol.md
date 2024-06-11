@@ -6,9 +6,9 @@
 `bash bazel-5.1.0-installer-linux-x86_64.sh --user`
 
 ### revise compile config and compile. You may need 32G memory for this stage
-(3) add `build --linkopt=-lstdc++fs` after line 55 of `.bazelrc`
+(1) add `build --linkopt=-lstdc++fs` after line 55 of `.bazelrc`
 (2) replace the version to `5.1.0` in `.bazelversion`
-(1) compile with `bazel build :visqol -c opt`
+(3) compile with `bazel build :visqol -c opt`
 
 ### install in python 
 `pip install .`
