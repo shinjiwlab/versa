@@ -13,13 +13,7 @@ or
 pip install git+https://github.com/ftshijt/speech_evaluation.git
 ```
 
-You will need to install visqol by yourself. Check https://github.com/google/visqol for details.
-A installation bug for visqol for me is usually about lstdc++fs
-Fix it by add 
-```
-build --linkopt=-lstdc++fs
-```
-to line 55 at .bazelrc in https://github.com/google/visqol
+You need to manually install visqol. We prepared a detailed installation guide at https://github.com/ftshijt/speech_evaluation/blob/main/speech_evaluation/utterance_metrics/INSTALL_visqol.md if you met issue with original repo https://github.com/google/visqol
 
 
 ## Quick test

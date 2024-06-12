@@ -30,7 +30,6 @@ setup(
         "opt-einsum>=3.3.0",
         "pesq>=0.0.4",
         "protobuf>=3.20.3",
-        "pypesq>=1.2.4",
         "pysptk>=0.2.2",
         "pystoi>=0.4.1",
         "python-dateutil>=2.9.0",
