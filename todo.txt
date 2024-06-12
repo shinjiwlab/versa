@@ -1,0 +1,9 @@
+https://github.com/crlandsc/torch-log-wmse-audio-quality
+https://github.com/wjassim/WARP-Q
+https://github.com/lcn-kul/xls-r-analysis-sqa?tab=readme-ov-file
+https://github.com/NTIA/WEnets
+https://github.com/pranaymanocha/PerceptualAudio
+torchaudio-squim
+https://github.com/JasonSWFu/VQscore
+https://github.com/soumimaiti/speechlmscore_tool
+https://github.com/urgent-challenge/urgent2024_challenge/tree/main/evaluation_metrics
