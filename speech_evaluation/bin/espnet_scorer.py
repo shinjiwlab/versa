@@ -266,9 +266,10 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
                 )
             )
             continue
-        assert key in gt_files.keys(), "key {} not found in ground truth files".format(
-            key
-        )
+        if gt_files is not None:
+            assert key in gt_files.keys(), "key {} not found in ground truth files".format(
+                 key
+            )
         if gt_files is not None:
             gt_wav, gt_sr = sf.read(gt_files[key])
 
