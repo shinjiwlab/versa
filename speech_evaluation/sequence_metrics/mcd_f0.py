@@ -134,12 +134,16 @@ def world_extract(
     # scale from [-1, 1] to [-32768, 32767]
     x = x * np.iinfo(np.int16).max
 
+    if x.ndim > 1:
+        x = x[:, 0]
+        logging.warning("detect multi-channel data for mcd-f0 caluclation, use first channel")
+
     x = np.array(x, dtype=np.float64)
     x = low_cut_filter(x, fs, cutoff=filter_cutoff)
 
     # extract features
     f0, time_axis = pw.harvest(
-        x, fs, f0_floor=f0min, f0_ceil=f0max, frame_period=mcep_shift
+        x.astype(np.double), fs, f0_floor=f0min, f0_ceil=f0max, frame_period=mcep_shift
     )
     sp = pw.cheaptrick(x, f0, time_axis, fs, fft_size=mcep_fftl)
     ap = pw.d4c(x, f0, time_axis, fs, fft_size=mcep_fftl)

@@ -7,11 +7,26 @@
 
 import argparse
 import logging
+import copy
 
+import numpy as np
+import kaldiio
 import librosa
 import soundfile as sf
 import yaml
 from tqdm import tqdm
+
+
+def wav_normalize(wave_array):
+    if wave_array.dtype != np.int16:
+        return np.ascontiguousarray(copy.deepcopy(wave_array.astype(np.float64)))
+    # Convert the integer samples to floating-point numbers
+    data_float = wave_array.astype(np.float64)
+
+    # Normalize the floating-point numbers to the range [-1.0, 1.0]
+    max_int16 = np.iinfo(np.int16).max
+    normalized_data = data_float / max_int16
+    return np.ascontiguousarray(copy.deepcopy(normalized_data))
 
 
 def get_parser() -> argparse.Namespace:
@@ -257,7 +272,8 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
 
     score_info = []
     for key in tqdm(gen_files.keys()):
-        gen_wav, gen_sr = sf.read(gen_files[key])
+        gen_sr, gen_wav = gen_files[key]
+        gen_wav = wav_normalize(gen_wav)
         logging.warning(gen_wav.shape[0])
         if not check_minimum_length(gen_wav.shape[0] / gen_sr, score_modules.keys()):
             logging.warning(
@@ -271,8 +287,8 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
                  key
             )
         if gt_files is not None:
-            gt_wav, gt_sr = sf.read(gt_files[key])
-
+            gt_sr, gt_wav= gt_files[key]
+            gt_wav = wav_normalize(gt_wav)
             if not check_minimum_length(
                 gt_wav.shape[0] / gt_sr, score_modules.keys()
             ):
@@ -284,13 +300,14 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
                 continue
         else:
             gt_wav = None
+            gt_sr = None
 
-        if gen_sr > gt_sr:
+        if gt_sr is not None and gen_sr > gt_sr:
             logging.warning(
                 "Resampling the generated audio to match the ground truth audio"
             )
             gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
-        elif gen_sr < gt_sr:
+        elif gt_sr is not None and gen_sr < gt_sr:
             logging.warning(
                 "Resampling the ground truth audio to match the generated audio"
             )
@@ -342,21 +359,11 @@ def main():
     gen_files = {}
     # find files
     with open(args.pred) as f:
-        for line in f.readlines():
-            key, value = line.strip().split(maxsplit=1)
-            if value.endswith("|"):
-                raise ValueError("Not supported wav.scp format.")
-            gen_files[key] = value
+        gen_files = kaldiio.load_scp(args.pred)
 
     # find reference file
     if args.gt is not None:
-        gt_files = {}
-        with open(args.gt) as f:
-            for line in f.readlines():
-                key, value = line.strip().split(maxsplit=1)
-                if value.endswith("|"):
-                    raise ValueError("Not supported wav.scp format.")
-                gt_files[key] = value
+        gt_files = kaldiio.load_scp(args.gt)
     else:
         gt_files = None
 
