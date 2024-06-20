@@ -17,7 +17,14 @@ import yaml
 from tqdm import tqdm
 
 
+def check_all_same(array):
+    return np.all(array == array[0])
+
+
 def wav_normalize(wave_array):
+    if wave_array.ndim > 1:
+        wave_array = wave_array[:, 0]
+        logging.warning("detect multi-channel data for mcd-f0 caluclation, use first channel")
     if wave_array.dtype != np.int16:
         return np.ascontiguousarray(copy.deepcopy(wave_array.astype(np.float64)))
     # Convert the integer samples to floating-point numbers
@@ -289,6 +296,9 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         if gt_files is not None:
             gt_sr, gt_wav= gt_files[key]
             gt_wav = wav_normalize(gt_wav)
+            if check_all_same(gt_wav):
+                logging.warning("skip audio with gt {}, as the gt audio has all the same value.".format(key))
+                continue
             if not check_minimum_length(
                 gt_wav.shape[0] / gt_sr, score_modules.keys()
             ):
@@ -316,6 +326,8 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         utt_score = {"key": key}
 
         utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr))
+        del gen_wav
+        del gt_wav
 
         if output_file is not None:
             f.write(f"{utt_score}\n")
