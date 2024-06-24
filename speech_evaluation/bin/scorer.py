@@ -268,7 +268,7 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
             ):
                 logging.warning(
                     "audio {} (ground truth, length {}) is too short to be evaluated with many metrics, skipping".format(
-                        key, gt_wav.shape[0] / gt_sr
+                        gt_files[i], gt_wav.shape[0] / gt_sr
                     )
                 )
                 continue
