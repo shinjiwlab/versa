@@ -24,7 +24,9 @@ def check_all_same(array):
 def wav_normalize(wave_array):
     if wave_array.ndim > 1:
         wave_array = wave_array[:, 0]
-        logging.warning("detect multi-channel data for mcd-f0 caluclation, use first channel")
+        logging.warning(
+            "detect multi-channel data for mcd-f0 caluclation, use first channel"
+        )
     if wave_array.dtype != np.int16:
         return np.ascontiguousarray(copy.deepcopy(wave_array.astype(np.float64)))
     # Convert the integer samples to floating-point numbers
@@ -61,6 +63,13 @@ def get_parser() -> argparse.Namespace:
     )
     parser.add_argument(
         "--use_gpu", type=bool, default=False, help="whether to use GPU if it can"
+    )
+    parser.add_argument(
+        "--io",
+        type=str,
+        default="kaldi",
+        choices=["kaldi", "soundfile"],
+        help="io interface to use",
     )
     parser.add_argument(
         "--verbose",
@@ -267,19 +276,22 @@ def check_minimum_length(length, key_info):
         if length < 0.25:
             return False
     if "visqol" in key_info:
-        # NOTE(jiatong): check https://github.com/google/visqol/blob/master/src/image_patch_creator.cc#L50-L72 
+        # NOTE(jiatong): check https://github.com/google/visqol/blob/master/src/image_patch_creator.cc#L50-L72
         if length < 1.0:
             return False
     return True
 
 
-def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
+def list_scoring(gen_files, score_modules, gt_files=None, output_file=None, io="kaldi"):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
 
     score_info = []
     for key in tqdm(gen_files.keys()):
-        gen_sr, gen_wav = gen_files[key]
+        if io == "kaldi":
+            gen_sr, gen_wav = gen_files[key]
+        else:
+            gen_wav, gen_sr = sf.read(gen_files[key])
         gen_wav = wav_normalize(gen_wav)
         logging.warning(gen_wav.shape[0])
         if not check_minimum_length(gen_wav.shape[0] / gen_sr, score_modules.keys()):
@@ -290,18 +302,23 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
             )
             continue
         if gt_files is not None:
-            assert key in gt_files.keys(), "key {} not found in ground truth files".format(
-                 key
-            )
+            assert (
+                key in gt_files.keys()
+            ), "key {} not found in ground truth files".format(key)
         if gt_files is not None:
-            gt_sr, gt_wav= gt_files[key]
+            if io == "kaldi":
+                gt_sr, gt_wav = gt_files[key]
+            else:
+                gt_wav, gt_sr = sf.read(gt_files[key])
             gt_wav = wav_normalize(gt_wav)
             if check_all_same(gt_wav):
-                logging.warning("skip audio with gt {}, as the gt audio has all the same value.".format(key))
+                logging.warning(
+                    "skip audio with gt {}, as the gt audio has all the same value.".format(
+                        key
+                    )
+                )
                 continue
-            if not check_minimum_length(
-                gt_wav.shape[0] / gt_sr, score_modules.keys()
-            ):
+            if not check_minimum_length(gt_wav.shape[0] / gt_sr, score_modules.keys()):
                 logging.warning(
                     "audio {} (ground truth, length {}) is too short to be evaluated with many metrics, skipping".format(
                         key, gt_wav.shape[0] / gt_sr
@@ -368,14 +385,32 @@ def main():
         )
         logging.warning("Skip DEBUG/INFO messages")
 
-    gen_files = {}
-    # find files
-    with open(args.pred) as f:
-        gen_files = kaldiio.load_scp(args.pred)
+    if args.io == "kaldi":
+        with open(args.pred) as f:
+            gen_files = kaldiio.load_scp(args.pred)
+    else:
+        gen_files = {}
+        with open(args.pred) as f:
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                if value.endswith("|"):
+                    raise ValueError(
+                        "Not supported wav.scp format. Set IO interface to kaldi"
+                    )
+                gen_files[key] = value
 
     # find reference file
     if args.gt is not None:
-        gt_files = kaldiio.load_scp(args.gt)
+        if args.io == "kaldi":
+            gt_files = kaldiio.load_scp(args.gt)
+        else:
+            gt_files = {}
+            with open(args.gt) as f:
+                for line in f.readlines():
+                    key, value = line.strip().split(maxsplit=1)
+                    if value.endswith("|"):
+                        raise ValueError("Not supported wav.scp format.")
+                    gt_files[key] = value
     else:
         gt_files = None
 
@@ -403,7 +438,7 @@ def main():
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, output_file=args.output_file
+        gen_files, score_modules, gt_files, output_file=args.output_file, io=args.io
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 
