@@ -8,6 +8,7 @@
 import argparse
 import logging
 import copy
+import torch
 
 import numpy as np
 import kaldiio
@@ -76,6 +77,12 @@ def get_parser() -> argparse.Namespace:
         default=1,
         type=int,
         help="Verbosity level. Higher is more logging.",
+    )
+    parser.add_argument(
+        "--rank",
+        default=0,
+        type=int,
+        help="the overall rank in the batch processing, used to specify GPU rank",
     )
     return parser
 
@@ -366,6 +373,12 @@ def load_summary(score_info):
 
 def main():
     args = get_parser().parse_args()
+
+    # In case of using `local` backend, all GPU will be visible to all process.
+    if args.use_gpu:
+        gpu_rank = args.rank % torch.cuda.device_count()
+        torch.cuda.set_device(gpu_rank)
+        logging.info(f"using device: cuda:{gpu_rank}")
 
     # logging info
     if args.verbose > 1:
