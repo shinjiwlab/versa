@@ -62,6 +62,10 @@
 - name: speaker
   model_tag: default
 
+# torchaudio-squim
+# -- torchaudio-squim: non-intrusive speech assessment in torchaudio
+- name: squim
+
 
   
 
