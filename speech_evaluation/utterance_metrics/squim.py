@@ -4,6 +4,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import numpy as np
+import torch
 
 try:
     from pesq import pesq
@@ -23,12 +24,19 @@ def squim_metric(pred_x, gt_x, fs):
         gt_x = F.resample(gt_x, fs, 16000)
         pred_x = F.resample(pred_x, fs, 16000)
 
-    subjective_model = SQUIM_SUBJECTIVE.get_model()
-    objective_model = SQUIM_OBJECTIVE.get_model()
+    gt_x = torch.from_numpy(gt_x).unsqueeze(0)
+    gt_x = gt_x.float()
 
+    pred_x = torch.from_numpy(pred_x).unsqueeze(0)
+    pred_x = pred_x.float()
+
+    subjective_model = SQUIM_SUBJECTIVE.get_model()
     mos = subjective_model(pred_x, gt_x)
-    stoi, pesq, si_sdr = objective_model(pred_x)
-    return {"mos": mos, "stoi": stoi, "pesq": pesq, "si_sdr": si_sdr}
+
+    #objective_model = SQUIM_OBJECTIVE.get_model()
+    #stoi, pesq, si_sdr = objective_model(pred_x)
+    
+    return {"mos": mos.detach().numpy()}
 
 
 if __name__ == "__main__":
