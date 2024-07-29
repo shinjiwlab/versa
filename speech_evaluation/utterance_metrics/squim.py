@@ -26,6 +26,7 @@ def squim_metric(pred_x, gt_x, fs):
     https://pytorch.org/audio/main/tutorials/squim_tutorial.html
 
     """
+
     if fs != 16000:
         gt_x = F.resample(gt_x, fs, 16000)
         pred_x = F.resample(pred_x, fs, 16000)
