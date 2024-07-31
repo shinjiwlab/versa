@@ -61,3 +61,10 @@ python scripts/show_result.py <score_dir>/utt_result.gpu.txt
 Access `egs/*.yaml` for different config for differnt setups.
 
 ## List of Metrics
+
+| Metric Name      | Key in config | Key in report | Details | Code Source                                                                                                     | References                                                                                       |
+|------------------|---------------|---------------|---------|-----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Mean Cepstral Distortion | mcd_f0 | mcd | | |
+| F0 Correlation | mcd_f0 | f0_corr| | |
+| F0 Root Mean Square Error | mcd_f0 | f0_rmse | | |
+| Signal-to-infererence Ratio | signal_metric | sir | | |
