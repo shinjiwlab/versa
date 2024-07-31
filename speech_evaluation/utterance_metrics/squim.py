@@ -43,7 +43,7 @@ def squim_metric(pred_x, gt_x, fs):
     objective_model = SQUIM_OBJECTIVE.get_model()
     torch_squim_stoi, torch_squim_pesq, torch_squim_si_sdr = objective_model(pred_x)
     
-    return {"torch squim mos": torch_squim_mos.detach().numpy(), "torch_squim_stoi": torch_squim_stoi.detach().numpy(), "torch_squim_pesq": torch_squim_pesq.detach().numpy(), "torch_squim_si_sdr": torch_squim_si_sdr.detach().numpy()}
+    return {"torch_squim_mos": torch_squim_mos.detach().numpy(), "torch_squim_stoi": torch_squim_stoi.detach().numpy(), "torch_squim_pesq": torch_squim_pesq.detach().numpy(), "torch_squim_si_sdr": torch_squim_si_sdr.detach().numpy()}
 
 
 if __name__ == "__main__":
