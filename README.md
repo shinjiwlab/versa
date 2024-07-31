@@ -22,9 +22,42 @@ python speech_evaluation/bin/test.py
 ```
 
 ## Usage
+
+Simple usage case for a few samples.
 ```
-python speech_evaluation/bin/scorer.py --score_config egs/codec_16k.yaml --gt egs/test/test1 --output_file egs/test/test_result.txt
+# direct usage
+python speech_evaluation/bin/scorer.py \
+    --score_config egs/codec_16k.yaml \
+    --gt egs/test/test1 \
+    --output_file egs/test/test_result.txt
+```
+
+Use launcher with slurm job submissions
+```
+# use the launcher
+# Option1: with gt speech
+./launcher.sh \
+  <pred_speech_scp> \
+  <gt_speech_scp> \
+  <score_dir> \
+  <split_job_num> 
+
+# Option2: without gt speech
+./launcher.sh \
+  <pred_speech_scp> None 
+  <score_dir> \
+  <split_job_num>
+
+# aggregate the results
+cat <score_dir>/result/*.result.cpu.txt > <score_dir>/utt_result.cpu.txt
+cat <score_dir>/result/*.result.gpu.txt > <score_dir>/utt_result.gpu.txt
+
+# show result
+python scripts/show_result.py <score_dir>/utt_result.cpu.txt
+python scripts/show_result.py <score_dir>/utt_result.gpu.txt 
+
 ```
 
 Access `egs/*.yaml` for different config for differnt setups.
 
+## List of Metrics
