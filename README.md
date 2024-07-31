@@ -27,3 +27,4 @@ python speech_evaluation/bin/scorer.py --score_config egs/codec_16k.yaml --gt eg
 ```
 
 Access `egs/*.yaml` for different config for differnt setups.
+
