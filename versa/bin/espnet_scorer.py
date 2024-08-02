@@ -93,7 +93,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
         print(config, flush=True)
         if config["name"] == "mcd_f0":
             logging.info("Loading MCD & F0 evaluation...")
-            from speech_evaluation import mcd_f0
+            from versa import mcd_f0
 
             score_modules["mcd_f0"] = {
                 "module": mcd_f0,
@@ -119,7 +119,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading signal metric evaluation...")
-            from speech_evaluation import signal_metric
+            from versa import signal_metric
 
             score_modules["signal_metric"] = {"module": signal_metric}
             logging.info("Initiate signal metric evaluation successfully.")
@@ -132,7 +132,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading discrete speech evaluation...")
-            from speech_evaluation import discrete_speech_metric, discrete_speech_setup
+            from versa import discrete_speech_metric, discrete_speech_setup
 
             score_modules["discrete_speech"] = {
                 "module": discrete_speech_metric,
@@ -144,7 +144,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
 
         elif config["name"] == "pseudo_mos":
             logging.info("Loading pseudo MOS evaluation...")
-            from speech_evaluation import pseudo_mos_metric, pseudo_mos_setup
+            from versa import pseudo_mos_metric, pseudo_mos_setup
 
             predictor_dict, predictor_fs = pseudo_mos_setup(
                 use_gpu=use_gpu,
@@ -169,7 +169,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loadding pesq evaluation...")
-            from speech_evaluation import pesq_metric
+            from versa import pesq_metric
 
             score_modules["pesq"] = {"module": pesq_metric}
             logging.info("Initiate pesq evaluation successfully.")
@@ -182,7 +182,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading stoi evaluation...")
-            from speech_evaluation import stoi_metric
+            from versa import stoi_metric
 
             score_modules["stoi"] = {"module": stoi_metric}
             logging.info("Initiate stoi evaluation successfully.")
@@ -195,7 +195,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading visqol evaluation...")
-            from speech_evaluation import visqol_metric, visqol_setup
+            from versa import visqol_metric, visqol_setup
 
             api, fs = visqol_setup(model=config.get("model", "default"))
             score_modules["visqol"] = {
@@ -212,7 +212,7 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading speaker evaluation...")
-            from speech_evaluation import speaker_metric, speaker_model_setup
+            from versa import speaker_metric, speaker_model_setup
 
             spk_model = speaker_model_setup(
                 model_tag=config.get("model_tag", "default"),

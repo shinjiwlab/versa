@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='speech-evaluation-toolkit',
+    name='versa-speech-audio-toolkit',
     version='0.0.1',
     packages=find_packages(),
     install_requires=[
@@ -55,7 +55,7 @@ setup(
     ],
     author='Jiatong Shi',
     author_email='ftshijt@gmail.com',
-    description='A package for computing speech evaluation metrics.',
-    url='https://github.com/ftshijt/speech_evaluation',
+    description='A package for versatile evaluation of speech and audio',
+    url='https://github.com/shinjiwlab/versa.git',
     keywords='speech metrics',
 )

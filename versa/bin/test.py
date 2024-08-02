@@ -1,4 +1,4 @@
-from speech_evaluation.bin.scorer import find_files, load_score_modules, list_scoring, load_summary
+from versa.bin.scorer import find_files, load_score_modules, list_scoring, load_summary
 import yaml
 import os
 import logging
