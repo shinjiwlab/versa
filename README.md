@@ -20,7 +20,7 @@ As for collection purpose, VERSA instead of re-distribu the model, we try to ali
 
 ## Quick test
 ```
-python versa/bin/test.py
+python versa/test/test_script.py
 ```
 
 ## Usage
