@@ -18,14 +18,9 @@ pip install git+https://github.com/shinjiwlab/versa.git
 As for collection purpose, VERSA instead of re-distribu the model, we try to align as much to the original API provided by the algorithm developer. Therefore, we are having many dependencies. We try to include as many as default, but there are cases where the toolkit needs specific installtion requirements. Please refer to our [list-of-metric section](https://github.com/shinjiwlab/versa?tab=readme-ov-file#list-of-metrics) for more details on whether the metrics are automatically included or not.  If not, we provide installation guide or installers in `tools`.
 
 
-
-
-You need to manually install visqol. We prepared a detailed installation guide at https://github.com/ftshijt/speech_evaluation/blob/main/speech_evaluation/utterance_metrics/INSTALL_visqol.md if you met issue with original repo https://github.com/google/visqol
-
-
 ## Quick test
 ```
-python speech_evaluation/bin/test.py
+python versa/bin/test.py
 ```
 
 ## Usage
@@ -33,10 +28,11 @@ python speech_evaluation/bin/test.py
 Simple usage case for a few samples.
 ```
 # direct usage
-python speech_evaluation/bin/scorer.py \
+python versa/bin/scorer.py \
     --score_config egs/codec_16k.yaml \
-    --gt egs/test/test1 \
-    --output_file egs/test/test_result.txt
+    --gt test/test1 \
+    --pred test/test2 \
+    --output_file test_result
 ```
 
 Use launcher with slurm job submissions
