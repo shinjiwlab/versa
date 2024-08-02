@@ -4,17 +4,17 @@ import os
 import logging
 import math
 
-TEST_INFO = {'mcd': 3.944548129900429, 'f0rmse': 0.0021156428157651486, 'f0corr': 0.25196390785343026, 'sdr': 4.873952979593654, 'sir': float('inf'), 'sar': 4.873952979593654, 'si_snr': 1.0702767372131348, 'ci_sdr': 4.87394905090332, 'pesq': 1.5722705125808716, 'stoi': 0.007625108859647476, 'utmos': 1.9074420928955078, 'dns_overall': 1.452605403465056, 'dns_p808': 2.09430193901062, 'plcmos': 3.196744743982951, 'visqol': 1.714412514940845, 'spk_similarity': 0.8953613042831421}
+TEST_INFO = {'mcd': 5.045226506332897, 'f0rmse': 20.28100448994277, 'f0corr': -0.07540903652440145, 'sdr': 4.8739529795936445, 'sir': float('inf'), 'sar': 4.8739529795936445, 'si_snr': 1.0702757835388184, 'ci_sdr': 4.873954772949219, 'pesq': 1.572286605834961, 'stoi': 0.0076251088596473275, 'speech_bert': 0.9727544188499451, 'speech_bleu': 0.6699938983346256, 'speech_token_distance': 0.850506056080969, 'utmos': 1.9074358940124512, 'dns_overall': 1.4526059573614438, 'dns_p808': 2.094302177429199, 'plcmos': 3.1603124300638834, 'spk_similarity': 0.8953473567962646}
 
 def info_update():
     
     # find files
-    if os.path.isdir("egs/test/test2"):
-        gen_files = sorted(find_files("egs/test/test2"))
+    if os.path.isdir("test/test_samples/test2"):
+        gen_files = sorted(find_files("test/test_samples/test2"))
 
     # find reference file
-    if os.path.isdir("egs/test/test1"):
-        gt_files = sorted(find_files("egs/test/test1"))
+    if os.path.isdir("test/test_samples/test1"):
+        gt_files = sorted(find_files("test/test_samples/test1"))
 
     logging.info("The number of utterances = %d" % len(gen_files))
 

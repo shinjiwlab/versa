@@ -160,7 +160,11 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 continue
 
             logging.info("Loading visqol evaluation...")
-            from versa import visqol_metric, visqol_setup
+            try:
+                from versa import visqol_metric, visqol_setup
+            except ImportError:
+                logging.warning("VISQOL not installed, please check `tools` for installation guideline")
+                continue
 
             api, fs = visqol_setup(model=config.get("model", "default"))
             score_modules["visqol"] = {
