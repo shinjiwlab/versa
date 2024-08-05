@@ -39,15 +39,16 @@ Use launcher with slurm job submissions
 ```
 # use the launcher
 # Option1: with gt speech
-./launcher.sh \
+./launch.sh \
   <pred_speech_scp> \
   <gt_speech_scp> \
   <score_dir> \
   <split_job_num> 
 
 # Option2: without gt speech
-./launcher.sh \
-  <pred_speech_scp> None 
+./launch.sh \
+  <pred_speech_scp> \
+  None \
   <score_dir> \
   <split_job_num>
 
