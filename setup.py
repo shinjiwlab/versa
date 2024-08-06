@@ -21,7 +21,7 @@ setup(
         "importlib-metadata",
         "kaggle",
         "kaldiio",
-        "lazy_loader4",
+        "lazy_loader",
         "Levenshtein",
         "librosa",
         "mir-eval",
