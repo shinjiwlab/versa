@@ -6,3 +6,5 @@ https://github.com/pranaymanocha/PerceptualAudio
 https://github.com/JasonSWFu/VQscore
 https://github.com/soumimaiti/speechlmscore_tool
 https://github.com/urgent-challenge/urgent2024_challenge/tree/main/evaluation_metrics
+WER (with text interface)
+Other metrics with pre-trained models
