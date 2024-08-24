@@ -16,7 +16,8 @@ export PATH="$PATH:$HOME/.zshrc
 ### revise compile config and compile. You may need 32G memory for this stage
 1. add `build --linkopt=-lstdc++fs` after line 55 of `.bazelrc`
 2. replace the version to `5.1.0` in `.bazelversion`
-3. compile with `bazel build :visqol -c opt`
+3. update `WORKSPACE` to new armadillo version as suggested in https://github.com/google/visqol/pull/119/files
+4. compile with `bazel build :visqol -c opt`
 
 ### install in python 
 `pip install .`
