@@ -88,7 +88,7 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | Packet Loss Concealment-related MOS Score (PLCMOS) [x]  | pseudo_mos | plcmos | | [speechmos (MS)](https://pypi.org/project/speechmos/) | https://arxiv.org/abs/2305.15127|
 | Virtual Speech Quality Objective Listener (VISQOL) [ ]  | visqol | visqol | | [google-visqol](https://github.com/google/visqol) | https://arxiv.org/abs/2004.09584 |
 | Speaker Embedding Similarity [x]  | speaker | spk_similarity | | [espnet](https://github.com/espnet/espnet) | https://arxiv.org/abs/2401.17230 |
-| PESQ in TorchAudio-Squim [x]  | squim | torch_squim_pesq | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
-| STOI in TorchAudio-Squim [x]  | squim | torch_squim_stoi | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
-| SI-SDR in TorchAudio-Squim [x]  | squim | torch_squim_si_sdr | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
-| MOS in TorchAudio-Squim [x]  | squim | torch_squim_mos |  | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
+| PESQ in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_pesq | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
+| STOI in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_stoi | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
+| SI-SDR in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_si_sdr | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
+| MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |  | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |

@@ -11,13 +11,17 @@ import torch
 
 try:
     from torch_log_wmse import LogWMSE
+
     logging.warning("Using the torch-log-wmse package for evaluation")
 except ImportError:
     raise ImportError("Please install torch-log-wmse and retry")
 
+
 def log_wmse(pred_x, gt_x, fs):
     audio_length = 1.0
-    inst_log_wmse = LogWMSE(audio_length=audio_length, sample_Rate=fs, return_as_loss=True)
+    inst_log_wmse = LogWMSE(
+        audio_length=audio_length, sample_Rate=fs, return_as_loss=True
+    )
     return {"pesq": pesq_value}
 
 

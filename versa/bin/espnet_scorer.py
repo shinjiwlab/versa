@@ -226,6 +226,32 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
             }
             logging.info("Initiate speaker evaluation successfully.")
 
+        elif config["name"] == "squim_ref":
+            if not use_gt:
+                logging.warning("Cannot use squim_ref because no gt audio is provided")
+                continue
+
+            logging.info("Loadding squim metrics with reference")
+            from versa import squim_metric
+
+            score_modules["squim_ref"] = {
+                "module": squim_metric,
+            }
+            logging.info("Initiate torch squim (with reference) successfully")
+
+        elif config["name"] == "squim_no_ref":
+            if not use_gt:
+                logging.warning("Cannot use squim_ref because no gt audio is provided")
+                continue
+
+            logging.info("Loadding squim metrics with reference")
+            from versa import squim_metric_no_ref
+
+            score_modules["squim_no_ref"] = {
+                "module": squim_metric_no_ref,
+            }
+            logging.info("Initiate torch squim (without reference) successfully")
+
     return score_modules
 
 
@@ -265,6 +291,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr
             )
+        elif key == "squim_ref":
+            score = score_modules["key"]["module"](gen_wav, gt_wav, gen_sr)
+        elif key == "squim_no_ref":
+            score = score_modules["key"]["modules"](gen_wav, gen_sr)
         else:
             raise NotImplementedError(f"Not supported {key}")
 

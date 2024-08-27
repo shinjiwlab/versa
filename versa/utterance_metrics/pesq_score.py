@@ -34,7 +34,9 @@ def pesq_metric(pred_x, gt_x, fs):
             new_pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
             pesq_value = pesq(16000, new_gt_x, new_pred_x, "wb")
     except BaseException:
-        logging.warning("Error from pesq calculation. Please check the audio (likely due to silence)")
+        logging.warning(
+            "Error from pesq calculation. Please check the audio (likely due to silence)"
+        )
         pesq_value = 0.0
     return {"pesq": pesq_value}
 

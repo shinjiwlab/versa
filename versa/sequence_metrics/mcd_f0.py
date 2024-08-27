@@ -136,7 +136,9 @@ def world_extract(
 
     if x.ndim > 1:
         x = x[:, 0]
-        logging.warning("detect multi-channel data for mcd-f0 caluclation, use first channel")
+        logging.warning(
+            "detect multi-channel data for mcd-f0 caluclation, use first channel"
+        )
 
     x = np.array(x, dtype=np.float64)
     x = low_cut_filter(x, fs, cutoff=filter_cutoff)

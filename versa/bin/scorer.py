@@ -163,7 +163,9 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
             try:
                 from versa import visqol_metric, visqol_setup
             except ImportError:
-                logging.warning("VISQOL not installed, please check `tools` for installation guideline")
+                logging.warning(
+                    "VISQOL not installed, please check `tools` for installation guideline"
+                )
                 continue
 
             api, fs = visqol_setup(model=config.get("model", "default"))
@@ -194,6 +196,32 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
                 "args": {"model": spk_model},
             }
             logging.info("Initiate speaker evaluation successfully.")
+
+        elif config["name"] == "squim_ref":
+            if not use_gt:
+                logging.warning("Cannot use squim_ref because no gt audio is provided")
+                continue
+
+            logging.info("Loadding squim metrics with reference")
+            from versa import squim_metric
+
+            score_modules["squim_ref"] = {
+                "module": squim_metric,
+            }
+            logging.info("Initiate torch squim (with reference) successfully")
+
+        elif config["name"] == "squim_no_ref":
+            if not use_gt:
+                logging.warning("Cannot use squim_ref because no gt audio is provided")
+                continue
+
+            logging.info("Loadding squim metrics with reference")
+            from versa import squim_metric_no_ref
+
+            score_modules["squim_no_ref"] = {
+                "module": squim_metric_no_ref,
+            }
+            logging.info("Initiate torch squim (without reference) successfully")
 
     return score_modules
 
@@ -234,6 +262,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr
             )
+        elif key == "squim_ref":
+            score = score_modules["key"]["module"](gen_wav, gt_wav, gen_sr)
+        elif key == "squim_no_ref":
+            score = score_modules["key"]["modules"](gen_wav, gen_sr)
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -267,9 +299,7 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
         gen_wav, gen_sr = sf.read(gen_files[i])
         if gt_files is not None:
             gt_wav, gt_sr = sf.read(gt_files[i])
-            if not check_minimum_length(
-                gt_wav.shape[0] / gt_sr, score_modules.keys()
-            ):
+            if not check_minimum_length(gt_wav.shape[0] / gt_sr, score_modules.keys()):
                 logging.warning(
                     "audio {} (ground truth, length {}) is too short to be evaluated with many metrics, skipping".format(
                         gt_files[i], gt_wav.shape[0] / gt_sr
