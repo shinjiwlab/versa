@@ -1,5 +1,5 @@
 # VERSA
-VERSA (Versatile Evaluation of Speech and Audio) is a toolkit dedicating a collection of evaluation metrics in speech and audio quality. Our goal is to provide comprehensive connection to the cutting-edge techniques developped for evaluation. The toolkit is also tightly integrated to [ESPnet](https://github.com/espnet/espnet.git).
+VERSA (Versatile Evaluation of Speech and Audio) is a toolkit dedicated to collecting evaluation metrics in speech and audio quality. Our goal is to provide a comprehensive connection to the cutting-edge techniques developed for evaluation. The toolkit is also tightly integrated into [ESPnet](https://github.com/espnet/espnet.git).
 
 
 ## Install
@@ -15,7 +15,7 @@ or
 pip install git+https://github.com/shinjiwlab/versa.git
 ```
 
-As for collection purpose, VERSA instead of re-distribu the model, we try to align as much to the original API provided by the algorithm developer. Therefore, we are having many dependencies. We try to include as many as default, but there are cases where the toolkit needs specific installtion requirements. Please refer to our [list-of-metric section](https://github.com/shinjiwlab/versa?tab=readme-ov-file#list-of-metrics) for more details on whether the metrics are automatically included or not.  If not, we provide installation guide or installers in `tools`.
+As for collection purposes, VERSA instead of re-distributing the model, we try to align as much to the original API provided by the algorithm developer. Therefore, we have many dependencies. We try to include as many as default, but there are cases where the toolkit needs specific installation requirements. Please refer to our [list-of-metric section](https://github.com/shinjiwlab/versa?tab=readme-ov-file#list-of-metrics) for more details on whether the metrics are automatically included or not.  If not, we provide an installation guide or installers in `tools`.
 
 
 ## Quick test
