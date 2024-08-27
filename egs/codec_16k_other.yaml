@@ -1,0 +1,17 @@
+# pseudo subjective metrics
+# -- utmos: SingMOS score
+- name: pseudo_mos
+  predictor_types: ["singmos"]
+  predictor_args:
+    utmos:
+      fs: 16000
+
+
+# visqol metric
+# -- visqol: visual quality of speech
+#            use `default` for original-proposed audio model
+#            use `general` for general model
+#            use `grid-search` for the best-tuned model (may not be general)
+#            use `speech` for speech evaluation
+- name: visqol
+  model: default
