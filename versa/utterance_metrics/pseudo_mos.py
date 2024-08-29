@@ -56,6 +56,12 @@ def pseudo_mos_setup(predictor_types, predictor_args, use_gpu=False):
                 predictor_fs["plcmos"] = predictor_args["plcmos"]["fs"]
         elif predictor == "utmos":
             continue  # already initial
+        elif predictor == "singmos":
+            singmos = torch.hub.load(
+                "South-Twilight/SingMOS:v0.2.0", "singing_ssl_mos", trust_repo=True
+            ).to(device)
+            predictor_dict["singmos"] = singmos
+            predictor_fs["singmos"] = 16000
         else:
             raise NotImplementedError("Not supported {}".format(predictor))
 
@@ -105,6 +111,17 @@ def pseudo_mos_metric(pred, fs, predictor_dict, predictor_fs, use_gpu=False):
             max_val = np.max(np.abs(pred_plcmos))
             score = predictor_dict["plcmos"].run(pred_plcmos / max_val, sr=fs)
             scores.update(plcmos=score["plcmos"])
+        elif predictor == "singmos":
+            if fs != predictor_fs["singmos"]:
+                pred_singmos = librosa.resample(
+                    pred, orig_sr=fs, target_sr=predictor_fs["singmos"]
+                )
+            else:
+                pred_singmos = pred
+            pred_tensor = torch.from_numpy(pred_singmos).unsqueeze(0)
+            length_tensor = torch.tensor([pred_tensor.size(1)]).int()
+            score = predictor_dict["singmos"](pred_tensor.float(), length_tensor)[0].item()
+            scores.update(singmos=score)
         else:
             raise NotImplementedError("Not supported {}".format(predictor))
 
@@ -115,7 +132,7 @@ if __name__ == "__main__":
     a = np.random.random(16000)
     print(a)
     predictor_dict, predictor_fs = pseudo_mos_setup(
-        ["utmos", "dnsmos", "plcmos"],
+        ["utmos", "dnsmos", "plcmos", "singmos"],
         predictor_args={
             "dnsmos": {"fs": 16000},
             "plcmos": {"fs": 16000},
