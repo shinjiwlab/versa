@@ -92,3 +92,4 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | STOI in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_stoi | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | SI-SDR in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_si_sdr | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |  | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
+| Singing voice MOS [ ]  | singmos | singmos |  | [singmos](https://github.com/South-Twilight/SingMOS/tree/main) | https://arxiv.org/abs/2406.10911 |
