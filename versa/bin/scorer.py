@@ -308,17 +308,18 @@ def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
                 continue
         else:
             gt_wav = None
-
-        if gen_sr > gt_sr:
-            logging.warning(
-                "Resampling the generated audio to match the ground truth audio"
-            )
-            gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
-        elif gen_sr < gt_sr:
-            logging.warning(
-                "Resampling the ground truth audio to match the generated audio"
-            )
-            gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
+          
+        if gt_wav is not None:
+            if gen_sr > gt_sr:
+                logging.warning(
+                    "Resampling the generated audio to match the ground truth audio"
+                )
+                gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
+            elif gen_sr < gt_sr:
+                logging.warning(
+                    "Resampling the ground truth audio to match the generated audio"
+                )
+                gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
 
         utt_score = {"key": gen_files[i]}
 
@@ -395,7 +396,7 @@ def main():
             raise ValueError("Not supported wav.scp format.")
 
     # find reference file
-    if os.path.isdir(args.gt):
+    if args.gt is not None and os.path.isdir(args.gt):
         gt_files = sorted(find_files(args.gt))
     elif args.gt is not None:
         with open(args.gt) as f:
