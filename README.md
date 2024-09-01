@@ -1,6 +1,10 @@
 # VERSA
 VERSA (Versatile Evaluation of Speech and Audio) is a toolkit dedicated to collecting evaluation metrics in speech and audio quality. Our goal is to provide a comprehensive connection to the cutting-edge techniques developed for evaluation. The toolkit is also tightly integrated into [ESPnet](https://github.com/espnet/espnet.git).
 
+# Colab Demonstration
+
+[Colab Demonstration at Interspeech2024 Tutorial](https://colab.research.google.com/drive/11c0vZxbSa8invMSfqM999tI3MnyAVsOp?usp=sharing)
+
 
 ## Install
 
@@ -93,3 +97,4 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | SI-SDR in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_si_sdr | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |  | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | Singing voice MOS [x]  | singmos | singmos |  | [singmos](https://github.com/South-Twilight/SingMOS/tree/main) | https://arxiv.org/abs/2406.10911 |
+| A few more in verifying/progresss|
