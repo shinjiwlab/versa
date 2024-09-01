@@ -263,9 +263,9 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
                 score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr
             )
         elif key == "squim_ref":
-            score = score_modules["key"]["module"](gen_wav, gt_wav, gen_sr)
+            score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
         elif key == "squim_no_ref":
-            score = score_modules["key"]["modules"](gen_wav, gen_sr)
+            score = score_modules[key]["module"](gen_wav, gen_sr)
         else:
             raise NotImplementedError(f"Not supported {key}")
 
