@@ -40,7 +40,7 @@ def squim_metric(pred_x, gt_x, fs):
     subjective_model = SQUIM_SUBJECTIVE.get_model()
     torch_squim_mos = subjective_model(pred_x, gt_x)
 
-    return {"torch_squim_mos": torch_squim_mos.detach().numpy()}
+    return {"torch_squim_mos": torch_squim_mos.detach().numpy()[0]}
 
 
 def squim_metric_no_ref(pred_x, fs):
@@ -52,11 +52,7 @@ def squim_metric_no_ref(pred_x, fs):
 
     """
     if fs != 16000:
-        gt_x = F.resample(gt_x, fs, 16000)
         pred_x = F.resample(pred_x, fs, 16000)
-
-    gt_x = torch.from_numpy(gt_x).unsqueeze(0)
-    gt_x = gt_x.float()
 
     pred_x = torch.from_numpy(pred_x).unsqueeze(0)
     pred_x = pred_x.float()
@@ -65,9 +61,9 @@ def squim_metric_no_ref(pred_x, fs):
     torch_squim_stoi, torch_squim_pesq, torch_squim_si_sdr = objective_model(pred_x)
 
     return {
-        "torch_squim_stoi": torch_squim_stoi.detach().numpy(),
-        "torch_squim_pesq": torch_squim_pesq.detach().numpy(),
-        "torch_squim_si_sdr": torch_squim_si_sdr.detach().numpy(),
+        "torch_squim_stoi": torch_squim_stoi.detach().numpy()[0],
+        "torch_squim_pesq": torch_squim_pesq.detach().numpy()[0],
+        "torch_squim_si_sdr": torch_squim_si_sdr.detach().numpy()[0],
     }
 
 
