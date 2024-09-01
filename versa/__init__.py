@@ -45,3 +45,5 @@ except ImportError:
     logging.warning(
         "Please install visqol follow https://github.com/google/visqol and retry"
     )
+
+from versa.utterance_metrics.squim import squim_metric_no_ref, squim_metric
