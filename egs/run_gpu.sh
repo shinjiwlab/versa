@@ -5,7 +5,7 @@ GT=$2
 OUTPUT=$3
 CONFIG=$4
 
-python speech_evaluation/bin/espnet_scorer.py \
+python versa/bin/espnet_scorer.py \
     --pred ${PRED} \
     --gt ${GT} \
     --output_file ${OUTPUT} \
