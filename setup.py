@@ -50,6 +50,7 @@ setup(
         "torch",
         "torch-complex",
         "torchaudio",
+        "s3prl",
         "transformers>=4.36.2",
         "espnet_model_zoo",
         "discrete-speech-metrics @ git+https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics.git@v1.0.1",

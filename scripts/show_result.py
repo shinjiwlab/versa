@@ -15,7 +15,6 @@ for line in file:
 keys = info[0].keys()
 
 for key in keys:
-    print(key)
     if key == "key":
         continue 
     print("key {}: {}".format(key, sum([element[key] for element in info]) / len(info)) )
