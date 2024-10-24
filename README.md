@@ -98,4 +98,6 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | SI-SDR in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_si_sdr | | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |  | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | Singing voice MOS [x]  | singmos | singmos |  | [singmos](https://github.com/South-Twilight/SingMOS/tree/main) | https://arxiv.org/abs/2406.10911 |
+| Log-Weighted Mean Square Error [x] | log_wmse | log_wmse |  | [log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
+| Dynamic Time Warping Cost Metric [ ] | warpq | warpq |  | [WARP-Q](https://github.com/wjassim/WARP-Q) |
 | A few more in verifying/progresss|
