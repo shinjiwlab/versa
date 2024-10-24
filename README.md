@@ -100,4 +100,5 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | Singing voice MOS [x]  | singmos | singmos |  | [singmos](https://github.com/South-Twilight/SingMOS/tree/main) | https://arxiv.org/abs/2406.10911 |
 | Log-Weighted Mean Square Error [x] | log_wmse | log_wmse |  | [log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
 | Dynamic Time Warping Cost Metric [ ] | warpq | warpq |  | [WARP-Q](https://github.com/wjassim/WARP-Q) |
+| Sheet SSQA MOS Models [x] | sheet_ssqa | sheet_ssqa |  | [Sheet](https://github.com/unilight/sheet/tree/main) |
 | A few more in verifying/progresss|

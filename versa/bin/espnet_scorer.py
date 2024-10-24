@@ -226,6 +226,23 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
             }
             logging.info("Initiate speaker evaluation successfully.")
 
+        elif config["name"] == "sheet_ssqa":
+
+            logging.info("Loading Sheet SSQA models for evaluation...")
+            from versa import sheet_ssqa_setup, sheet_ssqa
+
+            sheet_model = sheet_ssqa_setup(
+                model_tag=config.get("model_tag", "default"),
+                model_path=config.get("model_path", None),
+                model_config=config.get("model_config", None),
+                use_gpu=use_gpu,
+            )
+            score_modules["sheet_ssqa"] = {
+                "module": sheet_ssqa,
+                "args": {"model": sheet_model},
+            }
+            logging.info("Initiate Sheet SSQA evaluation successfully.")
+
         elif config["name"] == "squim_ref":
             if not use_gt:
                 logging.warning("Cannot use squim_ref because no gt audio is provided")
@@ -290,6 +307,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
         elif key == "speaker":
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr
+            )
+        elif key == "sheet_ssqa":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["model"], gen_wav, gen_sr
             )
         elif key == "squim_ref":
             score = score_modules["key"]["module"](gen_wav, gt_wav, gen_sr)

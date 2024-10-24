@@ -4,9 +4,6 @@
 # Copyright 2024 Jiatong Shi
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
-import importlib
-import sys
-
 import librosa
 import numpy as np
 import torch
@@ -120,7 +117,9 @@ def pseudo_mos_metric(pred, fs, predictor_dict, predictor_fs, use_gpu=False):
                 pred_singmos = pred
             pred_tensor = torch.from_numpy(pred_singmos).unsqueeze(0)
             length_tensor = torch.tensor([pred_tensor.size(1)]).int()
-            score = predictor_dict["singmos"](pred_tensor.float(), length_tensor)[0].item()
+            score = predictor_dict["singmos"](pred_tensor.float(), length_tensor)[
+                0
+            ].item()
             scores.update(singmos=score)
         else:
             raise NotImplementedError("Not supported {}".format(predictor))

@@ -47,3 +47,5 @@ except ImportError:
     )
 
 from versa.utterance_metrics.squim import squim_metric_no_ref, squim_metric
+
+from versa.utterance_metrics.sheet_ssqa import sheet_ssqa_setup, sheet_ssqa
