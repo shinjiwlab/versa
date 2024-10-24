@@ -1,0 +1,13 @@
+# visqol metric
+# -- visqol: visual quality of speech
+#            use `default` for original-proposed audio model
+#            use `general` for general model
+#            use `grid-search` for the best-tuned model (may not be general)
+#            use `speech` for speech evaluation
+- name: visqol
+  model: default
+
+# warp-q metric
+# -- warpq: quality prediction for generative neural speech codecs
+- name: warpq
+    

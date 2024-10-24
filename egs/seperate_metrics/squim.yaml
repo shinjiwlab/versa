@@ -1,0 +1,6 @@
+# torchaudio-squim
+# -- torch_squim_pesq: reference-less pesq
+# -- torch_squim_stoi: reference-less stoi
+# -- torch_squim_si_sdr: reference-less si-sdr
+# -- torch_squim_mos: MOS score with reference
+- name: squim
