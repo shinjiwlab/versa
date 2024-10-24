@@ -89,6 +89,19 @@ def load_score_modules(score_config, use_gt=True, use_gpu=False):
             score_modules["signal_metric"] = {"module": signal_metric}
             logging.info("Initiate signal metric evaluation successfully.")
 
+        elif config["name"] == "warpq":
+            if not use_gt:
+                logging.warning(
+                    "Cannot use warpq because no gt audio is provided"
+                )
+                continue
+            
+            logging.info("Loading WARPQ metric evaluation...")
+            from versa import warpq_setup, warpq
+            
+            score_modules["warpq"] = {"module": warpq_setup()}
+            logging.info("Initiate WARP-Q metric...")
+
         elif config["name"] == "discrete_speech":
             if not use_gt:
                 logging.warning(
