@@ -1,5 +1,3 @@
-https://github.com/crlandsc/torch-log-wmse-audio-quality
-https://github.com/wjassim/WARP-Q
 https://github.com/lcn-kul/xls-r-analysis-sqa?tab=readme-ov-file
 https://github.com/NTIA/WEnets
 https://github.com/pranaymanocha/PerceptualAudio
