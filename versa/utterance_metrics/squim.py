@@ -7,10 +7,10 @@ import numpy as np
 import torch
 
 try:
-    from pesq import pesq
-    from pystoi import stoi
     import torchaudio
     import torchaudio.functional as F
+    from pesq import pesq
+    from pystoi import stoi
     from torchaudio.pipelines import SQUIM_OBJECTIVE, SQUIM_SUBJECTIVE
 except ImportError:
     raise ImportError(

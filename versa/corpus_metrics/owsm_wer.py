@@ -5,20 +5,20 @@
 
 import logging
 
-import torch
 import librosa
 import numpy as np
-
-from Levenshtein import opcodes
-
+import torch
 from espnet2.bin.s2t_inference import Speech2Text
 from espnet2.text.cleaner import TextCleaner
+from Levenshtein import opcodes
 
-TARGET_FS=16000
-CHUNK_SIZE=30 # seconds
+TARGET_FS = 16000
+CHUNK_SIZE = 30  # seconds
 
 
-def owsm_wer_setup(model_tag="default", beam_size=5, text_cleaner="whisper_basic", use_gpu=True):
+def owsm_wer_setup(
+    model_tag="default", beam_size=5, text_cleaner="whisper_basic", use_gpu=True
+):
     if model_tag == "default":
         model_tag = "espnet/owsm_v3.1_ebf"
     device = "cuda" if use_gpu else "cpu"
@@ -34,12 +34,10 @@ def owsm_wer_setup(model_tag="default", beam_size=5, text_cleaner="whisper_basic
         try:
             import whisper
         except ImportError:
-            logging.warning("Whipser-based cleaner is used but openai-whisper is not installed")
-    wer_utils = {
-        "model": model,
-        "cleaner": textcleaner,
-        "beam_size": beam_size
-    }
+            logging.warning(
+                "Whipser-based cleaner is used but openai-whisper is not installed"
+            )
+    wer_utils = {"model": model, "cleaner": textcleaner, "beam_size": beam_size}
     return wer_utils
 
 
@@ -96,7 +94,8 @@ def owsm_predict(
 
     # Detect language using the first 30s of speech
     if src_lang == "none":
-        from espnet2.bin.s2t_inference_language import Speech2Language as Speech2Lang
+        from espnet2.bin.s2t_inference_language import \
+            Speech2Language as Speech2Lang
 
         # default 30 seconds chunk for owsm training
         src_lang = model(
@@ -146,7 +145,7 @@ def owsm_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
 
     Args:
         wer_utils (dict): a utility dict for WER calculation.
-            including: owsm model ("model"), text cleaner ("textcleaner"), and 
+            including: owsm model ("model"), text cleaner ("textcleaner"), and
             beam size ("beam size")
         pred_x (np.ndarray): test signal (time,)
         ref_text (string): reference transcript
@@ -155,9 +154,7 @@ def owsm_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
         ret (dict): ditionary containing occurrences of edit operations
     """
     if fs != TARGET_FS:
-        pred_x = librosa.resample(
-            pred_x, orig_sr=fs, target_sr=TARGET_FS
-        )
+        pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=TARGET_FS)
         fs = TARGET_FS
     with torch.no_grad():
         inf_txt = owsm_predict(
@@ -218,4 +215,8 @@ def owsm_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
 if __name__ == "__main__":
     a = np.random.random(16000)
     wer_utils = owsm_wer_setup()
-    print("metrics: {}".format(owsm_levenshtein_metric(wer_utils, a, "test a sentence.", 16000)))
+    print(
+        "metrics: {}".format(
+            owsm_levenshtein_metric(wer_utils, a, "test a sentence.", 16000)
+        )
+    )

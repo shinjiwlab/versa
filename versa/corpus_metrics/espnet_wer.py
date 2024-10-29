@@ -5,20 +5,20 @@
 
 import logging
 
-import torch
 import librosa
 import numpy as np
-
-from Levenshtein import opcodes
-
+import torch
 from espnet2.bin.asr_inference import Speech2Text
 from espnet2.text.cleaner import TextCleaner
+from Levenshtein import opcodes
 
-TARGET_FS=16000
-CHUNK_SIZE=30 # seconds
+TARGET_FS = 16000
+CHUNK_SIZE = 30  # seconds
 
 
-def espnet_wer_setup(model_tag="default", beam_size=5, text_cleaner="whisper_basic", use_gpu=True):
+def espnet_wer_setup(
+    model_tag="default", beam_size=5, text_cleaner="whisper_basic", use_gpu=True
+):
     if model_tag == "default":
         model_tag = "espnet/simpleoier_librispeech_asr_train_asr_conformer7_wavlm_large_raw_en_bpe5000_sp"
     device = "cuda" if use_gpu else "cpu"
@@ -32,35 +32,11 @@ def espnet_wer_setup(model_tag="default", beam_size=5, text_cleaner="whisper_bas
         try:
             import whisper
         except ImportError:
-            logging.warning("Whipser-based cleaner is used but openai-whisper is not installed")
-    wer_utils = {
-        "model": model,
-        "cleaner": textcleaner,
-        "beam_size": beam_size
-    }
+            logging.warning(
+                "Whipser-based cleaner is used but openai-whisper is not installed"
+            )
+    wer_utils = {"model": model, "cleaner": textcleaner, "beam_size": beam_size}
     return wer_utils
-
-
-# Copied from Whisper utils
-def format_timestamp(
-    seconds: float, always_include_hours: bool = False, decimal_marker: str = "."
-):
-    assert seconds >= 0, "non-negative timestamp expected"
-    milliseconds = round(seconds * 1000.0)
-
-    hours = milliseconds // 3_600_000
-    milliseconds -= hours * 3_600_000
-
-    minutes = milliseconds // 60_000
-    milliseconds -= minutes * 60_000
-
-    seconds = milliseconds // 1_000
-    milliseconds -= seconds * 1_000
-
-    hours_marker = f"{hours:02d}:" if always_include_hours or hours > 0 else ""
-    return (
-        f"{hours_marker}{minutes:02d}:{seconds:02d}{decimal_marker}{milliseconds:03d}"
-    )
 
 
 def espnet_predict(
@@ -97,7 +73,7 @@ def espnet_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
 
     Args:
         wer_utils (dict): a utility dict for WER calculation.
-            including: espnet model ("model"), text cleaner ("textcleaner"), and 
+            including: espnet model ("model"), text cleaner ("textcleaner"), and
             beam size ("beam size")
         pred_x (np.ndarray): test signal (time,)
         ref_text (string): reference transcript
@@ -106,9 +82,7 @@ def espnet_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
         ret (dict): ditionary containing occurrences of edit operations
     """
     if fs != TARGET_FS:
-        pred_x = librosa.resample(
-            pred_x, orig_sr=fs, target_sr=TARGET_FS
-        )
+        pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=TARGET_FS)
         fs = TARGET_FS
     with torch.no_grad():
         inf_txt = espnet_predict(
@@ -137,9 +111,13 @@ def espnet_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
             ret["espnet_wer_" + op] = ret["espnet_wer_" + op] + inf_et - inf_st
         else:
             ret["espnet_wer_" + op] = ret["espnet_wer_" + op] + ref_et - ref_st
-    total = ret["espnet_wer_delete"] + ret["espnet_wer_replace"] + ret["espnet_wer_equal"]
+    total = (
+        ret["espnet_wer_delete"] + ret["espnet_wer_replace"] + ret["espnet_wer_equal"]
+    )
     assert total == len(ref_words), (total, len(ref_words))
-    total = ret["espnet_wer_insert"] + ret["espnet_wer_replace"] + ret["espnet_wer_equal"]
+    total = (
+        ret["espnet_wer_insert"] + ret["espnet_wer_replace"] + ret["espnet_wer_equal"]
+    )
     assert total == len(pred_words), (total, len(pred_words))
 
     # process cer
@@ -156,9 +134,13 @@ def espnet_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
             ret["espnet_cer_" + op] = ret["espnet_cer_" + op] + inf_et - inf_st
         else:
             ret["espnet_cer_" + op] = ret["espnet_cer_" + op] + ref_et - ref_st
-    total = ret["espnet_cer_delete"] + ret["espnet_cer_replace"] + ret["espnet_cer_equal"]
+    total = (
+        ret["espnet_cer_delete"] + ret["espnet_cer_replace"] + ret["espnet_cer_equal"]
+    )
     assert total == len(ref_words), (total, len(ref_words))
-    total = ret["espnet_cer_insert"] + ret["espnet_cer_replace"] + ret["espnet_cer_equal"]
+    total = (
+        ret["espnet_cer_insert"] + ret["espnet_cer_replace"] + ret["espnet_cer_equal"]
+    )
     assert total == len(pred_words), (total, len(pred_words))
 
     return ret
@@ -167,4 +149,8 @@ def espnet_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
 if __name__ == "__main__":
     a = np.random.random(16000)
     wer_utils = espnet_wer_setup()
-    print("metrics: {}".format(espnet_levenshtein_metric(wer_utils, a, "test a sentence.", 16000)))
+    print(
+        "metrics: {}".format(
+            espnet_levenshtein_metric(wer_utils, a, "test a sentence.", 16000)
+        )
+    )

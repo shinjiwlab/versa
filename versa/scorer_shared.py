@@ -2,14 +2,15 @@
 
 # Copyright 2024 Jiatong Shi
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
+import copy
 import logging
-from tqdm import tqdm
 
 import librosa
+import numpy as np
 import soundfile as sf
 import yaml
-import numpy as np
-import copy
+from tqdm import tqdm
+
 
 def check_all_same(array):
     return np.all(array == array[0])
@@ -95,7 +96,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 continue
 
             logging.info("Loading WARPQ metric evaluation...")
-            from versa import warpq_setup, warpq
+            from versa import warpq, warpq_setup
 
             score_modules["warpq"] = {"module": warpq_setup()}
             logging.info("Initiate WARP-Q metric...")
@@ -211,7 +212,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
         elif config["name"] == "sheet_ssqa":
 
             logging.info("Loading Sheet SSQA models for evaluation...")
-            from versa import sheet_ssqa_setup, sheet_ssqa
+            from versa import sheet_ssqa, sheet_ssqa_setup
 
             sheet_model = sheet_ssqa_setup(
                 model_tag=config.get("model_tag", "default"),
@@ -250,16 +251,17 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "module": squim_metric_no_ref,
             }
             logging.info("Initiate torch squim (without reference) successfully")
-        
+
         elif config["name"] == "espnet_wer":
             if not use_gt_text:
                 logging.warning("Cannot use espnet_wer because no gt text is provided")
                 continue
-                # TODO(jiatong): add case for ground truth speech 
+                # TODO(jiatong): add case for ground truth speech
                 # (predict text for gt speech as well)
-            
+
             logging.info("Loadding espnet_wer metric with reference text")
-            from versa import espnet_wer_setup, espnet_levenshtein_metric
+            from versa import espnet_levenshtein_metric, espnet_wer_setup
+
             score_modules["espnet_wer"] = {
                 "module": espnet_levenshtein_metric,
                 "args": espnet_wer_setup(
@@ -267,19 +269,20 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                     beam_size=config.get("beam_size", 1),
                     text_cleaner=config.get("text_cleaner", "whisper_basic"),
                     use_gpu=use_gpu,
-                )
+                ),
             }
             logging.info("Initiate ESPnet WER calculation successfully")
-        
+
         elif config["name"] == "owsm_wer":
             if not use_gt_text:
                 logging.warning("Cannot use espnet_wer because no gt text is provided")
                 continue
-                # TODO(jiatong): add case for ground truth speech 
+                # TODO(jiatong): add case for ground truth speech
                 # (predict text for gt speech as well)
-            
+
             logging.info("Loadding owsm_wer metric with reference text")
-            from versa import owsm_wer_setup, owsm_levenshtein_metric
+            from versa import owsm_levenshtein_metric, owsm_wer_setup
+
             score_modules["espnet_wer"] = {
                 "module": owsm_levenshtein_metric,
                 "args": owsm_wer_setup(
@@ -287,7 +290,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                     beam_size=config.get("beam_size", 1),
                     text_cleaner=config.get("text_cleaner", "whisper_basic"),
                     use_gpu=use_gpu,
-                )
+                ),
             }
             logging.info("Initiate ESPnet-OWSM WER calculation successfully")
 
@@ -295,11 +298,12 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             if not use_gt_text:
                 logging.warning("Cannot use whisper_wer because no gt text is provided")
                 continue
-                # TODO(jiatong): add case for ground truth speech 
+                # TODO(jiatong): add case for ground truth speech
                 # (predict text for gt speech as well)
-            
+
             logging.info("Loadding whisper_wer metric with reference text")
-            from versa import whisper_wer_setup, whisper_levenshtein_metric
+            from versa import whisper_levenshtein_metric, whisper_wer_setup
+
             score_modules["whisper_wer"] = {
                 "module": whisper_levenshtein_metric,
                 "args": whisper_wer_setup(
@@ -307,7 +311,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                     beam_size=config.get("beam_size", 1),
                     text_cleaner=config.get("text_cleaner", "whisper_basic"),
                     use_gpu=use_gpu,
-                )
+                ),
             }
             logging.info("Initiate Whisper WER calculation successfully")
 
@@ -373,7 +377,14 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
     return utt_score
 
 
-def list_scoring(gen_files, score_modules, gt_files=None, text_info=None, output_file=None, io="kaldi"):
+def list_scoring(
+    gen_files,
+    score_modules,
+    gt_files=None,
+    text_info=None,
+    output_file=None,
+    io="kaldi",
+):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
 

@@ -8,9 +8,9 @@ import numpy as np
 import torch
 
 try:
-    from torch_log_wmse import LogWMSE
     import torchaudio
     import torchaudio.functional as F
+    from torch_log_wmse import LogWMSE
     logging.warning("Using the torch-log-wmse package for evaluation")
 except ImportError:
     raise ImportError("Please install torch-log-wmse and retry")

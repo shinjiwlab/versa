@@ -6,16 +6,16 @@
 """Scorer Interface for Speech Evaluation."""
 
 import argparse
-import logging
-import torch
-
 import fnmatch
+import logging
 import os
-import kaldiio
-import yaml
-from typing import List, Dict
+from typing import Dict, List
 
-from versa.scorer_shared import load_score_modules, list_scoring, load_summary
+import kaldiio
+import torch
+import yaml
+
+from versa.scorer_shared import list_scoring, load_score_modules, load_summary
 
 
 def get_parser() -> argparse.Namespace:
@@ -36,10 +36,7 @@ def get_parser() -> argparse.Namespace:
         help="Wav.scp for ground truth waveforms.",
     )
     parser.add_argument(
-        "--text",
-        type=str,
-        default=None,
-        help="Path of ground truth transcription."
+        "--text", type=str, default=None, help="Path of ground truth transcription."
     )
     parser.add_argument(
         "--output_file",
@@ -191,7 +188,12 @@ def main():
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, text_info, output_file=args.output_file, io=args.io
+        gen_files,
+        score_modules,
+        gt_files,
+        text_info,
+        output_file=args.output_file,
+        io=args.io,
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 

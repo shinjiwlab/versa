@@ -9,7 +9,8 @@ import librosa
 import numpy as np
 
 try:
-    from discrete_speech_metrics import SpeechBERTScore, SpeechBLEU, SpeechTokenDistance
+    from discrete_speech_metrics import (SpeechBERTScore, SpeechBLEU,
+                                         SpeechTokenDistance)
 
     logging.warning("Using the discrete_speech_metrics package for evaluation")
 except ImportError:
