@@ -6,15 +6,14 @@
 """Scorer Interface for Speech Evaluation."""
 
 import argparse
-import fnmatch
 import logging
-import os
-from typing import List, Dict
-from tqdm import tqdm
+import torch
 
-import librosa
-import soundfile as sf
+import fnmatch
+import os
+import kaldiio
 import yaml
+from typing import List, Dict
 
 from versa.scorer_shared import load_score_modules, list_scoring, load_summary
 
@@ -23,9 +22,9 @@ def get_parser() -> argparse.Namespace:
     """Get argument parser."""
     parser = argparse.ArgumentParser(description="Speech Evaluation Interface")
     parser.add_argument(
-        "pred",
+        "--pred",
         type=str,
-        help="Path of directory or wav.scp for generated waveforms.",
+        help="Wav.scp for generated waveforms.",
     )
     parser.add_argument(
         "--score_config", type=str, default=None, help="Configuration of Score Config"
@@ -34,7 +33,7 @@ def get_parser() -> argparse.Namespace:
         "--gt",
         type=str,
         default=None,
-        help="Path of directory or wav.scp for ground truth waveforms.",
+        help="Wav.scp for ground truth waveforms.",
     )
     parser.add_argument(
         "--text",
@@ -52,17 +51,30 @@ def get_parser() -> argparse.Namespace:
         "--use_gpu", type=bool, default=False, help="whether to use GPU if it can"
     )
     parser.add_argument(
+        "--io",
+        type=str,
+        default="kaldi",
+        choices=["kaldi", "soundfile"],
+        help="io interface to use",
+    )
+    parser.add_argument(
         "--verbose",
         default=1,
         type=int,
         help="Verbosity level. Higher is more logging.",
+    )
+    parser.add_argument(
+        "--rank",
+        default=0,
+        type=int,
+        help="the overall rank in the batch processing, used to specify GPU rank",
     )
     return parser
 
 
 def find_files(
     root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
-) -> Dict[str]:
+) -> Dict[str, str]:
     """Find files recursively.
 
     Args:
@@ -78,14 +90,21 @@ def find_files(
     for root, _, filenames in os.walk(root_dir, followlinks=True):
         for q in query:
             for filename in fnmatch.filter(filenames, q):
+                value = os.path.join(root, filename)
                 if not include_root_dir:
-                    value = os.path.join(root, filename).replace(root_dir + "/", "")
+                    value = value.replace(root_dir + "/", "")
                 files[filename] = value
     return files
 
 
 def main():
     args = get_parser().parse_args()
+
+    # In case of using `local` backend, all GPU will be visible to all process.
+    if args.use_gpu:
+        gpu_rank = args.rank % torch.cuda.device_count()
+        torch.cuda.set_device(gpu_rank)
+        logging.info(f"using device: cuda:{gpu_rank}")
 
     # logging info
     if args.verbose > 1:
@@ -105,8 +124,10 @@ def main():
         )
         logging.warning("Skip DEBUG/INFO messages")
 
-    # find files
-    if os.path.isdir(args.pred):
+    if args.io == "kaldi":
+        with open(args.pred) as f:
+            gen_files = kaldiio.load_scp(args.pred)
+    elif args.io == "dir":
         gen_files = find_files(args.pred)
     else:
         gen_files = {}
@@ -120,23 +141,29 @@ def main():
                 gen_files[key] = value
 
     # find reference file
-    if args.gt is not None and os.path.isdir(args.gt):
-        gt_files = find_files(args.gt)
-    elif args.gt is not None:
-        gt_files = {}
-        with open(args.gt) as f:
-            for line in f.readlines():
-                key, value = line.strip().split(maxsplit=1)
-                if value.endswith("|"):
-                    raise ValueError("Not supported wav.scp format.")
-                gt_files[key] = value
+    if args.gt is not None:
+        if args.io == "kaldi":
+            gt_files = kaldiio.load_scp(args.gt)
+        elif args.io == "dir":
+            gt_files = find_files(args.gt)
+        else:
+            gt_files = {}
+            with open(args.gt) as f:
+                for line in f.readlines():
+                    key, value = line.strip().split(maxsplit=1)
+                    if value.endswith("|"):
+                        raise ValueError("Not supported wav.scp format.")
+                    gt_files[key] = value
     else:
         gt_files = None
 
     # fine ground truth transcription
     if args.text is not None:
+        test_info = {}
         with open(args.text) as f:
-            text_info = [line.strip().split(None, 1)[1] for line in f.readlines()]
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                test_info[key] = value
     else:
         text_info = None
 
@@ -161,12 +188,10 @@ def main():
         use_gpu=args.use_gpu,
     )
 
-    print(score_modules, flush=True)
-
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, text_info, output_file=args.output_file, io="waveform"
+        gen_files, score_modules, gt_files, text_info, output_file=args.output_file, io=args.io
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 
