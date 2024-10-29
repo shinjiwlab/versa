@@ -9,7 +9,7 @@ import argparse
 import fnmatch
 import logging
 import os
-from typing import List
+from typing import List, Dict
 from tqdm import tqdm
 
 import librosa
@@ -37,6 +37,12 @@ def get_parser() -> argparse.Namespace:
         help="Path of directory or wav.scp for ground truth waveforms.",
     )
     parser.add_argument(
+        "--text",
+        type=str,
+        default=None,
+        help="Path of ground truth transcription."
+    )
+    parser.add_argument(
         "--output_file",
         type=str,
         default=None,
@@ -56,7 +62,7 @@ def get_parser() -> argparse.Namespace:
 
 def find_files(
     root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
-) -> List[str]:
+) -> Dict[str]:
     """Find files recursively.
 
     Args:
@@ -65,17 +71,16 @@ def find_files(
         include_root_dir (bool): If False, root_dir name is not included.
 
     Returns:
-        List[str]: List of found filenames.
+        Dict[str]: List of found filenames.
 
     """
-    files = []
+    files = {}
     for root, _, filenames in os.walk(root_dir, followlinks=True):
         for q in query:
             for filename in fnmatch.filter(filenames, q):
-                files.append(os.path.join(root, filename))
-    if not include_root_dir:
-        files = [file_.replace(root_dir + "/", "") for file_ in files]
-
+                if not include_root_dir:
+                    value = os.path.join(root, filename).replace(root_dir + "/", "")
+                files[filename] = value
     return files
 
 
@@ -102,23 +107,38 @@ def main():
 
     # find files
     if os.path.isdir(args.pred):
-        gen_files = sorted(find_files(args.pred))
+        gen_files = find_files(args.pred)
     else:
+        gen_files = {}
         with open(args.pred) as f:
-            gen_files = [line.strip().split(None, 1)[1] for line in f.readlines()]
-        if gen_files[0].endswith("|"):
-            raise ValueError("Not supported wav.scp format.")
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                if value.endswith("|"):
+                    raise ValueError(
+                        "Not supported wav.scp format. Set IO interface to kaldi"
+                    )
+                gen_files[key] = value
 
     # find reference file
     if args.gt is not None and os.path.isdir(args.gt):
-        gt_files = sorted(find_files(args.gt))
+        gt_files = find_files(args.gt)
     elif args.gt is not None:
+        gt_files = {}
         with open(args.gt) as f:
-            gt_files = [line.strip().split(None, 1)[1] for line in f.readlines()]
-        if gt_files[0].endswith("|"):
-            raise ValueError("Not supported wav.scp format.")
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                if value.endswith("|"):
+                    raise ValueError("Not supported wav.scp format.")
+                gt_files[key] = value
     else:
         gt_files = None
+
+    # fine ground truth transcription
+    if args.text is not None:
+        with open(args.text) as f:
+            text_info = [line.strip().split(None, 1)[1] for line in f.readlines()]
+    else:
+        text_info = None
 
     # Get and divide list
     if len(gen_files) == 0:
@@ -146,7 +166,7 @@ def main():
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, output_file=args.output_file, io="waveform"
+        gen_files, score_modules, gt_files, text_info, output_file=args.output_file, io="waveform"
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 

@@ -9,8 +9,11 @@ import argparse
 import logging
 import torch
 
+import fnmatch
+import os
 import kaldiio
 import yaml
+from typing import List, Dict
 
 from versa.scorer_shared import load_score_modules, list_scoring, load_summary
 
@@ -31,6 +34,12 @@ def get_parser() -> argparse.Namespace:
         type=str,
         default=None,
         help="Wav.scp for ground truth waveforms.",
+    )
+    parser.add_argument(
+        "--text",
+        type=str,
+        default=None,
+        help="Path of ground truth transcription."
     )
     parser.add_argument(
         "--output_file",
@@ -63,6 +72,31 @@ def get_parser() -> argparse.Namespace:
     return parser
 
 
+def find_files(
+    root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
+) -> Dict[str, str]:
+    """Find files recursively.
+
+    Args:
+        root_dir (str): Root root_dir to find.
+        query (List[str]): Query to find.
+        include_root_dir (bool): If False, root_dir name is not included.
+
+    Returns:
+        Dict[str]: List of found filenames.
+
+    """
+    files = {}
+    for root, _, filenames in os.walk(root_dir, followlinks=True):
+        for q in query:
+            for filename in fnmatch.filter(filenames, q):
+                value = os.path.join(root, filename)
+                if not include_root_dir:
+                    value = value.replace(root_dir + "/", "")
+                files[filename] = value
+    return files
+
+
 def main():
     args = get_parser().parse_args()
 
@@ -93,6 +127,8 @@ def main():
     if args.io == "kaldi":
         with open(args.pred) as f:
             gen_files = kaldiio.load_scp(args.pred)
+    elif args.io == "dir":
+        gen_files = find_files(args.pred)
     else:
         gen_files = {}
         with open(args.pred) as f:
@@ -108,6 +144,8 @@ def main():
     if args.gt is not None:
         if args.io == "kaldi":
             gt_files = kaldiio.load_scp(args.gt)
+        elif args.io == "dir":
+            gt_files = find_files(args.gt)
         else:
             gt_files = {}
             with open(args.gt) as f:
@@ -118,6 +156,16 @@ def main():
                     gt_files[key] = value
     else:
         gt_files = None
+
+    # fine ground truth transcription
+    if args.text is not None:
+        test_info = {}
+        with open(args.text) as f:
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                test_info[key] = value
+    else:
+        text_info = None
 
     # Get and divide list
     if len(gen_files) == 0:
@@ -143,7 +191,7 @@ def main():
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, output_file=args.output_file, io=args.io
+        gen_files, score_modules, gt_files, text_info, output_file=args.output_file, io=args.io
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 

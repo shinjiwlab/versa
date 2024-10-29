@@ -373,7 +373,7 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
     return utt_score
 
 
-def list_scoring(gen_files, score_modules, gt_files=None, output_file=None, io="kaldi"):
+def list_scoring(gen_files, score_modules, gt_files=None, text_info=None, output_file=None, io="kaldi"):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
 
