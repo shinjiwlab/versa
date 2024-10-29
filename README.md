@@ -72,7 +72,7 @@ Access `egs/*.yaml` for different config for differnt setups.
 
 We include [ ] and [x] to mark if the metirc is auto-installed in versa. 
 
-| Metric Name  (Auto-Install)  | Key in config | Key in report   Code Source                                                                                                     | References                                                                                       |
+| Metric Name  (Auto-Install)  | Key in config | Key in report |  Code Source                                                                                                     | References                                                                                       |
 |------------------|---------------|---------------|-----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | Mel Cepstral Distortion (MCD) [x]  | mcd_f0 | mcd | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | https://ieeexplore.ieee.org/iel2/3220/9154/00407206.pdf |
 | F0 Correlation [x]  | mcd_f0 | f0_corr | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf |
