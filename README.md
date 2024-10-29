@@ -96,12 +96,12 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | PESQ in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_pesq | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | STOI in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_stoi | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
 | SI-SDR in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_si_sdr | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
-| MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |  | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
-| Singing voice MOS [x]  | singmos | singmos |  | [singmos](https://github.com/South-Twilight/SingMOS/tree/main) | https://arxiv.org/abs/2406.10911 |
-| Log-Weighted Mean Square Error [x] | log_wmse | log_wmse |  | [log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
-| Dynamic Time Warping Cost Metric [ ] | warpq | warpq |  | [WARP-Q](https://github.com/wjassim/WARP-Q) | https://arxiv.org/abs/2102.10449 |
-| Sheet SSQA MOS Models [x] | sheet_ssqa | sheet_ssqa |  | [Sheet](https://github.com/unilight/sheet/tree/main) |
-| ESPnet Speech Recognition-based Error Rate [x] | espnet_wer | espnet_wer |  | [ESPnet](https://github.com/espnet/espnet) | https://arxiv.org/pdf/1804.00015 |
-| ESPnet-OWSM Speech Recognition-based Error Rate [x] | owsm_wer | owsm_wer |  | [ESPnet](https://github.com/espnet/espnet) | https://arxiv.org/abs/2309.13876 |
-| OpenAI-Whisper Speech Recognition-based Error Rate [x] | whisper_wer | whisper_wer |  | [Whisper](https://github.com/openai/whisper) | https://arxiv.org/abs/2212.04356 |
+| MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |[torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | https://arxiv.org/abs/2304.01448 |
+| Singing voice MOS [x]  | singmos | singmos |[singmos](https://github.com/South-Twilight/SingMOS/tree/main) | https://arxiv.org/abs/2406.10911 |
+| Log-Weighted Mean Square Error [x] | log_wmse | log_wmse |[log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
+| Dynamic Time Warping Cost Metric [ ] | warpq | warpq |[WARP-Q](https://github.com/wjassim/WARP-Q) | https://arxiv.org/abs/2102.10449 |
+| Sheet SSQA MOS Models [x] | sheet_ssqa | sheet_ssqa |[Sheet](https://github.com/unilight/sheet/tree/main) |
+| ESPnet Speech Recognition-based Error Rate [x] | espnet_wer | espnet_wer |[ESPnet](https://github.com/espnet/espnet) | https://arxiv.org/pdf/1804.00015 |
+| ESPnet-OWSM Speech Recognition-based Error Rate [x] | owsm_wer | owsm_wer |[ESPnet](https://github.com/espnet/espnet) | https://arxiv.org/abs/2309.13876 |
+| OpenAI-Whisper Speech Recognition-based Error Rate [x] | whisper_wer | whisper_wer |[Whisper](https://github.com/openai/whisper) | https://arxiv.org/abs/2212.04356 |
 | A few more in verifying/progresss|
