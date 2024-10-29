@@ -87,7 +87,7 @@ def espnet_predict(
     model.maxlenratio = -min(300, int((len(speech) / TARGET_FS) * 10))
 
     speech = librosa.util.fix_length(speech, size=(TARGET_FS * CHUNK_SIZE))
-    text = model(speech)[0][-2]
+    text = model(speech)[0][0]
 
     return text
 
