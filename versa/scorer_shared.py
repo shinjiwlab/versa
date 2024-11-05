@@ -392,7 +392,7 @@ def list_scoring(
     for key in tqdm(gen_files.keys()):
         if io == "kaldi":
             gen_sr, gen_wav = gen_files[key]
-        elif io == "waveform":
+        elif io == "soundfile":
             gen_wav, gen_sr = sf.read(gen_files[key])
         else:
             raise NotImplementedError("Not supported io type: {}".format(io))
