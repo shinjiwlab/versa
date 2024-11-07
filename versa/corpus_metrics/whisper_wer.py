@@ -68,7 +68,7 @@ def whisper_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
     ref_words = ref_text.split()
     pred_words = pred_text.split()
     ret = {
-        "hyp_text": pred_text,
+        "whisper_hyp_text": pred_text,
         "ref_text": ref_text,
         "whisper_wer_delete": 0,
         "whisper_wer_insert": 0,

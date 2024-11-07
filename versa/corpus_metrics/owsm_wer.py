@@ -173,7 +173,7 @@ def owsm_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
     ref_words = ref_text.split()
     pred_words = pred_text.split()
     ret = {
-        "hyp_text": pred_text,
+        "owsm_hyp_text": pred_text,
         "ref_text": ref_text,
         "owsm_wer_delete": 0,
         "owsm_wer_insert": 0,

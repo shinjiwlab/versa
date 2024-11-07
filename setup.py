@@ -27,6 +27,7 @@ setup(
         "mir-eval",
         "omegaconf",
         "onnxruntime",
+        "openai-whisper",
         "opt-einsum",
         "pesq",
         "protobuf",

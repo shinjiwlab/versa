@@ -5,11 +5,59 @@
 import copy
 import logging
 
+import os
+import fnmatch
 import librosa
 import numpy as np
 import soundfile as sf
 import yaml
+import kaldiio
 from tqdm import tqdm
+from typing import Dict, List
+
+
+def find_files(
+    root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
+) -> Dict[str, str]:
+    """Find files recursively.
+
+    Args:
+        root_dir (str): Root root_dir to find.
+        query (List[str]): Query to find.
+        include_root_dir (bool): If False, root_dir name is not included.
+
+    Returns:
+        Dict[str]: List of found filenames.
+
+    """
+    files = {}
+    for root, _, filenames in os.walk(root_dir, followlinks=True):
+        for q in query:
+            for filename in fnmatch.filter(filenames, q):
+                value = os.path.join(root, filename)
+                if not include_root_dir:
+                    value = value.replace(root_dir + "/", "")
+                files[filename] = value
+    return files
+
+
+def audio_loader_setup(audio, io):
+    # get ready compute embeddings
+    if io == "kaldi":
+        audio_files = kaldiio.load_scp(audio)
+    elif io == "dir":
+        audio_files = find_files(audio)
+    else:
+        audio_files = {}
+        with open(audio) as f:
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                if value.endswith("|"):
+                    raise ValueError(
+                        "Not supported wav.scp format. Set IO interface to kaldi"
+                    )
+                audio_files[key] = value
+    return audio_files
 
 
 def check_all_same(array):
@@ -397,7 +445,6 @@ def list_scoring(
         else:
             raise NotImplementedError("Not supported io type: {}".format(io))
         gen_wav = wav_normalize(gen_wav)
-        logging.warning(gen_wav.shape[0])
         if not check_minimum_length(gen_wav.shape[0] / gen_sr, score_modules.keys()):
             logging.warning(
                 "audio {} (generated, length {}) is too short to be evaluated with some metric metrics, skipping".format(
@@ -405,6 +452,7 @@ def list_scoring(
                 )
             )
             continue
+
         if gt_files is not None:
             assert (
                 key in gt_files.keys()
@@ -432,6 +480,12 @@ def list_scoring(
         else:
             gt_wav = None
             gt_sr = None
+        
+        if text_info is not None:
+            assert (
+                key in text_info.keys()
+            ), "key {} not found in ground truth transcription".format(key)
+            text = text_info[key]
 
         if gt_sr is not None and gen_sr > gt_sr:
             logging.warning(
@@ -446,7 +500,7 @@ def list_scoring(
 
         utt_score = {"key": key}
 
-        utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr))
+        utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=text))
         del gen_wav
         del gt_wav
 
@@ -460,6 +514,46 @@ def list_scoring(
 def load_summary(score_info):
     summary = {}
     for key in score_info[0].keys():
-        if key != "key":
-            summary[key] = sum([score[key] for score in score_info]) / len(score_info)
+        if "ref_text" in key or "hyp_text" in key or key == "key":
+            # NOTE(jiatong): skip text cases
+            continue
+        summary[key] = sum([score[key] for score in score_info])
+        if "_wer" not in key and "_cer" not in key:
+            # Average for non-WER/CER metrics
+            summary[key] /= len(score_info)
     return summary
+
+
+def load_corpus_modules(score_config, use_gpu=False, io="kaldi"):
+    score_modules = {}
+    for config in score_config:
+        if config["name"] == "fad":
+            logging.info("Loading FAD evaluation with specific models...")
+            from versa import fad_setup, fad_scoring
+            fad_info = fad_setup(
+                fad_embedding=config.get("model", "default"),
+                baseline=config.get("baseline_audio", "default"),
+                cache_dir=config.get("cache_dir"),
+                use_inf=config.get("use_inf", False),
+                io=io,
+            )
+
+            fad_key = "fad_{}".format(config.get("model", "default"))
+ 
+            score_modules[fad_key] = {
+                "module": fad_scoring,
+                "args": fad_info,
+            }
+            logging.info("Initiate {} calculation evaluation successfully.".format(fad_key))
+    
+    return score_modules
+
+def corpus_scoring(
+        gen_files,
+        score_modules,
+        base_files=None,
+        text_info=None,
+        output_file=None,
+        io="kaldi"
+    ):
+    pass

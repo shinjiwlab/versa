@@ -6,16 +6,12 @@
 """Scorer Interface for Speech Evaluation."""
 
 import argparse
-import fnmatch
 import logging
-import os
-from typing import Dict, List
 
-import kaldiio
 import torch
 import yaml
 
-from versa.scorer_shared import list_scoring, load_score_modules, load_summary
+from versa.scorer_shared import audio_loader_setup, list_scoring, load_score_modules, load_summary, load_corpus_modules, corpus_scoring
 
 
 def get_parser() -> argparse.Namespace:
@@ -45,6 +41,12 @@ def get_parser() -> argparse.Namespace:
         help="Path of directory to write the results.",
     )
     parser.add_argument(
+        "--cache_folder",
+        type=str,
+        default=None,
+        help="Path of cache saving"
+    )
+    parser.add_argument(
         "--use_gpu", type=bool, default=False, help="whether to use GPU if it can"
     )
     parser.add_argument(
@@ -67,31 +69,6 @@ def get_parser() -> argparse.Namespace:
         help="the overall rank in the batch processing, used to specify GPU rank",
     )
     return parser
-
-
-def find_files(
-    root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
-) -> Dict[str, str]:
-    """Find files recursively.
-
-    Args:
-        root_dir (str): Root root_dir to find.
-        query (List[str]): Query to find.
-        include_root_dir (bool): If False, root_dir name is not included.
-
-    Returns:
-        Dict[str]: List of found filenames.
-
-    """
-    files = {}
-    for root, _, filenames in os.walk(root_dir, followlinks=True):
-        for q in query:
-            for filename in fnmatch.filter(filenames, q):
-                value = os.path.join(root, filename)
-                if not include_root_dir:
-                    value = value.replace(root_dir + "/", "")
-                files[filename] = value
-    return files
 
 
 def main():
@@ -121,36 +98,12 @@ def main():
         )
         logging.warning("Skip DEBUG/INFO messages")
 
-    if args.io == "kaldi":
-        with open(args.pred) as f:
-            gen_files = kaldiio.load_scp(args.pred)
-    elif args.io == "dir":
-        gen_files = find_files(args.pred)
-    else:
-        gen_files = {}
-        with open(args.pred) as f:
-            for line in f.readlines():
-                key, value = line.strip().split(maxsplit=1)
-                if value.endswith("|"):
-                    raise ValueError(
-                        "Not supported wav.scp format. Set IO interface to kaldi"
-                    )
-                gen_files[key] = value
+    
+    gen_files = audio_loader_setup(args.pred, args.io)
 
     # find reference file
     if args.gt is not None:
-        if args.io == "kaldi":
-            gt_files = kaldiio.load_scp(args.gt)
-        elif args.io == "dir":
-            gt_files = find_files(args.gt)
-        else:
-            gt_files = {}
-            with open(args.gt) as f:
-                for line in f.readlines():
-                    key, value = line.strip().split(maxsplit=1)
-                    if value.endswith("|"):
-                        raise ValueError("Not supported wav.scp format.")
-                    gt_files[key] = value
+        gt_files = audio_loader_setup(args.gt, args.io)
     else:
         gt_files = None
 
@@ -196,6 +149,21 @@ def main():
         io=args.io,
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
+
+    corpus_score_modules = load_corpus_modules(
+        score_config,
+        use_gpu=args.use_gpu,
+        cache_folder=args.cache_folder,
+    )
+    corpus_score_info = corpus_scoring(
+        gen_files,
+        corpus_score_modules,
+        gt_files,
+        text_info,
+        output_file=args.output_file + ".corpus",
+        io=args.io,
+    )
+    logging.info("Corpus Summary: {}".format(corpus_score_info))
 
 
 if __name__ == "__main__":
