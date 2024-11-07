@@ -109,11 +109,11 @@ def main():
 
     # fine ground truth transcription
     if args.text is not None:
-        test_info = {}
+        text_info = {}
         with open(args.text) as f:
             for line in f.readlines():
                 key, value = line.strip().split(maxsplit=1)
-                test_info[key] = value
+                text_info[key] = value
     else:
         text_info = None
 
@@ -135,6 +135,7 @@ def main():
     score_modules = load_score_modules(
         score_config,
         use_gt=(True if gt_files is not None else False),
+        use_gt_text=(True if text_info is not None else False),
         use_gpu=args.use_gpu,
     )
 
@@ -150,20 +151,20 @@ def main():
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 
-    corpus_score_modules = load_corpus_modules(
-        score_config,
-        use_gpu=args.use_gpu,
-        cache_folder=args.cache_folder,
-    )
-    corpus_score_info = corpus_scoring(
-        gen_files,
-        corpus_score_modules,
-        gt_files,
-        text_info,
-        output_file=args.output_file + ".corpus",
-        io=args.io,
-    )
-    logging.info("Corpus Summary: {}".format(corpus_score_info))
+    # corpus_score_modules = load_corpus_modules(
+    #     score_config,
+    #     use_gpu=args.use_gpu,
+    #     cache_folder=args.cache_folder,
+    # )
+    # corpus_score_info = corpus_scoring(
+    #     gen_files,
+    #     corpus_score_modules,
+    #     gt_files,
+    #     text_info,
+    #     output_file=args.output_file + ".corpus",
+    #     io=args.io,
+    # )
+    # logging.info("Corpus Summary: {}".format(corpus_score_info))
 
 
 if __name__ == "__main__":

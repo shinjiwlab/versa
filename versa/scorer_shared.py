@@ -323,7 +323,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
 
         elif config["name"] == "owsm_wer":
             if not use_gt_text:
-                logging.warning("Cannot use espnet_wer because no gt text is provided")
+                logging.warning("Cannot use owsm_wer because no gt text is provided")
                 continue
                 # TODO(jiatong): add case for ground truth speech
                 # (predict text for gt speech as well)
@@ -331,7 +331,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Loadding owsm_wer metric with reference text")
             from versa import owsm_levenshtein_metric, owsm_wer_setup
 
-            score_modules["espnet_wer"] = {
+            score_modules["owsm_wer"] = {
                 "module": owsm_levenshtein_metric,
                 "args": owsm_wer_setup(
                     model_tag=config.get("model_tag", "default"),
@@ -486,6 +486,8 @@ def list_scoring(
                 key in text_info.keys()
             ), "key {} not found in ground truth transcription".format(key)
             text = text_info[key]
+        else:
+            text = None
 
         if gt_sr is not None and gen_sr > gt_sr:
             logging.warning(
@@ -524,7 +526,7 @@ def load_summary(score_info):
     return summary
 
 
-def load_corpus_modules(score_config, use_gpu=False, io="kaldi"):
+def load_corpus_modules(score_config, cache_forlder=".cache", use_gpu=False, io="kaldi"):
     score_modules = {}
     for config in score_config:
         if config["name"] == "fad":

@@ -65,6 +65,11 @@
 # -- torch_squim_mos: MOS score with reference
 - name: squim
 
+# An overall model on MOS-bench from Sheet toolkit
+# More info in https://github.com/unilight/sheet/tree/main
+# --sheet_ssqa: the mos prediction from sheet_ssqa
+- name: sheet_ssqa
+
 # torch-log-wmse 
 # -- log-wmse: the log of a frequency-weighted Mean Squared Error (MSE)
 # - name: log_wmse
