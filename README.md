@@ -55,7 +55,7 @@ python versa/bin/scorer.py \
   
 # For text information
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/separate_metrics/wer.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result \
