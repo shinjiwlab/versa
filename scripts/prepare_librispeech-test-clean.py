@@ -55,7 +55,7 @@ def generate_files(root_dir):
                                                     f"{flac_name} {wav_path}\n"
                                                 )
                                                 transcriptions_file.write(
-                                                    f"{flac_name} {normalized_transcription}\n"
+                                                    f"{flac_name} {transcription}\n"
                                                 )
 
     print("Files ori.scp and transcriptions.txt have been generated.")

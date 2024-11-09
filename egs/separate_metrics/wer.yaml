@@ -53,5 +53,5 @@
 # --whisper_cer_equal: correct matching words/character counts
 - name: whisper_wer
   model_tag: default
-  beam_size: 5
+  beam_size: 1
   text_cleaner: whisper_basic
