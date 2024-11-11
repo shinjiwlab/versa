@@ -128,4 +128,5 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | ESPnet-OWSM Speech Recognition-based Error Rate [x] | owsm_wer | owsm_wer |[ESPnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/2309.13876) |
 | OpenAI-Whisper Speech Recognition-based Error Rate [x] | whisper_wer | whisper_wer |[Whisper](https://github.com/openai/whisper) | [paper](https://arxiv.org/abs/2212.04356) |
 | UTMOSv2: UTokyo-SaruLab MOS Prediction System [ ] | utmosv2 | utmosv2 |[UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | [paper](https://arxiv.org/abs/2409.09305) |
+| Speech Contrastive Regression for Quality Assessment (ScoreQ) [ ] | scoreq_nr / scoreq_ref | scoreq_nr / scoreq_ref |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
 | A few more in verifying/progresss|
