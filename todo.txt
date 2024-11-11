@@ -5,6 +5,6 @@ https://github.com/pranaymanocha/PerceptualAudio
 https://github.com/JasonSWFu/VQscore
 https://github.com/soumimaiti/speechlmscore_tool
 https://github.com/urgent-challenge/urgent2024_challenge/tree/main/evaluation_metrics
-https://pypi.org/project/scoreq/
 Other metrics with pre-trained models
 https://github.com/Ashvala/AQUA-Tk?tab=readme-ov-file
+https://github.com/facebookresearch/Noresqa/tree/main
