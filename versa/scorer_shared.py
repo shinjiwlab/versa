@@ -362,6 +362,40 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 ),
             }
             logging.info("Initiate Whisper WER calculation successfully")
+        
+        elif config["name"] == "scoreq_ref":
+            if not use_gt:
+                logging.warning("Cannot use scoreq_ref because no gt audio is provided")
+                continue
+
+            logging.info("Loadding scoreq metrics with reference")
+            from versa import scoreq_ref_setup, scoreq_ref
+            model = scoreq_ref_setup(
+                    data_domain=config.get("data_domain", "synthetic"),
+                    cache_dir=config.get("model_cache", "./scoreq_pt-models"),
+                    use_gpu=use_gpu,
+                )
+
+            score_modules["scoreq_ref"] = {
+                "module": scoreq_ref,
+                "model": model,
+            }
+            logging.info("Initiate scoreq (with reference) successfully")
+
+        elif config["name"] == "scoreq_nr":
+            logging.info("Loadding scoreq metrics without reference")
+            from versa import scoreq_nr_setup, scoreq_nr
+            model = scoreq_nr_setup(
+                    data_domain=config.get("data_domain", "synthetic"),
+                    cache_dir=config.get("model_cache", "./scoreq_pt-models"),
+                    use_gpu=use_gpu,
+                )
+
+            score_modules["scoreq_nr"] = {
+                "module": scoreq_nr,
+                "model": model,
+            }
+            logging.info("Initiate scoreq (with reference) successfully")
 
     return score_modules
 
@@ -417,6 +451,14 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
                 text,
                 gen_sr,
             )
+        elif key == "scoreq_ref":
+            score = score_modules[key]["module"](
+                score_modules[key]["model"],
+                gen_wav, gt_wav, gen_sr)
+        elif key == "scoreq_nr":
+            score = score_modules[key]["module"](
+                score_modules[key]["model"], 
+                gen_wav, gen_sr) 
         else:
             raise NotImplementedError(f"Not supported {key}")
 

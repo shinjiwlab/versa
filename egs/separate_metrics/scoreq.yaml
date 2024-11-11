@@ -1,0 +1,13 @@
+# scoreq (reference-based) metric
+# -- scoreq_ref: scoreq reference-based model
+#            data_domain: "synthetic" or "natural" (default: "synthetic")
+- name: scoreq_ref
+  data_domain: synthetic
+  model_cache: scoreq_pt-models
+
+# scoreq (non-reference-based) metric
+# -- scoreq_nr: scoreq non-reference-based model
+#            data_domain: "synthetic" or "natural" (default: "synthetic")
+- name: scoreq_nr
+  data_domain: synthetic
+  model_cache: scoreq_pt-models

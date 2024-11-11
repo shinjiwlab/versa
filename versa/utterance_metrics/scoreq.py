@@ -42,7 +42,7 @@ def scoreq_nr(model, pred_x, fs):
     if fs != 16000:
         pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
 
-    return model(test_path=pred_x, ref_path=None)
+    return {"scoreq_nr": model.predict(test_path=pred_x, ref_path=None)}
 
 
 def scoreq_ref(model, pred_x, gt_x, fs):
@@ -51,14 +51,16 @@ def scoreq_ref(model, pred_x, gt_x, fs):
         gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=16000)
         pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
 
-    return model(test_path=pred_x, ref_path=gt_x)
+    return {"scoreq_ref": model.predict(test_path=pred_x, ref_path=gt_x)}
 
 
 if __name__ == "__main__":
     a = np.random.random(16000)
     b = np.random.random(16000)
-    nr_model = scoreq_nr_setup()
-    ref_model = scoreq_ref_setup()
+    nr_model = scoreq_nr_setup(use_gpu=True)
+    ref_model = scoreq_ref_setup(use_gpu=True)
     fs = 16000
     metric_nr = scoreq_nr(nr_model, a, fs)
     metric_ref = scoreq_ref(ref_model, a, b, fs)
+    print(metric_nr)
+    print(metric_ref)

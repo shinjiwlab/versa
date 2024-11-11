@@ -46,3 +46,4 @@ from versa.corpus_metrics.whisper_wer import (whisper_levenshtein_metric,
                                               whisper_wer_setup)
 from versa.utterance_metrics.sheet_ssqa import sheet_ssqa, sheet_ssqa_setup
 from versa.utterance_metrics.squim import squim_metric, squim_metric_no_ref
+from versa.utterance_metrics.scoreq import scoreq_nr, scoreq_nr_setup, scoreq_ref, scoreq_ref_setup
