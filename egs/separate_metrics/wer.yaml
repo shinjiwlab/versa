@@ -51,7 +51,7 @@
 # --whisper_cer_insert: insertion errors
 # --whisper_cer_replace: replacement errors
 # --whisper_cer_equal: correct matching words/character counts
-- name: whisper_wer
+- name: whisper_en
   model_tag: default
-  beam_size: 1
+  beam_size: 5
   text_cleaner: whisper_basic
