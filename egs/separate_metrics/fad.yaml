@@ -1,0 +1,8 @@
+# Frechet Audio Distance (fad) metrics
+# --fad_overall: fad_score
+# --fad_r2: r2 estimation for fad_inf
+- name: fad
+  fad_embedding: default
+  cache_dir: versa_cache/fad
+  use_inf: true
+  io: kaldi
