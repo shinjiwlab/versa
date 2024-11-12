@@ -11,8 +11,8 @@ import torch
 import kaldiio
 from tqdm import tqdm
 
-from fadtk_versa.fad_versa import FrechetAudioDistance
-from fadtk_versa.model_loader import get_all_models
+from fadtk.fad_versa import FrechetAudioDistance
+from fadtk.model_loader import get_all_models
 from versa.scorer_shared import audio_loader_setup
 
 
@@ -74,6 +74,11 @@ def fad_scoring(pred_x, fad_info):
     else:
         score = fad_info["module"].score(baseline_files, eval_files, cache_dir)
         return {"fad_overall": score}
+
+
+if __name__ == "__main__":
+    fad_info = fad_setup("test/test_samples/test1.scp")
+    print(fad_scoring("test/test_samples/test2.scp", fad_info))
     
 
     
