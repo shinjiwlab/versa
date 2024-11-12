@@ -47,7 +47,7 @@ def audio_loader_setup(audio, io):
         audio_files = kaldiio.load_scp(audio)
     elif io == "dir":
         audio_files = find_files(audio)
-    else:
+    elif io == "soundfile":
         audio_files = {}
         with open(audio) as f:
             for line in f.readlines():
