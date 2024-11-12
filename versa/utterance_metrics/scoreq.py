@@ -6,11 +6,13 @@
 import librosa
 import numpy as np
 import torch
+import logging
 
 try:
     from scoreq_versa import Scoreq
 except ImportError:
-    raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
+    logging.warning("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
+    Scoreq = None
 
 
 def scoreq_nr_setup(
@@ -22,6 +24,9 @@ def scoreq_nr_setup(
     else:
         device = "cpu"
     
+    if Scoreq is None:
+        raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
+
     return Scoreq(data_domain=data_domain, mode="nr", device=device)
 
 
@@ -33,7 +38,11 @@ def scoreq_ref_setup(
         device = "cuda"
     else:
         device = "cpu"
-    
+
+    if Scoreq is None:
+        raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
+
+
     return Scoreq(data_domain=data_domain, mode="ref", device=device)
 
 
