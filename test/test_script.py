@@ -4,7 +4,7 @@ import os
 
 import yaml
 
-from versa.bin.espnet_scorer import (find_files, list_scoring,
+from versa.scorer_shared import (find_files, list_scoring,
                                      load_score_modules, load_summary)
 
 TEST_INFO = {
@@ -27,6 +27,7 @@ TEST_INFO = {
     "plcmos": 3.1603124300638834,
     "spk_similarity": 0.8953609466552734,
     "singmos": 2.0403053760528564,
+    "sheet_ssqa": 1.5056110620498657
 }
 
 
@@ -54,7 +55,7 @@ def info_update():
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, output_file=None, io="waveform"
+        gen_files, score_modules, gt_files, output_file=None, io="soundfile"
     )
     summary = load_summary(score_info)
     print("Summary: {}".format(load_summary(score_info)), flush=True)

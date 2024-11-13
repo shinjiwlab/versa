@@ -65,8 +65,8 @@ def whisper_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
     pred_text = wer_utils["cleaner"](inf_txt)
 
     # process wer
-    ref_words = ref_text.split()
-    pred_words = pred_text.split()
+    ref_words = ref_text.strip().split()
+    pred_words = pred_text.strip().split()
     ret = {
         "whisper_hyp_text": pred_text,
         "ref_text": ref_text,

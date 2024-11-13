@@ -1,0 +1,7 @@
+# pseudo subjective metrics
+# -- utmosv2: UT-MOSv2 score
+- name: pseudo_mos
+  predictor_types: ["utmosv2"]
+  predictor_args:
+    utmosv2:
+      fs: 16000
