@@ -5,8 +5,8 @@ GT_WAVSCP=$2
 SCORE_DIR=$3
 SPLIT_SIZE=$4
 
-GPU_PART=gpu
-CPU_PART=cpu
+GPU_PART=general
+CPU_PART=general
 
 
 mkdir -p ${SCORE_DIR}
@@ -47,8 +47,28 @@ for ((i=0; i<${#pred_list[@]}; i++))  ; do
     
     echo "${sub_pred_wavscp} ${sub_gt_wavscp}"
 
-    sbatch -p ${GPU_PART} --time 2-0:00:00 --cpus-per-task 8 --mem-per-cpu 2000M --gres=gpu:1 ./egs/run_gpu.sh ${sub_pred_wavscp} ${sub_gt_wavscp} ${SCORE_DIR}/result/$(basename ${sub_pred_wavscp}).result.gpu.txt egs/codec_16k_gpu.yaml
-    sbatch -p ${CPU_PART} --time 2-0:00:00 --cpus-per-task 8 --mem-per-cpu 2000M ./egs/run_cpu.sh ${sub_pred_wavscp} ${sub_gt_wavscp} ${SCORE_DIR}/result/$(basename ${sub_pred_wavscp}).result.cpu.txt egs/codec_16k_speech_cpu.yaml
+    sbatch \
+        -p ${GPU_PART} \
+        --time 2-0:00:00 \
+        --cpus-per-task 8 \
+        --mem-per-cpu 2000M \
+        --gres=gpu:A6000:1 \
+        ./egs/run_gpu.sh \
+            ${sub_pred_wavscp} \
+            ${sub_gt_wavscp} \
+            ${SCORE_DIR}/result/$(basename ${sub_pred_wavscp}).result.gpu.txt \
+            egs/speech_gpu.yaml
+
+    sbatch \
+        -p ${CPU_PART} \
+        --time 2-0:00:00 \
+        --cpus-per-task 8 \
+        --mem-per-cpu 2000M \
+        ./egs/run_cpu.sh \
+            ${sub_pred_wavscp} \
+            ${sub_gt_wavscp} \
+            ${SCORE_DIR}/result/$(basename ${sub_pred_wavscp}).result.cpu.txt \
+            egs/speech_cpu.yaml
 
 done
 

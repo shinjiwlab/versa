@@ -37,8 +37,8 @@ def sheet_ssqa(model, pred_x, fs):
     # NOTE(jiatong): current model only work for 16000 Hz
     if fs != 16000:
         pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
-
-    return {"sheet_ssqa": model.predict(wav=torch.tensor(pred_x).float())}
+    pred_x = torch.tensor(pred_x).float().to(model.model.device)
+    return {"sheet_ssqa": model.predict(wav=pred_x)}
 
 
 if __name__ == "__main__":
