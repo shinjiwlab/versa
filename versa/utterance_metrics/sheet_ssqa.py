@@ -33,11 +33,13 @@ def sheet_ssqa_setup(
     return model
 
 
-def sheet_ssqa(model, pred_x, fs):
+def sheet_ssqa(model, pred_x, fs, use_gpu=False):
     # NOTE(jiatong): current model only work for 16000 Hz
     if fs != 16000:
         pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
-    pred_x = torch.tensor(pred_x).float().to(model.model.device)
+    pred_x = torch.tensor(pred_x).float()
+    if use_gpu:
+        pred_x = pred_x.to(device)
     return {"sheet_ssqa": model.predict(wav=pred_x)}
 
 

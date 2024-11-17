@@ -270,7 +270,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             )
             score_modules["sheet_ssqa"] = {
                 "module": sheet_ssqa,
-                "args": {"model": sheet_model},
+                "args": {"model": sheet_model, "use_gpu": use_gpu},
             }
             logging.info("Initiate Sheet SSQA evaluation successfully.")
 
@@ -438,7 +438,8 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             )
         elif key == "sheet_ssqa":
             score = score_modules[key]["module"](
-                score_modules[key]["args"]["model"], gen_wav, gen_sr
+                score_modules[key]["args"]["model"], gen_wav, gen_sr,
+                use_gpu=score_modules[key]["args"]["use_gpu"]
             )
         elif key == "squim_ref":
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
