@@ -26,7 +26,7 @@ def sheet_ssqa_setup(
         if model_tag == "default":
             model_tag = "unilight/sheet:v0.1.0"
         model = torch.hub.load(
-            "unilight/sheet:v0.1.0", "default", trust_repo=True, force_reload=True
+            "unilight/sheet:v0.1.0", "default", trust_repo=True, force_reload=False
         )
 
     model.model.to(device)
