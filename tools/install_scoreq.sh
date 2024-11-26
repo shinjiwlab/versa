@@ -1,7 +1,9 @@
 #/bin/bash
 
 
-rm -rf WARP-Q
+rm -rf scoreq
+
+. ./install_fairseq.sh
 
 # # NOTE(jiatong): a versa-specialized implementation for scoreq
 git clone https://github.com/ftshijt/scoreq.git
