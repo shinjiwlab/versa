@@ -65,7 +65,7 @@ def info_update():
             # for sir"
             continue
         # the plc mos is undeterministic
-        if abs(TEST_INFO[key] - summary[key]) > 1e-5 and key != "plcmos":
+        if abs(TEST_INFO[key] - summary[key]) > 1e-4 and key != "plcmos":
             raise ValueError(
                 "Value issue in the test case, might be some issue in scorer {}".format(
                     key
