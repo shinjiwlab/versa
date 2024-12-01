@@ -53,13 +53,13 @@ def fad_scoring(pred_x, fad_info):
     logging.info("[FAD] caching baseline embeddings...")
     baseline_files = audio_loader_setup(fad_info["baseline"], fad_info["io"])
     for key in tqdm(baseline_files.keys()):
-        fad_info["module"].cache_embedding_file(baseline_files[key], cache_dir)
+        fad_info["module"].cache_embedding_file(key, baseline_files[key], cache_dir + "/baseline")
     logging.info("[FAD] Finished caching baseline embeddings.")
 
     logging.info("[FAD] caching eval embeddings...")
     eval_files = audio_loader_setup(pred_x, fad_info["io"])
     for key in tqdm(baseline_files.keys()):
-        fad_info["module"].cache_embedding_file(eval_files[key], cache_dir)
+        fad_info["module"].cache_embedding_file(key, eval_files[key], cache_dir + "/eval")
     logging.info("[FAD] Finished caching eval embeddings.")
 
     if len(baseline_files) != len(eval_files):
