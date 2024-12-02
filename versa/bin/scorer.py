@@ -11,7 +11,9 @@ import logging
 import torch
 import yaml
 
-from versa.scorer_shared import audio_loader_setup, list_scoring, load_score_modules, load_summary, load_corpus_modules, corpus_scoring
+from versa.scorer_shared import (audio_loader_setup, corpus_scoring,
+                                 list_scoring, load_corpus_modules,
+                                 load_score_modules, load_summary)
 
 
 def get_parser() -> argparse.Namespace:
@@ -41,10 +43,7 @@ def get_parser() -> argparse.Namespace:
         help="Path of directory to write the results.",
     )
     parser.add_argument(
-        "--cache_folder",
-        type=str,
-        default=None,
-        help="Path of cache saving"
+        "--cache_folder", type=str, default=None, help="Path of cache saving"
     )
     parser.add_argument(
         "--use_gpu", type=bool, default=False, help="whether to use GPU if it can"
@@ -98,7 +97,6 @@ def main():
         )
         logging.warning("Skip DEBUG/INFO messages")
 
-    
     gen_files = audio_loader_setup(args.pred, args.io)
 
     # find reference file
