@@ -1,1 +1,1 @@
-/Users/darius/Documents/research/versa/versa/sequence_metrics/2f_model/README.md
+../versa/sequence_metrics/2f_model/README.md
