@@ -1,6 +1,5 @@
 https://github.com/lcn-kul/xls-r-analysis-sqa?tab=readme-ov-file
 https://github.com/NTIA/WEnets
-https://github.com/alessandroragano/nomad
 https://github.com/pranaymanocha/PerceptualAudio
 https://github.com/JasonSWFu/VQscore
 https://github.com/soumimaiti/speechlmscore_tool
