@@ -3,7 +3,7 @@
 
 rm -rf nomad
 
-. ./install_nomad.sh > err.log 2>&1
+. ./install_nomad.sh
 
 # # NOTE(jiatong): a versa-specialized implementation for scoreq
 git clone https://github.com/shimhz/nomad.git
