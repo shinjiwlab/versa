@@ -17,6 +17,7 @@ except ImportError:
 
 def scoreq_nr_setup(
         data_domain="synthetic",
+        cache_dir="./scoreq_pt-models",
         use_gpu=False,
 ):
     if use_gpu:
@@ -27,11 +28,12 @@ def scoreq_nr_setup(
     if Scoreq is None:
         raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
 
-    return Scoreq(data_domain=data_domain, mode="nr", device=device)
+    return Scoreq(data_domain=data_domain, mode="nr", cache_dir=cache_dir, device=device)
 
 
 def scoreq_ref_setup(
         data_domain="synthetic",
+        cache_dir="./scoreq_pt-models",
         use_gpu=False,
 ):
     if use_gpu:
@@ -43,7 +45,7 @@ def scoreq_ref_setup(
         raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
 
 
-    return Scoreq(data_domain=data_domain, mode="ref", device=device)
+    return Scoreq(data_domain=data_domain, mode="ref", cache_dir=cache_dir, device=device)
 
 
 def scoreq_nr(model, pred_x, fs):
