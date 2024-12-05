@@ -100,7 +100,7 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | 1 | Mel Cepstral Distortion (MCD) [x]  | mcd_f0 | mcd | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel2/3220/9154/00407206.pdf) |
 | 2 | F0 Correlation [x]  | mcd_f0 | f0_corr | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf) |
 | 3 | F0 Root Mean Square Error  [x] | mcd_f0 | f0_rmse | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf) |
-| 4 | Signal-to-infererence Ratio (SIR) [x]  | signal_metric | sir | [espnet](https://github.com/espnet/espnet) | - |
+| 4 | Signal-to-interference  Ratio (SIR) [x]  | signal_metric | sir | [espnet](https://github.com/espnet/espnet) | - |
 | 5 | Signal-to-artifact Ratio (SAR) [x]  | signal_metric | sar | [espnet](https://github.com/espnet/espnet) | - |
 | 6 | Signal-to-distortion Ratio (SDR) [x]  | signal_metric | sdr | [espnet](https://github.com/espnet/espnet) | - |
 | 7 | Convolutional scale-invariant signal-to-distortion ratio (CI-SDR) [x]  | signal_metric | ci-sdr | [ci_sdr](https://github.com/fgnt/ci_sdr) | [paper](https://arxiv.org/abs/2011.15003) |
@@ -130,6 +130,11 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | 31 | UTMOSv2: UTokyo-SaruLab MOS Prediction System [ ] | utmosv2 | utmosv2 |[UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | [paper](https://arxiv.org/abs/2409.09305) |
 | 32 | Speech Contrastive Regression for Quality Assessment with reference (ScoreQ) [ ] |  scoreq_ref | scoreq_ref |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
 | 33 | Speech Contrastive Regression for Quality Assessment without reference (ScoreQ) [ ] | scoreq_nr | scoreq_nr |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
+| 34 | Emotion2vec similarity (emo2vec) [ ] | emo2vec_similarity | emotion_similarity | [emo2vec](https://github.com/ftshijt/emotion2vec/tree/main) | [paper](https://arxiv.org/abs/2312.15185) | 
+| 35 | Speech enhancement-based SI-SNR [x] | se_snr | se_si_snr | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 36 | Speech enhancement-based CI-SDR [x] | se_snr | se_ci_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 37 | Speech enhancement-based SAR [x] | se_snr | se_sar | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 38 | Speech enhancement-based SDR [x] | se_snr | se_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
 | A few more in verifying/progresss|
 
 

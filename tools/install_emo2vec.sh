@@ -1,0 +1,16 @@
+#/bin/bash
+
+
+rm -rf emotion2vec
+
+. ./install_fairseq.sh
+
+# # NOTE(jiatong): a versa-specialized implementation for emo2vec
+git clone https://github.com/ftshijt/emotion2vec.git
+cd scoreq
+pip install -e .
+
+# Note(jiatong): default downloading the base model
+cd emotion2vec/emo2vec_versa
+wget https://huggingface.co/emotion2vec/emotion2vec_base/resolve/main/emotion2vec_base.pt
+cd ../..

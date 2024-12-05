@@ -3,15 +3,18 @@
 # Copyright 2024 Jiatong Shi
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
+import logging
+
 import librosa
 import numpy as np
 import torch
-import logging
 
 try:
     from scoreq_versa import Scoreq
 except ImportError:
-    logging.warning("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
+    logging.warning(
+        "scoreq is not installed. Please use `tools/install_scoreq.sh` to install"
+    )
     Scoreq = None
 
 
@@ -24,9 +27,11 @@ def scoreq_nr_setup(
         device = "cuda"
     else:
         device = "cpu"
-    
+
     if Scoreq is None:
-        raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
+        raise ModuleNotFoundError(
+            "scoreq is not installed. Please use `tools/install_scoreq.sh` to install"
+        )
 
     return Scoreq(data_domain=data_domain, mode="nr", cache_dir=cache_dir, device=device)
 
@@ -42,8 +47,9 @@ def scoreq_ref_setup(
         device = "cpu"
 
     if Scoreq is None:
-        raise ModuleNotFoundError("scoreq is not installed. Please use `tools/install_scoreq.sh` to install")
-
+        raise ModuleNotFoundError(
+            "scoreq is not installed. Please use `tools/install_scoreq.sh` to install"
+        )
 
     return Scoreq(data_domain=data_domain, mode="ref", cache_dir=cache_dir, device=device)
 

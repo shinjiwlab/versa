@@ -5,24 +5,24 @@
 
 import logging
 
+import kaldiio
 import librosa
 import numpy as np
 import torch
-import kaldiio
-from tqdm import tqdm
-
 from fadtk.fad_versa import FrechetAudioDistance
 from fadtk.model_loader import get_all_models
+from tqdm import tqdm
+
 from versa.scorer_shared import audio_loader_setup
 
 
 def fad_setup(
-        baseline,
-        fad_embedding="default",
-        cache_dir="versa_cache/fad",
-        use_inf=True,
-        io="kaldi",
-    ):
+    baseline,
+    fad_embedding="default",
+    cache_dir="versa_cache/fad",
+    use_inf=True,
+    io="kaldi",
+):
 
     # get model
     models = {m.name: m for m in get_all_models()}
@@ -31,10 +31,7 @@ def fad_setup(
     model = models[fad_embedding]
 
     # setup fad object
-    fad = FrechetAudioDistance(
-        ml=model,
-        load_model=True
-    )
+    fad = FrechetAudioDistance(ml=model, load_model=True)
 
     return {
         "module": fad,
@@ -53,13 +50,17 @@ def fad_scoring(pred_x, fad_info):
     logging.info("[FAD] caching baseline embeddings...")
     baseline_files = audio_loader_setup(fad_info["baseline"], fad_info["io"])
     for key in tqdm(baseline_files.keys()):
-        fad_info["module"].cache_embedding_file(baseline_files[key], cache_dir)
+        fad_info["module"].cache_embedding_file(
+            key, baseline_files[key], cache_dir + "/baseline"
+        )
     logging.info("[FAD] Finished caching baseline embeddings.")
 
     logging.info("[FAD] caching eval embeddings...")
     eval_files = audio_loader_setup(pred_x, fad_info["io"])
     for key in tqdm(baseline_files.keys()):
-        fad_info["module"].cache_embedding_file(eval_files[key], cache_dir)
+        fad_info["module"].cache_embedding_file(
+            key, eval_files[key], cache_dir + "/eval"
+        )
     logging.info("[FAD] Finished caching eval embeddings.")
 
     if len(baseline_files) != len(eval_files):
@@ -79,10 +80,3 @@ def fad_scoring(pred_x, fad_info):
 if __name__ == "__main__":
     fad_info = fad_setup("test/test_samples/test1.scp")
     print(fad_scoring("test/test_samples/test2.scp", fad_info))
-    
-
-    
-    
-    
-
-    

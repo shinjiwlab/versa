@@ -3,17 +3,17 @@
 # Copyright 2024 Jiatong Shi
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 import copy
-import logging
-
-import os
 import fnmatch
+import logging
+import os
+from typing import Dict, List
+
+import kaldiio
 import librosa
 import numpy as np
 import soundfile as sf
 import yaml
-import kaldiio
 from tqdm import tqdm
-from typing import Dict, List
 
 
 def find_files(
@@ -362,19 +362,20 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 ),
             }
             logging.info("Initiate Whisper WER calculation successfully")
-        
+
         elif config["name"] == "scoreq_ref":
             if not use_gt:
                 logging.warning("Cannot use scoreq_ref because no gt audio is provided")
                 continue
 
             logging.info("Loadding scoreq metrics with reference")
-            from versa import scoreq_ref_setup, scoreq_ref
+            from versa import scoreq_ref, scoreq_ref_setup
+
             model = scoreq_ref_setup(
-                    data_domain=config.get("data_domain", "synthetic"),
-                    cache_dir=config.get("model_cache", "./scoreq_pt-models"),
-                    use_gpu=use_gpu,
-                )
+                data_domain=config.get("data_domain", "synthetic"),
+                cache_dir=config.get("model_cache", "./scoreq_pt-models"),
+                use_gpu=use_gpu,
+            )
 
             score_modules["scoreq_ref"] = {
                 "module": scoreq_ref,
@@ -384,18 +385,57 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
 
         elif config["name"] == "scoreq_nr":
             logging.info("Loadding scoreq metrics without reference")
-            from versa import scoreq_nr_setup, scoreq_nr
+            from versa import scoreq_nr, scoreq_nr_setup
+
             model = scoreq_nr_setup(
-                    data_domain=config.get("data_domain", "synthetic"),
-                    cache_dir=config.get("model_cache", "./scoreq_pt-models"),
-                    use_gpu=use_gpu,
-                )
+                data_domain=config.get("data_domain", "synthetic"),
+                cache_dir=config.get("model_cache", "./scoreq_pt-models"),
+                use_gpu=use_gpu,
+            )
 
             score_modules["scoreq_nr"] = {
                 "module": scoreq_nr,
                 "model": model,
             }
             logging.info("Initiate scoreq (with reference) successfully")
+
+        elif config["name"] == "emo2vec_similarity":
+            if not use_gt:
+                logging.warning(
+                    "Cannot use emo2vec_similarity metric because no gt audio is provided"
+                )
+                continue
+
+            logging.info("Loadding emo2vec metrics with reference")
+            from versa import emo2vec_setup, emo_sim
+
+            model = emo2vec_setup(
+                model_tag=config.get("model_tag", "default"),
+                model_path=config.get("model_path", None),
+                use_gpu=use_gpu,
+            )
+
+            score_modules["emotion"] = {
+                "module": emo_sim,
+                "model": model,
+            }
+            logging.info("Initiate emo2vec successfully")
+
+        elif config["name"] == "se_snr":
+            logging.info("Loadding se_snr metrics with reference")
+            from versa import se_snr, se_snr_setup
+
+            model = se_snr_setup(
+                model_tag=config.get("model_tag", "default"),
+                model_path=config.get("model_path", None),
+                use_gpu=use_gpu,
+            )
+
+            score_modules["se_snr"] = {
+                "module": se_snr,
+                "model": model,
+            }
+            logging.info("Initiate se_snr successfully")
 
     return score_modules
 
@@ -438,8 +478,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             )
         elif key == "sheet_ssqa":
             score = score_modules[key]["module"](
-                score_modules[key]["args"]["model"], gen_wav, gen_sr,
-                use_gpu=score_modules[key]["args"]["use_gpu"]
+                score_modules[key]["args"]["model"],
+                gen_wav,
+                gen_sr,
+                use_gpu=score_modules[key]["args"]["use_gpu"],
             )
         elif key == "squim_ref":
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
@@ -454,12 +496,20 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             )
         elif key == "scoreq_ref":
             score = score_modules[key]["module"](
-                score_modules[key]["model"],
-                gen_wav, gt_wav, gen_sr)
+                score_modules[key]["model"], gen_wav, gt_wav, gen_sr
+            )
         elif key == "scoreq_nr":
             score = score_modules[key]["module"](
-                score_modules[key]["model"], 
-                gen_wav, gen_sr) 
+                score_modules[key]["model"], gen_wav, gen_sr
+            )
+        elif key == "emotion":
+            score = score_modules[key]["module"](
+                score_modules[key]["model"], gen_wav, gt_wav, gen_sr
+            )
+        elif key == "se_snr":
+            score = score_modules[key]["module"](
+                score_modules[key]["model"], gen_wav, gen_sr
+            )
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -523,7 +573,7 @@ def list_scoring(
         else:
             gt_wav = None
             gt_sr = None
-        
+
         if text_info is not None:
             assert (
                 key in text_info.keys()
@@ -545,7 +595,9 @@ def list_scoring(
 
         utt_score = {"key": key}
 
-        utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=text))
+        utt_score.update(
+            use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=text)
+        )
         del gen_wav
         del gt_wav
 
@@ -569,12 +621,15 @@ def load_summary(score_info):
     return summary
 
 
-def load_corpus_modules(score_config, cache_forlder=".cache", use_gpu=False, io="kaldi"):
+def load_corpus_modules(
+    score_config, cache_forlder=".cache", use_gpu=False, io="kaldi"
+):
     score_modules = {}
     for config in score_config:
         if config["name"] == "fad":
             logging.info("Loading FAD evaluation with specific models...")
-            from versa import fad_setup, fad_scoring
+            from versa import fad_scoring, fad_setup
+
             fad_info = fad_setup(
                 fad_embedding=config.get("model", "default"),
                 baseline=config.get("baseline_audio", "default"),
@@ -584,21 +639,24 @@ def load_corpus_modules(score_config, cache_forlder=".cache", use_gpu=False, io=
             )
 
             fad_key = "fad_{}".format(config.get("model", "default"))
- 
+
             score_modules[fad_key] = {
                 "module": fad_scoring,
                 "args": fad_info,
             }
-            logging.info("Initiate {} calculation evaluation successfully.".format(fad_key))
-    
+            logging.info(
+                "Initiate {} calculation evaluation successfully.".format(fad_key)
+            )
+
     return score_modules
 
+
 def corpus_scoring(
-        gen_files,
-        score_modules,
-        base_files=None,
-        text_info=None,
-        output_file=None,
-        io="kaldi"
-    ):
+    gen_files,
+    score_modules,
+    base_files=None,
+    text_info=None,
+    output_file=None,
+    io="kaldi",
+):
     pass
