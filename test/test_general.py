@@ -4,8 +4,12 @@ import os
 
 import yaml
 
-from versa.scorer_shared import (find_files, list_scoring,
-                                     load_score_modules, load_summary)
+from versa.scorer_shared import (
+    find_files,
+    list_scoring,
+    load_score_modules,
+    load_summary,
+)
 
 TEST_INFO = {
     "mcd": 5.045226506332897,
@@ -27,7 +31,7 @@ TEST_INFO = {
     "plcmos": 3.1603124300638834,
     "spk_similarity": 0.8953609466552734,
     "singmos": 2.0403053760528564,
-    "sheet_ssqa": 1.5056110620498657
+    "sheet_ssqa": 1.5056110620498657,
 }
 
 

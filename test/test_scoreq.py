@@ -4,13 +4,14 @@ import os
 
 import yaml
 
-from versa.scorer_shared import (find_files, list_scoring,
-                                     load_score_modules, load_summary)
+from versa.scorer_shared import (
+    find_files,
+    list_scoring,
+    load_score_modules,
+    load_summary,
+)
 
-TEST_INFO = {
-    'scoreq_ref': 1.0068472623825073,
-    'scoreq_nr': 1.7731
-}
+TEST_INFO = {"scoreq_ref": 1.0068472623825073, "scoreq_nr": 1.7731}
 
 
 def info_update():

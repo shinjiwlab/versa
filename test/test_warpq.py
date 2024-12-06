@@ -4,10 +4,14 @@ import os
 
 import yaml
 
-from versa.scorer_shared import (find_files, list_scoring,
-                                     load_score_modules, load_summary)
+from versa.scorer_shared import (
+    find_files,
+    list_scoring,
+    load_score_modules,
+    load_summary,
+)
 
-TEST_INFO = {'warpq': 3.853}
+TEST_INFO = {"warpq": 3.853}
 
 
 def info_update():
