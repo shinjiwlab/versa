@@ -1,6 +1,6 @@
-# Frechet Audio Distance (fad) metrics
-# --fad_overall: fad_score
-# --fad_r2: r2 estimation for fad_inf
+# PAM: Prompting Audio-Language Models for Audio Quality Assessment
+# https://github.com/soham97/PAM/tree/main
+
 - name: pam
   repro: true
   cache_dir: versa_cache/pam
