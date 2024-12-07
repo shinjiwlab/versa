@@ -228,7 +228,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 )
                 continue
 
-            api, fs = visqol_setup(model=config.get("model", "default"))
+            api, fs = visqol_setup(model=config.get("score_config", "default"))
             score_modules["visqol"] = {
                 "module": visqol_metric,
                 "args": {"api": api, "api_fs": fs},
@@ -436,6 +436,21 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "model": model,
             }
             logging.info("Initiate se_snr successfully")
+        
+        elif config["name"] == "pam":
+           
+            logging.info("Loading pam metric without reference...")
+            from versa.utterance_metrics.pam import pam_metric, pam_model_setup
+            pam_model = pam_model_setup(
+                model_config=config,
+                use_gpu=use_gpu
+            )
+            score_modules["pam"] = {
+                "module": pam_metric,
+                "args": {"model": pam_model},
+            }
+            logging.info("Initiate pam metric successfully.")
+
 
     return score_modules
 
@@ -510,6 +525,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             score = score_modules[key]["module"](
                 score_modules[key]["model"], gen_wav, gen_sr
             )
+        elif key == "pam":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["model"], gen_wav, fs=gen_sr
+            )
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -533,7 +552,7 @@ def list_scoring(
     for key in tqdm(gen_files.keys()):
         if io == "kaldi":
             gen_sr, gen_wav = gen_files[key]
-        elif io == "soundfile":
+        elif io == "soundfile" or io == "dir":
             gen_wav, gen_sr = sf.read(gen_files[key])
         else:
             raise NotImplementedError("Not supported io type: {}".format(io))
