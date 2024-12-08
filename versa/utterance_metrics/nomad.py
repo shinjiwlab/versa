@@ -17,7 +17,7 @@ except ImportError:
     Nomad = None
 
 
-def nomad_setup(use_gpu=False):
+def nomad_setup(use_gpu=False, cache_dir="./nomad_pt-models"):
     if use_gpu:
         device = "cuda"
     else:
@@ -28,7 +28,7 @@ def nomad_setup(use_gpu=False):
             "nomad is not installed. Please use `tools/install_nomad.sh` to install"
         )
 
-    return Nomad(device=device)
+    return Nomad(device=device, cache_dir=cache_dir)
 
 
 def nomad(model, pred_x, gt_x, fs):
