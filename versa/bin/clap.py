@@ -10,9 +10,6 @@ from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
 from itertools import repeat
 
-from .pytorch_utils import do_mixup, interpolate
-from . import config
-
 import collections.abc
 import warnings
 
@@ -31,12 +28,35 @@ to_3tuple = _ntuple(3)
 to_4tuple = _ntuple(4)
 to_ntuple = _ntuple
 
-# Ke Chen
-# knutchen@ucsd.edu
-# HTS-AT: A HIERARCHICAL TOKEN-SEMANTIC AUDIO TRANSFORMER FOR SOUND CLASSIFICATION AND DETECTION
-# Model Core
-# below codes are based and referred from https://github.com/microsoft/Swin-Transformer
-# Swin Transformer for Computer Vision: https://arxiv.org/pdf/2103.14030.pdf
+
+def do_mixup(x, mixup_lambda):
+    """Mixup x of even indexes (0, 2, 4, ...) with x of odd indexes 
+    (1, 3, 5, ...).
+    Args:
+      x: (batch_size * 2, ...)
+      mixup_lambda: (batch_size * 2,)
+    Returns:
+      out: (batch_size, ...)
+    """
+    out = (x[0 :: 2].transpose(0, -1) * mixup_lambda[0 :: 2] + \
+        x[1 :: 2].transpose(0, -1) * mixup_lambda[1 :: 2]).transpose(0, -1)
+    return out
+    
+
+def interpolate(x, ratio):
+    """Interpolate data in time domain. This is used to compensate the 
+    resolution reduction in downsampling of a CNN.
+    
+    Args:
+      x: (batch_size, time_steps, classes_num)
+      ratio: int, ratio to interpolate
+    Returns:
+      upsampled: (batch_size, time_steps * ratio, classes_num)
+    """
+    (batch_size, time_steps, classes_num) = x.shape
+    upsampled = x[:, :, None, :].repeat(1, 1, ratio, 1)
+    upsampled = upsampled.reshape(batch_size, time_steps * ratio, classes_num)
+    return upsampled
 
 def drop_path(x, drop_prob: float = 0., training: bool = False):
     """Drop paths (Stochastic Depth) per sample (when applied in main path of residual blocks).
@@ -54,6 +74,35 @@ def drop_path(x, drop_prob: float = 0., training: bool = False):
     random_tensor.floor_()  # binarize
     output = x.div(keep_prob) * random_tensor
     return output
+
+class Config:
+    # For model design
+    enable_repeat_mode = False  # Repeat or reshape the spectrogram
+    enable_tscam = True         # Enable the token-semantic layer
+    loss_type = "clip_bce"
+    # For signal processing
+    sample_rate = 32000         # 16000 for scv2, 32000 for audioset and esc-50
+    clip_samples = sample_rate * 10  # 10-sec clip for audioset
+    window_size = 1024
+    hop_size = 320              # 160 for scv2, 320 for audioset and esc-50
+    mel_bins = 64
+    fmin = 50
+    fmax = 14000
+    shift_max = int(clip_samples * 0.5)
+
+    # For data collection
+    classes_num = 527           # esc: 50 | audioset: 527 | scv2: 35
+    patch_size = (25, 4)        # Deprecated
+    crop_size = None            # Deprecated
+    htsat_attn_heatmap = False  # Whether to enable attention heatmaps
+
+
+# Ke Chen
+# knutchen@ucsd.edu
+# HTS-AT: A HIERARCHICAL TOKEN-SEMANTIC AUDIO TRANSFORMER FOR SOUND CLASSIFICATION AND DETECTION
+# Model Core
+# below codes are based and referred from https://github.com/microsoft/Swin-Transformer
+# Swin Transformer for Computer Vision: https://arxiv.org/pdf/2103.14030.pdf
 
 
 class DropPath(nn.Module):
@@ -932,7 +981,8 @@ class HTSATWrapper(nn.Module):
         # print("parameters are being overidden when using HTSAT")
         # print("HTSAT only support loading a pretrained model on AudioSet")
         # @TODO later look at what parameters are same and can be merged
-
+        
+        config = Config()
         self.htsat = HTSAT_Swin_Transformer(config=config)
 
     def forward(self, x):
