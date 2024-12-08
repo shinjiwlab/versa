@@ -1,7 +1,8 @@
 #/bin/bash
 
-
-rm -rf UTMOSv2
+if [ -d "UTMOSv2" ]; then
+    rm -rf UTMOSv2
+fi
 
 # Check if git-lfs is installed
 if git lfs --version >/dev/null 2>&1; then

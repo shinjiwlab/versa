@@ -1,7 +1,8 @@
 #/bin/bash
 
-
-rm -rf nomad
+if [ -d "nomad" ]; then
+    rm -rf nomad
+fi
 
 . ./install_nomad.sh
 

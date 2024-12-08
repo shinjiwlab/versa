@@ -1,7 +1,8 @@
 #/bin/bash
 
-
-rm -rf scoreq
+if [ -d "scoreq" ]; then
+    rm -rf scoreq
+fi
 
 . ./install_fairseq.sh
 
