@@ -5,3 +5,4 @@
 . ./install_utmosv2.sh
 . ./install_warpq.sh
 . ./install_scoreq.sh
+. ./install_nomad.sh

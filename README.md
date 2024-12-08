@@ -135,6 +135,7 @@ We include [ ] and [x] to mark if the metirc is auto-installed in versa.
 | 36 | Speech enhancement-based CI-SDR [x] | se_snr | se_ci_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
 | 37 | Speech enhancement-based SAR [x] | se_snr | se_sar | [ESPnet](https://github.com/espnet/espnet.git) | |
 | 38 | Speech enhancement-based SDR [x] | se_snr | se_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 39 | NOMAD: Unsupervised Learning of Perceptual Embeddings For Speech Enhancement and Non-Matching Reference Audio Quality Assessment [ ] |  nomad | nomad |[Nomad](https://github.com/shimhz/nomad/tree/main) | [paper](https://arxiv.org/abs/2309.16284) |
 | A few more in verifying/progresss|
 
 
