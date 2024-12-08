@@ -14,17 +14,16 @@ git clone https://github.com/shinjiwlab/versa.git
 cd versa
 pip install .
 ```
-or
-```
-pip install git+https://github.com/shinjiwlab/versa.git
-```
 
 As for collection purposes, VERSA instead of re-distributing the model, we try to align as much to the original API provided by the algorithm developer. Therefore, we have many dependencies. We try to include as many as default, but there are cases where the toolkit needs specific installation requirements. Please refer to our [list-of-metric section](https://github.com/shinjiwlab/versa?tab=readme-ov-file#list-of-metrics) for more details on whether the metrics are automatically included or not.  If not, we provide an installation guide or installers in `tools`.
 
 
 ## Quick test
 ```
-python versa/test/test_script.py
+python versa/test/test_general.py
+
+# test metrics with additional installation
+python versa/test/test_{metric}.py
 ```
 
 ## Usage
@@ -33,21 +32,21 @@ Simple usage case for a few samples.
 ```
 # direct usage
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/general.yaml \
     --gt test/test_samples/test1 \
     --pred test/test_samples/test2 \
     --output_file test_result
 
 # with scp-style input
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/general.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result
 
 # with kaldi-ark style
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/general.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result \
