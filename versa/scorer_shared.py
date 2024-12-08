@@ -228,7 +228,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 )
                 continue
 
-            api, fs = visqol_setup(model=config.get("score_config", "default"))
+            api, fs = visqol_setup(model=config.get("model", "default"))
             score_modules["visqol"] = {
                 "module": visqol_metric,
                 "args": {"api": api, "api_fs": fs},
