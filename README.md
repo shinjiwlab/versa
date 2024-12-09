@@ -135,6 +135,11 @@ We include x mark if the metric is auto-installed in versa.
 | 37 | x | Speech enhancement-based SAR | se_snr | se_sar | [ESPnet](https://github.com/espnet/espnet.git) | |
 | 38 | x | Speech enhancement-based SDR | se_snr | se_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
 | 39 |   | NOMAD: Unsupervised Learning of Perceptual Embeddings For Speech Enhancement and Non-Matching Reference Audio Quality Assessment |  nomad | nomad |[Nomad](https://github.com/shimhz/nomad/tree/main) | [paper](https://arxiv.org/abs/2309.16284) |
+| 40 |   | Frechet Audio Distance (FAD) | fad | fad | [fadtk](https://github.com/microsoft/fadtk) | [paper](https://arxiv.org/abs/1812.08466) |
+| 41 |   | Contrastive Language-Audio Pretraining Score (CLAP Score) | clap_score | clap_score | [fadtk](https://github.com/gudgud96/frechet-audio-distance) | [paper](https://arxiv.org/abs/2301.12661) |
+| 42 |   | Audio Density and Coverage Score | audio_density_coverage | audio_density_coverage | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2002.09797) |
+| 43 |   | Accompaniment Prompt Adherence (APA) | apa | apa | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2404.00775) |
+| 44 |   | Kullback-Leibler Divergence on Embedding Distribution | kl_embedding | kl_embedding | [Stability-AI](https://github.com/Stability-AI/stable-audio-metrics) |  |
 | A few more in verifying/progresss|
 
 
