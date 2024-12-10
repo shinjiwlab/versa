@@ -140,7 +140,7 @@ We include x mark if the metric is auto-installed in versa.
 | 42 |   | Audio Density and Coverage Score | audio_density_coverage | audio_density_coverage | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2002.09797) |
 | 43 |   | Accompaniment Prompt Adherence (APA) | apa | apa | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2404.00775) |
 | 44 |   | Kullback-Leibler Divergence on Embedding Distribution | kl_embedding | kl_embedding | [Stability-AI](https://github.com/Stability-AI/stable-audio-metrics) |  |
-| 39 | x | PAM: Prompting Audio-Language Models for Audio Quality Assessment | pam | pam | [PAM](https://github.com/soham97/PAM/tree/main) | [Paper](https://arxiv.org/pdf/2402.00282)|
+| 45 | x | PAM: Prompting Audio-Language Models for Audio Quality Assessment | pam | pam | [PAM](https://github.com/soham97/PAM/tree/main) | [Paper](https://arxiv.org/pdf/2402.00282)|
 | A few more in verifying/progresss|
 
 
