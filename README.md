@@ -102,7 +102,7 @@ We include x mark if the metric is auto-installed in versa.
 | 4 | x | Signal-to-interference  Ratio (SIR)  | signal_metric | sir | [espnet](https://github.com/espnet/espnet) | - |
 | 5 | x | Signal-to-artifact Ratio (SAR)  | signal_metric | sar | [espnet](https://github.com/espnet/espnet) | - |
 | 6 | x | Signal-to-distortion Ratio (SDR)  | signal_metric | sdr | [espnet](https://github.com/espnet/espnet) | - |
-| 7 | x | Convolutional scale-invariant signal-to-distortion ratio (CI-SDR) [x]  | signal_metric | ci-sdr | [ci_sdr](https://github.com/fgnt/ci_sdr) | [paper](https://arxiv.org/abs/2011.15003) |
+| 7 | x | Convolutional scale-invariant signal-to-distortion ratio (CI-SDR)  | signal_metric | ci-sdr | [ci_sdr](https://github.com/fgnt/ci_sdr) | [paper](https://arxiv.org/abs/2011.15003) |
 | 8 | x | Scale-invariant signal-to-noise ratio (SI-SNR)  | signal_metric | si-snr | [espnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/1711.00541) |
 | 9 | x | Perceptual Evaluation of Speech Quality (PESQ)  | pesq | pesq | [pesq](https://pypi.org/project/pesq/) | [paper](https://ieeexplore.ieee.org/document/941023) |
 | 10 | x | Short-Time Objective Intelligibility (STOI)  | stoi | stoi | [pystoi](https://github.com/mpariente/pystoi) | [paper](https://ieeexplore.ieee.org/document/5495701) |
@@ -140,6 +140,7 @@ We include x mark if the metric is auto-installed in versa.
 | 42 |   | Audio Density and Coverage Score | audio_density_coverage | audio_density_coverage | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2002.09797) |
 | 43 |   | Accompaniment Prompt Adherence (APA) | apa | apa | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2404.00775) |
 | 44 |   | Kullback-Leibler Divergence on Embedding Distribution | kl_embedding | kl_embedding | [Stability-AI](https://github.com/Stability-AI/stable-audio-metrics) |  |
+| 39 | x | PAM: Prompting Audio-Language Models for Audio Quality Assessment | pam | pam | [PAM](https://github.com/soham97/PAM/tree/main) | [Paper](https://arxiv.org/pdf/2402.00282)|
 | A few more in verifying/progresss|
 
 
