@@ -12,6 +12,10 @@ except ImportError:
     logging.warning(
         "Please pip install git+https://github.com/ftshijt/DiscreteSpeechMetrics.git and retry"
     )
+except RuntimeError:
+    logging.warning(
+        "Issues detected in discrete speech metrics, please double check the environment."
+    )
 
 from versa.utterance_metrics.pseudo_mos import (
     pseudo_mos_metric,
