@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import re
 from transformers import AutoTokenizer, logging
-from versa.bin.clap import CLAP
+from versa.utterance_metrics.pam_utils.clap import CLAP
 import os
 import torch
 import torchaudio
