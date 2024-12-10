@@ -2,9 +2,6 @@
 # -- utmos: SingMOS score
 - name: pseudo_mos
   predictor_types: ["singmos"]
-  predictor_args:
-    utmos:
-      fs: 16000
 
 
 # visqol metric

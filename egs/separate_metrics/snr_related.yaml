@@ -1,0 +1,7 @@
+# signal related metrics
+# -- sir: signal to interference ratio
+# -- sar: signal to artifact ratio
+# -- sdr: signal to distortion ratio
+# -- ci-sdr: scale-invariant signal to distortion ratio
+# -- si-snri: scale-invariant signal to noise ratio improvement
+- name: signal_metric

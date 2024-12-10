@@ -46,7 +46,7 @@ def signal_metric(pred_x, gt_x):
     if pred_x.shape[1] != gt_x.shape[1]:
         min_audio_length = min(pred_x.shape[1], gt_x.shape[1])
         pred_x = pred_x[:, :min_audio_length]
-        gt_x = pred_x[:, :min_audio_length]
+        gt_x = gt_x[:, :min_audio_length]
     sdr, sir, sar, _ = bss_eval_sources(gt_x, pred_x, compute_permutation=False)
     si_snr = calculate_si_snr(pred_x, gt_x)
     ci_sdr = calculate_ci_sdr(pred_x, gt_x)

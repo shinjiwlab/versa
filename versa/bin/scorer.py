@@ -6,24 +6,28 @@
 """Scorer Interface for Speech Evaluation."""
 
 import argparse
-import fnmatch
 import logging
-import os
-from typing import List
-from tqdm import tqdm
 
-import librosa
-import soundfile as sf
+import torch
 import yaml
+
+from versa.scorer_shared import (
+    audio_loader_setup,
+    corpus_scoring,
+    list_scoring,
+    load_corpus_modules,
+    load_score_modules,
+    load_summary,
+)
 
 
 def get_parser() -> argparse.Namespace:
     """Get argument parser."""
     parser = argparse.ArgumentParser(description="Speech Evaluation Interface")
     parser.add_argument(
-        "pred",
+        "--pred",
         type=str,
-        help="Path of directory or wav.scp for generated waveforms.",
+        help="Wav.scp for generated waveforms.",
     )
     parser.add_argument(
         "--score_config", type=str, default=None, help="Configuration of Score Config"
@@ -32,7 +36,10 @@ def get_parser() -> argparse.Namespace:
         "--gt",
         type=str,
         default=None,
-        help="Path of directory or wav.scp for ground truth waveforms.",
+        help="Wav.scp for ground truth waveforms.",
+    )
+    parser.add_argument(
+        "--text", type=str, default=None, help="Path of ground truth transcription."
     )
     parser.add_argument(
         "--output_file",
@@ -41,7 +48,17 @@ def get_parser() -> argparse.Namespace:
         help="Path of directory to write the results.",
     )
     parser.add_argument(
+        "--cache_folder", type=str, default=None, help="Path of cache saving"
+    )
+    parser.add_argument(
         "--use_gpu", type=bool, default=False, help="whether to use GPU if it can"
+    )
+    parser.add_argument(
+        "--io",
+        type=str,
+        default="kaldi",
+        choices=["kaldi", "soundfile", "dir"],
+        help="io interface to use",
     )
     parser.add_argument(
         "--verbose",
@@ -49,324 +66,23 @@ def get_parser() -> argparse.Namespace:
         type=int,
         help="Verbosity level. Higher is more logging.",
     )
+    parser.add_argument(
+        "--rank",
+        default=0,
+        type=int,
+        help="the overall rank in the batch processing, used to specify GPU rank",
+    )
     return parser
-
-
-def load_score_modules(score_config, use_gt=True, use_gpu=False):
-    score_modules = {}
-    for config in score_config:
-        print(config, flush=True)
-        if config["name"] == "mcd_f0":
-            logging.info("Loading MCD & F0 evaluation...")
-            from versa import mcd_f0
-
-            score_modules["mcd_f0"] = {
-                "module": mcd_f0,
-                "args": {
-                    "f0min": config.get("f0min", 0),
-                    "f0max": config.get("f0max", 24000),
-                    "mcep_shift": config.get("mcep_shift", 5),
-                    "mcep_fftl": config.get("mcep_fftl", 1024),
-                    "mcep_dim": config.get("mcep_dim", 39),
-                    "mcep_alpha": config.get("mcep_alpha", 0.466),
-                    "seq_mismatch_tolerance": config.get("seq_mismatch_tolerance", 0.1),
-                    "power_threshold": config.get("power_threshold", -20),
-                    "dtw": config.get("dtw", False),
-                },
-            }
-            logging.info("Initiate MCD & F0 evaluation successfully.")
-
-        elif config["name"] == "signal_metric":
-            if not use_gt:
-                logging.warning(
-                    "Cannot use signal metric because no gt audio is provided"
-                )
-                continue
-
-            logging.info("Loading signal metric evaluation...")
-            from versa import signal_metric
-
-            score_modules["signal_metric"] = {"module": signal_metric}
-            logging.info("Initiate signal metric evaluation successfully.")
-
-        elif config["name"] == "discrete_speech":
-            if not use_gt:
-                logging.warning(
-                    "Cannot use discrete speech metric because no gt audio is provided"
-                )
-                continue
-
-            logging.info("Loading discrete speech evaluation...")
-            from versa import discrete_speech_metric, discrete_speech_setup
-
-            score_modules["discrete_speech"] = {
-                "module": discrete_speech_metric,
-                "args": {
-                    "discrete_speech_predictors": discrete_speech_setup(use_gpu=use_gpu)
-                },
-            }
-            logging.info("Initiate discrete speech evaluation successfully.")
-
-        elif config["name"] == "pseudo_mos":
-            logging.info("Loading pseudo MOS evaluation...")
-            from versa import pseudo_mos_metric, pseudo_mos_setup
-
-            predictor_dict, predictor_fs = pseudo_mos_setup(
-                use_gpu=use_gpu,
-                predictor_types=config.get("predictor_types", ["utmos"]),
-                predictor_args=config.get("predictor_args", {}),
-            )
-            score_modules["pseudo_mos"] = {
-                "module": pseudo_mos_metric,
-                "args": {
-                    "predictor_dict": predictor_dict,
-                    "predictor_fs": predictor_fs,
-                    "use_gpu": use_gpu,
-                },
-            }
-            logging.info("Initiate pseudo MOS evaluation successfully.")
-
-        elif config["name"] == "pesq":
-            if not use_gt:
-                logging.warning(
-                    "Cannot use pesq metric because no gt audio is provided"
-                )
-                continue
-
-            logging.info("Loadding pesq evaluation...")
-            from versa import pesq_metric
-
-            score_modules["pesq"] = {"module": pesq_metric}
-            logging.info("Initiate pesq evaluation successfully.")
-
-        elif config["name"] == "stoi":
-            if not use_gt:
-                logging.warning(
-                    "Cannot use stoi metric because no gt audio is provided"
-                )
-                continue
-
-            logging.info("Loading stoi evaluation...")
-            from versa import stoi_metric
-
-            score_modules["stoi"] = {"module": stoi_metric}
-            logging.info("Initiate stoi evaluation successfully.")
-
-        elif config["name"] == "visqol":
-            if not use_gt:
-                logging.warning(
-                    "Cannot use visqol metric because no gt audio is provided"
-                )
-                continue
-
-            logging.info("Loading visqol evaluation...")
-            try:
-                from versa import visqol_metric, visqol_setup
-            except ImportError:
-                logging.warning(
-                    "VISQOL not installed, please check `tools` for installation guideline"
-                )
-                continue
-
-            api, fs = visqol_setup(model=config.get("model", "default"))
-            score_modules["visqol"] = {
-                "module": visqol_metric,
-                "args": {"api": api, "api_fs": fs},
-            }
-            logging.info("Initiate visqol evaluation successfully.")
-
-        elif config["name"] == "speaker":
-            if not use_gt:
-                logging.warning(
-                    "Cannot use speaker metric because no gt audio is provided"
-                )
-                continue
-
-            logging.info("Loading speaker evaluation...")
-            from versa import speaker_metric, speaker_model_setup
-
-            spk_model = speaker_model_setup(
-                model_tag=config.get("model_tag", "default"),
-                model_path=config.get("model_path", None),
-                model_config=config.get("model_config", None),
-                use_gpu=use_gpu,
-            )
-            score_modules["speaker"] = {
-                "module": speaker_metric,
-                "args": {"model": spk_model},
-            }
-            logging.info("Initiate speaker evaluation successfully.")
-
-        elif config["name"] == "squim_ref":
-            if not use_gt:
-                logging.warning("Cannot use squim_ref because no gt audio is provided")
-                continue
-
-            logging.info("Loadding squim metrics with reference")
-            from versa import squim_metric
-
-            score_modules["squim_ref"] = {
-                "module": squim_metric,
-            }
-            logging.info("Initiate torch squim (with reference) successfully")
-
-        elif config["name"] == "squim_no_ref":
-            if not use_gt:
-                logging.warning("Cannot use squim_ref because no gt audio is provided")
-                continue
-
-            logging.info("Loadding squim metrics with reference")
-            from versa import squim_metric_no_ref
-
-            score_modules["squim_no_ref"] = {
-                "module": squim_metric_no_ref,
-            }
-            logging.info("Initiate torch squim (without reference) successfully")
-
-    return score_modules
-
-
-def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr):
-    utt_score = {}
-    for key in score_modules.keys():
-        if key == "mcd_f0":
-            score = score_modules[key]["module"](
-                gen_wav, gt_wav, gen_sr, **score_modules[key]["args"]
-            )
-        elif key == "signal_metric":
-            score = score_modules[key]["module"](gen_wav, gt_wav)
-        elif key == "discrete_speech":
-            score = score_modules[key]["module"](
-                score_modules[key]["args"]["discrete_speech_predictors"],
-                gen_wav,
-                gt_wav,
-                gen_sr,
-            )
-        elif key == "pseudo_mos":
-            score = score_modules[key]["module"](
-                gen_wav, gen_sr, **score_modules[key]["args"]
-            )
-        elif key == "pesq":
-            score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
-        elif key == "stoi":
-            score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
-        elif key == "visqol":
-            score = score_modules[key]["module"](
-                score_modules[key]["args"]["api"],
-                score_modules[key]["args"]["api_fs"],
-                gen_wav,
-                gt_wav,
-                gen_sr,
-            )
-        elif key == "speaker":
-            score = score_modules[key]["module"](
-                score_modules[key]["args"]["model"], gen_wav, gt_wav, gen_sr
-            )
-        elif key == "squim_ref":
-            score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
-        elif key == "squim_no_ref":
-            score = score_modules[key]["module"](gen_wav, gen_sr)
-        else:
-            raise NotImplementedError(f"Not supported {key}")
-
-        logging.info(f"Score for {key} is {score}")
-        utt_score.update(score)
-    return utt_score
-
-
-def check_minimum_length(length, key_info):
-    if "stoi" in key_info:
-        # NOTE(jiatong): explicitly 0.256s as in https://github.com/mpariente/pystoi/pull/24
-        if length < 0.3:
-            return False
-    if "pesq" in key_info:
-        # NOTE(jiatong): check https://github.com/ludlows/PESQ/blob/master/pesq/cypesq.pyx#L37-L46
-        if length < 0.25:
-            return False
-    if "visqol" in key_info:
-        # NOTE(jiatong): empirical number
-        if length < 1.0:
-            return False
-    return True
-
-
-def list_scoring(gen_files, score_modules, gt_files=None, output_file=None):
-    if output_file is not None:
-        f = open(output_file, "w", encoding="utf-8")
-
-    score_info = []
-    for i in tqdm(range(len(gen_files))):
-        gen_wav, gen_sr = sf.read(gen_files[i])
-        if gt_files is not None:
-            gt_wav, gt_sr = sf.read(gt_files[i])
-            if not check_minimum_length(gt_wav.shape[0] / gt_sr, score_modules.keys()):
-                logging.warning(
-                    "audio {} (ground truth, length {}) is too short to be evaluated with many metrics, skipping".format(
-                        gt_files[i], gt_wav.shape[0] / gt_sr
-                    )
-                )
-                continue
-        else:
-            gt_wav = None
-          
-        if gt_wav is not None:
-            if gen_sr > gt_sr:
-                logging.warning(
-                    "Resampling the generated audio to match the ground truth audio"
-                )
-                gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
-            elif gen_sr < gt_sr:
-                logging.warning(
-                    "Resampling the ground truth audio to match the generated audio"
-                )
-                gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
-
-        utt_score = {"key": gen_files[i]}
-
-        utt_score.update(use_score_modules(score_modules, gen_wav, gt_wav, gen_sr))
-
-        if output_file is not None:
-            f.write(f"{utt_score}\n")
-        score_info.append(utt_score)
-    logging.info("Scoring completed and save score at {}".format(output_file))
-    return score_info
-
-
-def load_summary(score_info):
-    summary = {}
-    for key in score_info[0].keys():
-        if key != "key":
-            summary[key] = sum([score[key] for score in score_info]) / len(score_info)
-    return summary
-
-
-def find_files(
-    root_dir: str, query: List[str] = ["*.flac", "*.wav"], include_root_dir: bool = True
-) -> List[str]:
-    """Find files recursively.
-
-    Args:
-        root_dir (str): Root root_dir to find.
-        query (List[str]): Query to find.
-        include_root_dir (bool): If False, root_dir name is not included.
-
-    Returns:
-        List[str]: List of found filenames.
-
-    """
-    files = []
-    for root, _, filenames in os.walk(root_dir, followlinks=True):
-        for q in query:
-            for filename in fnmatch.filter(filenames, q):
-                files.append(os.path.join(root, filename))
-    if not include_root_dir:
-        files = [file_.replace(root_dir + "/", "") for file_ in files]
-
-    return files
 
 
 def main():
     args = get_parser().parse_args()
+
+    # In case of using `local` backend, all GPU will be visible to all process.
+    if args.use_gpu:
+        gpu_rank = args.rank % torch.cuda.device_count()
+        torch.cuda.set_device(gpu_rank)
+        logging.info(f"using device: cuda:{gpu_rank}")
 
     # logging info
     if args.verbose > 1:
@@ -386,25 +102,23 @@ def main():
         )
         logging.warning("Skip DEBUG/INFO messages")
 
-    # find files
-    if os.path.isdir(args.pred):
-        gen_files = sorted(find_files(args.pred))
-    else:
-        with open(args.pred) as f:
-            gen_files = [line.strip().split(None, 1)[1] for line in f.readlines()]
-        if gen_files[0].endswith("|"):
-            raise ValueError("Not supported wav.scp format.")
+    gen_files = audio_loader_setup(args.pred, args.io)
 
     # find reference file
-    if args.gt is not None and os.path.isdir(args.gt):
-        gt_files = sorted(find_files(args.gt))
-    elif args.gt is not None:
-        with open(args.gt) as f:
-            gt_files = [line.strip().split(None, 1)[1] for line in f.readlines()]
-        if gt_files[0].endswith("|"):
-            raise ValueError("Not supported wav.scp format.")
+    if args.gt is not None:
+        gt_files = audio_loader_setup(args.gt, args.io)
     else:
         gt_files = None
+
+    # fine ground truth transcription
+    if args.text is not None:
+        text_info = {}
+        with open(args.text) as f:
+            for line in f.readlines():
+                key, value = line.strip().split(maxsplit=1)
+                text_info[key] = value
+    else:
+        text_info = None
 
     # Get and divide list
     if len(gen_files) == 0:
@@ -424,17 +138,36 @@ def main():
     score_modules = load_score_modules(
         score_config,
         use_gt=(True if gt_files is not None else False),
+        use_gt_text=(True if text_info is not None else False),
         use_gpu=args.use_gpu,
     )
-
-    print(score_modules, flush=True)
 
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, gt_files, output_file=args.output_file
+        gen_files,
+        score_modules,
+        gt_files,
+        text_info,
+        output_file=args.output_file,
+        io=args.io,
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
+
+    # corpus_score_modules = load_corpus_modules(
+    #     score_config,
+    #     use_gpu=args.use_gpu,
+    #     cache_folder=args.cache_folder,
+    # )
+    # corpus_score_info = corpus_scoring(
+    #     gen_files,
+    #     corpus_score_modules,
+    #     gt_files,
+    #     text_info,
+    #     output_file=args.output_file + ".corpus",
+    #     io=args.io,
+    # )
+    # logging.info("Corpus Summary: {}".format(corpus_score_info))
 
 
 if __name__ == "__main__":
