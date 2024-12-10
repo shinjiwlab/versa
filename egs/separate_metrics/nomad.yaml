@@ -1,0 +1,4 @@
+# nomad (reference-based) metric
+# -- nomad: nomad reference-based model
+- name: nomad
+  model_cache: versa_cache/nomad_pt-models

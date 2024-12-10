@@ -1,7 +1,8 @@
 #/bin/bash
 
-
-rm -rf emotion2vec
+if [ -d "emotion2vec" ]; then
+    rm -rf emotion2vec
+fi
 
 . ./install_fairseq.sh
 

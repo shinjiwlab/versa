@@ -47,7 +47,7 @@ def pseudo_mos_setup(predictor_types, predictor_args, use_gpu=False):
         #     **{k: v for k, v in _cfg.__dict__.items() if not k.startswith("__")}
         # )
         # utmosv2._settings.configure_execution(cfg)
-        predictor_dict["utmosv2"] = utmos_v2
+        predictor_dict["utmosv2"] = utmos_v2.to(device)
         predictor_fs["utmosv2"] = 16000
 
     if (

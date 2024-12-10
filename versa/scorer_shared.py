@@ -144,9 +144,9 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 continue
 
             logging.info("Loading WARPQ metric evaluation...")
-            from versa import warpq, warpq_setup
+            from versa.sequence_metrics.warpq import warpq, warpq_setup
 
-            score_modules["warpq"] = {"module": warpq_setup()}
+            score_modules["warpq"] = {"model": warpq_setup(), "module": warpq}
             logging.info("Initiate WARP-Q metric...")
 
         elif config["name"] == "discrete_speech":
@@ -399,6 +399,21 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             }
             logging.info("Initiate scoreq (with reference) successfully")
 
+        elif config["name"] == "nomad":
+            logging.info("Loadding nomad metrics with reference")
+            from versa import nomad, nomad_setup
+
+            model = nomad_setup(
+                cache_dir=config.get("model_cache", "./scoreq_pt-models"),
+                use_gpu=use_gpu,
+            )
+
+            score_modules["nomad"] = {
+                "module": nomad,
+                "model": model,
+            }
+            logging.info("Initiate nomad successfully")
+
         elif config["name"] == "emo2vec_similarity":
             if not use_gt:
                 logging.warning(
@@ -464,6 +479,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             )
         elif key == "signal_metric":
             score = score_modules[key]["module"](gen_wav, gt_wav)
+        elif key == "warpq":
+            score = score_modules[key]["module"](
+                score_modules[key]["model"], gen_wav, gt_wav, gen_sr
+            )
         elif key == "discrete_speech":
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["discrete_speech_predictors"],
@@ -502,6 +521,8 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             score = score_modules[key]["module"](gen_wav, gt_wav, gen_sr)
         elif key == "squim_no_ref":
             score = score_modules[key]["module"](gen_wav, gen_sr)
+        elif key == "nomad":
+            score = score_modules[key]["module"](score_modules[key]["model"], gen_wav, gt_wav, gen_sr)
         elif key == "espnet_wer" or key == "owsm_wer" or key == "whisper_wer":
             score = score_modules[key]["module"](
                 score_modules[key]["args"],

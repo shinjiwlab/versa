@@ -39,6 +39,7 @@ def se_snr(model, pred_x, fs):
     enhanced_x = model(pred_x[None, :], fs=fs)[0]
     signal_metrics = signal_metric(pred_x, enhanced_x)
     updated_metrics = {f"se_{key}": value for key, value in signal_metrics.items()}
+    updated_metrics.pop("se_sir")
     return updated_metrics
 
 
