@@ -12,30 +12,17 @@ from versa.scorer_shared import (
 )
 
 TEST_INFO = {
-    "mcd": 5.045226506332897,
-    "f0rmse": 20.28100448994277,
-    "f0corr": -0.07540903652440145,
-    "sdr": 4.8739529795936445,
-    "sir": float("inf"),
-    "sar": 4.8739529795936445,
-    "si_snr": 1.0702757835388184,
-    "ci_sdr": 4.873954772949219,
-    "pesq": 1.5722705125808716,
-    "stoi": 0.0076251088596473275,
-    "speech_bert": 0.9727544188499451,
-    "speech_bleu": 0.6699938983346256,
-    "speech_token_distance": 0.850506056080969,
-    "utmos": 1.9074358940124512,
-    "dns_overall": 1.4526059573614438,
-    "dns_p808": 2.094302177429199,
-    "plcmos": 3.1603124300638834,
-    "spk_similarity": 0.8953609466552734,
-    "singmos": 2.0403053760528564,
-    "sheet_ssqa": 1.5056110620498657,
-    "se_sdr": -10.220606003834313, 
-    "se_sar": -10.220606003834313, 
-    "se_si_snr": -16.837072372436523, 
-    "se_ci_sdr": -10.220602989196777
+    "pysepm_fwsegsnr": 12.010879979211092,
+    "pysepm_llr": 0.10582867330588923,
+    "pysepm_wss": 36.349490489992895,
+    "pysepm_cd": 1.9559655879411542,
+    "pysepm_Csig": 3.60503599984457,
+    "pysepm_Cbak": 2.319464152555435,
+    "pysepm_Covl": 2.551047048465036,
+    "pysepm_csii_high": 0.03851460997893698,
+    "pysepm_csii_mid": 0.05246553069271649,
+    "pysepm_csii_low": 0,
+    "pysepm_ncm": 0.1451686480269653,
 }
 
 
@@ -51,7 +38,7 @@ def info_update():
 
     logging.info("The number of utterances = %d" % len(gen_files))
 
-    with open("egs/speech.yaml", "r", encoding="utf-8") as f:
+    with open("egs/separate_metrics/pysepm.yaml", "r", encoding="utf-8") as f:
         score_config = yaml.full_load(f)
 
     score_modules = load_score_modules(

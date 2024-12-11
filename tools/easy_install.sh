@@ -7,3 +7,4 @@
 . ./install_scoreq.sh
 . ./install_nomad.sh
 . ./install_asvspoof.sh
+. ./install_pysepm.sh

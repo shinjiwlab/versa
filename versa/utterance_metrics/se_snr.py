@@ -12,7 +12,7 @@ from espnet2.bin.enh_inference import SeparateSpeech
 from versa.sequence_metrics.signal_metric import signal_metric
 
 
-def enhancement_model_setup(
+def se_snr_setup(
     model_tag="default", model_path=None, model_config=None, use_gpu=False
 ):
     if use_gpu:
