@@ -73,3 +73,5 @@
 # torch-log-wmse 
 # -- log-wmse: the log of a frequency-weighted Mean Squared Error (MSE)
 # - name: log_wmse
+
+- name: se_snr
