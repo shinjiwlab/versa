@@ -288,9 +288,6 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate torch squim (with reference) successfully")
 
         elif config["name"] == "squim_no_ref":
-            if not use_gt:
-                logging.warning("Cannot use squim_ref because no gt audio is provided")
-                continue
 
             logging.info("Loadding squim metrics with reference")
             from versa import squim_metric_no_ref
@@ -451,21 +448,35 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "model": model,
             }
             logging.info("Initiate se_snr successfully")
-        
+
         elif config["name"] == "pam":
-           
+
             logging.info("Loading pam metric without reference...")
             from versa.utterance_metrics.pam import pam_metric, pam_model_setup
-            pam_model = pam_model_setup(
-                model_config=config,
-                use_gpu=use_gpu
-            )
+
+            pam_model = pam_model_setup(model_config=config, use_gpu=use_gpu)
             score_modules["pam"] = {
                 "module": pam_metric,
                 "args": {"model": pam_model},
             }
             logging.info("Initiate pam metric successfully.")
 
+        elif config["name"] == "pysepm":
+            if not use_gt:
+                logging.warning("Cannot use pysepm because no gt audio is provided")
+                continue
+
+            logging.info("Loadding pysepm metrics with reference")
+            from versa import pysepm_metric
+
+            score_modules["pysepm"] = {
+                "module": pysepm_metric,
+                "args": {
+                    "frame_len": config.get("frame_len", 0.03),
+                    "overlap": config.get("overlap", 0.75),
+                },
+            }
+            logging.info("Initiate pysepm successfully")
 
     return score_modules
 
@@ -522,7 +533,9 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
         elif key == "squim_no_ref":
             score = score_modules[key]["module"](gen_wav, gen_sr)
         elif key == "nomad":
-            score = score_modules[key]["module"](score_modules[key]["model"], gen_wav, gt_wav, gen_sr)
+            score = score_modules[key]["module"](
+                score_modules[key]["model"], gen_wav, gt_wav, gen_sr
+            )
         elif key == "espnet_wer" or key == "owsm_wer" or key == "whisper_wer":
             score = score_modules[key]["module"](
                 score_modules[key]["args"],
@@ -550,6 +563,9 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, fs=gen_sr
             )
+        elif key == "pysepm":
+            score = score_modules[key]["module"](gen_wav, gt_wav, fs=gen_sr)
+
         else:
             raise NotImplementedError(f"Not supported {key}")
 
