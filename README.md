@@ -14,17 +14,16 @@ git clone https://github.com/shinjiwlab/versa.git
 cd versa
 pip install .
 ```
-or
-```
-pip install git+https://github.com/shinjiwlab/versa.git
-```
 
 As for collection purposes, VERSA instead of re-distributing the model, we try to align as much to the original API provided by the algorithm developer. Therefore, we have many dependencies. We try to include as many as default, but there are cases where the toolkit needs specific installation requirements. Please refer to our [list-of-metric section](https://github.com/shinjiwlab/versa?tab=readme-ov-file#list-of-metrics) for more details on whether the metrics are automatically included or not.  If not, we provide an installation guide or installers in `tools`.
 
 
 ## Quick test
 ```
-python versa/test/test_script.py
+python versa/test/test_general.py
+
+# test metrics with additional installation
+python versa/test/test_{metric}.py
 ```
 
 ## Usage
@@ -33,21 +32,21 @@ Simple usage case for a few samples.
 ```
 # direct usage
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/general.yaml \
     --gt test/test_samples/test1 \
     --pred test/test_samples/test2 \
     --output_file test_result
 
 # with scp-style input
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/general.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result
 
 # with kaldi-ark style
 python versa/bin/scorer.py \
-    --score_config egs/speech.yaml \
+    --score_config egs/general.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result \
@@ -89,53 +88,59 @@ python scripts/show_result.py <score_dir>/utt_result.gpu.txt
 
 ```
 
-Access `egs/*.yaml` for different config for differnt setups.
+Access `egs/*.yaml` for different configs for different setups.
 
 ## List of Metrics
 
-We include [ ] and [x] to mark if the metirc is auto-installed in versa. 
+We include x mark if the metric is auto-installed in versa. 
 
-|Number| Metric Name  (Auto-Install)  | Key in config | Key in report |  Code Source                                                                                                     | References                                                                                       |
-|-|------------------|---------------|---------------|-----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| 1 | Mel Cepstral Distortion (MCD) [x]  | mcd_f0 | mcd | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel2/3220/9154/00407206.pdf) |
-| 2 | F0 Correlation [x]  | mcd_f0 | f0_corr | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf) |
-| 3 | F0 Root Mean Square Error  [x] | mcd_f0 | f0_rmse | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf) |
-| 4 | Signal-to-interference  Ratio (SIR) [x]  | signal_metric | sir | [espnet](https://github.com/espnet/espnet) | - |
-| 5 | Signal-to-artifact Ratio (SAR) [x]  | signal_metric | sar | [espnet](https://github.com/espnet/espnet) | - |
-| 6 | Signal-to-distortion Ratio (SDR) [x]  | signal_metric | sdr | [espnet](https://github.com/espnet/espnet) | - |
-| 7 | Convolutional scale-invariant signal-to-distortion ratio (CI-SDR) [x]  | signal_metric | ci-sdr | [ci_sdr](https://github.com/fgnt/ci_sdr) | [paper](https://arxiv.org/abs/2011.15003) |
-| 8 | Scale-invariant signal-to-noise ratio (SI-SNR) [x]  | signal_metric | si-snr | [espnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/1711.00541) |
-| 9 | Perceptual Evaluation of Speech Quality (PESQ) [x]  | pesq | pesq | [pesq](https://pypi.org/project/pesq/) | [paper](https://ieeexplore.ieee.org/document/941023) |
-| 10 | Short-Time Objective Intelligibility (STOI) [x]  | stoi | stoi | [pystoi](https://github.com/mpariente/pystoi) | [paper](https://ieeexplore.ieee.org/document/5495701) |
-| 11 | Speech BERT Score [x]  | discrete_speech | speech_bert | [discrete speech metric](https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics) | [paper](https://arxiv.org/abs/2401.16812) |
-| 12 | Discrete Speech BLEU Score [x]  | discrete_speech | speech_belu | [discrete speech metric](https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics) | [paper](https://arxiv.org/abs/2401.16812) |
-| 13 | Discrete Speech Token Edit Distance [x]  | discrete_speech | speech_token_distance | [discrete speech metric](https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics) | [paper](https://arxiv.org/abs/2401.16812) |
-| 14 | UTokyo-SaruLab System for VoiceMOS Challenge 2022 (UTMOS) [x]  | pseudo_mos | utmos | [speechmos](https://github.com/tarepan/SpeechMOS) | [paper](https://arxiv.org/abs/2204.02152) |
-| 15 | Deep Noise Suppression MOS Score of P.835 (DNSMOS) [x]  | pseudo_mos | dnsmos_overall | [speechmos (MS)](https://pypi.org/project/speechmos/) | [paper](https://arxiv.org/abs/2110.01763) |
-| 16 | Deep Noise Suppression MOS Score of P.808 (DNSMOS) [x]  | pseudo_mos | dnsmos_p808 | [speechmos (MS)](https://pypi.org/project/speechmos/) | [paper](https://arxiv.org/abs/2005.08138) |
-| 17 | Packet Loss Concealment-related MOS Score (PLCMOS) [x]  | pseudo_mos | plcmos | [speechmos (MS)](https://pypi.org/project/speechmos/) | [paper](https://arxiv.org/abs/2305.15127)|
-| 18 | Virtual Speech Quality Objective Listener (VISQOL) [ ]  | visqol | visqol | [google-visqol](https://github.com/google/visqol) | [paper](https://arxiv.org/abs/2004.09584) |
-| 19 | Speaker Embedding Similarity [x]  | speaker | spk_similarity | [espnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/2401.17230) |
-| 20 | PESQ in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_pesq | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
-| 21 | STOI in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_stoi | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
-| 22 | SI-SDR in TorchAudio-Squim [x]  | squim_no_ref | torch_squim_si_sdr | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
-| 23 | MOS in TorchAudio-Squim [x]  | squim_ref | torch_squim_mos |[torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
-| 24 | Singing voice MOS [x]  | singmos | singmos |[singmos](https://github.com/South-Twilight/SingMOS/tree/main) | [paper](https://arxiv.org/abs/2406.10911) |
-| 25 | Log-Weighted Mean Square Error [x] | log_wmse | log_wmse |[log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
-| 26 | Dynamic Time Warping Cost Metric [ ] | warpq | warpq |[WARP-Q](https://github.com/wjassim/WARP-Q) | [paper](https://arxiv.org/abs/2102.10449) |
-| 27 | Sheet SSQA MOS Models [x] | sheet_ssqa | sheet_ssqa |[Sheet](https://github.com/unilight/sheet/tree/main) | [paper](https://arxiv.org/abs/2411.03715) |
-| 28 | ESPnet Speech Recognition-based Error Rate [x] | espnet_wer | espnet_wer |[ESPnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/pdf/1804.00015) |
-| 29 | ESPnet-OWSM Speech Recognition-based Error Rate [x] | owsm_wer | owsm_wer |[ESPnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/2309.13876) |
-| 30 | OpenAI-Whisper Speech Recognition-based Error Rate [x] | whisper_wer | whisper_wer |[Whisper](https://github.com/openai/whisper) | [paper](https://arxiv.org/abs/2212.04356) |
-| 31 | UTMOSv2: UTokyo-SaruLab MOS Prediction System [ ] | utmosv2 | utmosv2 |[UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | [paper](https://arxiv.org/abs/2409.09305) |
-| 32 | Speech Contrastive Regression for Quality Assessment with reference (ScoreQ) [ ] |  scoreq_ref | scoreq_ref |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
-| 33 | Speech Contrastive Regression for Quality Assessment without reference (ScoreQ) [ ] | scoreq_nr | scoreq_nr |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
-| 34 | Emotion2vec similarity (emo2vec) [ ] | emo2vec_similarity | emotion_similarity | [emo2vec](https://github.com/ftshijt/emotion2vec/tree/main) | [paper](https://arxiv.org/abs/2312.15185) | 
-| 35 | Speech enhancement-based SI-SNR [x] | se_snr | se_si_snr | [ESPnet](https://github.com/espnet/espnet.git) | |
-| 36 | Speech enhancement-based CI-SDR [x] | se_snr | se_ci_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
-| 37 | Speech enhancement-based SAR [x] | se_snr | se_sar | [ESPnet](https://github.com/espnet/espnet.git) | |
-| 38 | Speech enhancement-based SDR [x] | se_snr | se_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
-| 39 | NOMAD: Unsupervised Learning of Perceptual Embeddings For Speech Enhancement and Non-Matching Reference Audio Quality Assessment [ ] |  nomad | nomad |[Nomad](https://github.com/shimhz/nomad/tree/main) | [paper](https://arxiv.org/abs/2309.16284) |
+|Number| Auto-Install | Metric Name  (Auto-Install)  | Key in config | Key in report |  Code Source                                                                                                     | References                                                                                       |
+|---|---|------------------|---------------|---------------|-----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| 1 | x | Mel Cepstral Distortion (MCD)  | mcd_f0 | mcd | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel2/3220/9154/00407206.pdf) |
+| 2 | x | F0 Correlation | mcd_f0 | f0_corr | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf) |
+| 3 | x | F0 Root Mean Square Error  | mcd_f0 | f0_rmse | [espnet](https://github.com/espnet/espnet) and [s3prl-vc](https://github.com/unilight/s3prl-vc) | [paper](https://ieeexplore.ieee.org/iel7/9040208/9052899/09053512.pdf) |
+| 4 | x | Signal-to-interference  Ratio (SIR)  | signal_metric | sir | [espnet](https://github.com/espnet/espnet) | - |
+| 5 | x | Signal-to-artifact Ratio (SAR)  | signal_metric | sar | [espnet](https://github.com/espnet/espnet) | - |
+| 6 | x | Signal-to-distortion Ratio (SDR)  | signal_metric | sdr | [espnet](https://github.com/espnet/espnet) | - |
+| 7 | x | Convolutional scale-invariant signal-to-distortion ratio (CI-SDR)  | signal_metric | ci-sdr | [ci_sdr](https://github.com/fgnt/ci_sdr) | [paper](https://arxiv.org/abs/2011.15003) |
+| 8 | x | Scale-invariant signal-to-noise ratio (SI-SNR)  | signal_metric | si-snr | [espnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/1711.00541) |
+| 9 | x | Perceptual Evaluation of Speech Quality (PESQ)  | pesq | pesq | [pesq](https://pypi.org/project/pesq/) | [paper](https://ieeexplore.ieee.org/document/941023) |
+| 10 | x | Short-Time Objective Intelligibility (STOI)  | stoi | stoi | [pystoi](https://github.com/mpariente/pystoi) | [paper](https://ieeexplore.ieee.org/document/5495701) |
+| 11 | x | Speech BERT Score  | discrete_speech | speech_bert | [discrete speech metric](https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics) | [paper](https://arxiv.org/abs/2401.16812) |
+| 12 | x | Discrete Speech BLEU Score  | discrete_speech | speech_belu | [discrete speech metric](https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics) | [paper](https://arxiv.org/abs/2401.16812) |
+| 13 | x | Discrete Speech Token Edit Distance  | discrete_speech | speech_token_distance | [discrete speech metric](https://github.com/Takaaki-Saeki/DiscreteSpeechMetrics) | [paper](https://arxiv.org/abs/2401.16812) |
+| 14 | x | UTokyo-SaruLab System for VoiceMOS Challenge 2022 (UTMOS)  | pseudo_mos | utmos | [speechmos](https://github.com/tarepan/SpeechMOS) | [paper](https://arxiv.org/abs/2204.02152) |
+| 15 | x | Deep Noise Suppression MOS Score of P.835 (DNSMOS)  | pseudo_mos | dnsmos_overall | [speechmos (MS)](https://pypi.org/project/speechmos/) | [paper](https://arxiv.org/abs/2110.01763) |
+| 16 | x | Deep Noise Suppression MOS Score of P.808 (DNSMOS)  | pseudo_mos | dnsmos_p808 | [speechmos (MS)](https://pypi.org/project/speechmos/) | [paper](https://arxiv.org/abs/2005.08138) |
+| 17 | x | Packet Loss Concealment-related MOS Score (PLCMOS)  | pseudo_mos | plcmos | [speechmos (MS)](https://pypi.org/project/speechmos/) | [paper](https://arxiv.org/abs/2305.15127)|
+| 18 |   | Virtual Speech Quality Objective Listener (VISQOL)  | visqol | visqol | [google-visqol](https://github.com/google/visqol) | [paper](https://arxiv.org/abs/2004.09584) |
+| 19 | x | Speaker Embedding Similarity  | speaker | spk_similarity | [espnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/2401.17230) |
+| 20 | x | PESQ in TorchAudio-Squim  | squim_no_ref | torch_squim_pesq | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
+| 21 | x | STOI in TorchAudio-Squim  | squim_no_ref | torch_squim_stoi | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
+| 22 | x | SI-SDR in TorchAudio-Squim  | squim_no_ref | torch_squim_si_sdr | [torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
+| 23 | x | MOS in TorchAudio-Squim  | squim_ref | torch_squim_mos |[torch_squim](https://pytorch.org/audio/main/tutorials/squim_tutorial.html) | [paper](https://arxiv.org/abs/2304.01448) |
+| 24 | x | Singing voice MOS  | singmos | singmos |[singmos](https://github.com/South-Twilight/SingMOS/tree/main) | [paper](https://arxiv.org/abs/2406.10911) |
+| 25 | x | Log-Weighted Mean Square Error | log_wmse | log_wmse |[log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
+| 26 |   | Dynamic Time Warping Cost Metric | warpq | warpq |[WARP-Q](https://github.com/wjassim/WARP-Q) | [paper](https://arxiv.org/abs/2102.10449) |
+| 27 | x | Sheet SSQA MOS Models | sheet_ssqa | sheet_ssqa |[Sheet](https://github.com/unilight/sheet/tree/main) | [paper](https://arxiv.org/abs/2411.03715) |
+| 28 | x | ESPnet Speech Recognition-based Error Rate | espnet_wer | espnet_wer |[ESPnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/pdf/1804.00015) |
+| 29 | x | ESPnet-OWSM Speech Recognition-based Error Rate | owsm_wer | owsm_wer |[ESPnet](https://github.com/espnet/espnet) | [paper](https://arxiv.org/abs/2309.13876) |
+| 30 | x | OpenAI-Whisper Speech Recognition-based Error Rate | whisper_wer | whisper_wer |[Whisper](https://github.com/openai/whisper) | [paper](https://arxiv.org/abs/2212.04356) |
+| 31 |   | UTMOSv2: UTokyo-SaruLab MOS Prediction System | utmosv2 | utmosv2 |[UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | [paper](https://arxiv.org/abs/2409.09305) |
+| 32 |   | Speech Contrastive Regression for Quality Assessment with reference (ScoreQ) |  scoreq_ref | scoreq_ref |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
+| 33 |   | Speech Contrastive Regression for Quality Assessment without reference (ScoreQ) | scoreq_nr | scoreq_nr |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
+| 34 |   | Emotion2vec similarity (emo2vec) | emo2vec_similarity | emotion_similarity | [emo2vec](https://github.com/ftshijt/emotion2vec/tree/main) | [paper](https://arxiv.org/abs/2312.15185) | 
+| 35 | x | Speech enhancement-based SI-SNR | se_snr | se_si_snr | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 36 | x | Speech enhancement-based CI-SDR | se_snr | se_ci_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 37 | x | Speech enhancement-based SAR | se_snr | se_sar | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 38 | x | Speech enhancement-based SDR | se_snr | se_sdr | [ESPnet](https://github.com/espnet/espnet.git) | |
+| 39 |   | NOMAD: Unsupervised Learning of Perceptual Embeddings For Speech Enhancement and Non-Matching Reference Audio Quality Assessment |  nomad | nomad |[Nomad](https://github.com/shimhz/nomad/tree/main) | [paper](https://arxiv.org/abs/2309.16284) |
+| 40 |   | Frechet Audio Distance (FAD) | fad | fad | [fadtk](https://github.com/microsoft/fadtk) | [paper](https://arxiv.org/abs/1812.08466) |
+| 41 |   | Contrastive Language-Audio Pretraining Score (CLAP Score) | clap_score | clap_score | [fadtk](https://github.com/gudgud96/frechet-audio-distance) | [paper](https://arxiv.org/abs/2301.12661) |
+| 42 |   | Audio Density and Coverage Score | audio_density_coverage | audio_density_coverage | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2002.09797) |
+| 43 |   | Accompaniment Prompt Adherence (APA) | apa | apa | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2404.00775) |
+| 44 |   | Kullback-Leibler Divergence on Embedding Distribution | kl_embedding | kl_embedding | [Stability-AI](https://github.com/Stability-AI/stable-audio-metrics) |  |
+| 45 | x | PAM: Prompting Audio-Language Models for Audio Quality Assessment | pam | pam | [PAM](https://github.com/soham97/PAM/tree/main) | [Paper](https://arxiv.org/pdf/2402.00282)|
 | A few more in verifying/progresss|
 
 
@@ -180,6 +185,8 @@ At this step, the major implementation has been done and we mainly focus on the 
 For Docs, please add your metrics to the `README.md` (List of Metrics Section). If the metrics need external tools from installers at `tools`, please include that with the `[ ]` mark in the first field (column).
 
 For Tests, please add the local test functions at the corresponding metrics scripts temporarily (we will enable CI test in later stages).
+- For metrics included in the default setup, you can add the test metric value in `test/test_general.py`
+- For metrics not included in the default installation, you can add the test function in `test/test_{metric_name}.py`
 
 For Examples, please put a separate `yaml` style configuration file in `egs/separate_metrics` following other examples.
 
