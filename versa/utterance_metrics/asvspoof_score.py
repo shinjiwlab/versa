@@ -11,16 +11,13 @@
 # Please refer to https://github.com/clovaai/aasist for more details
 
 
-## cloning the repo into the checkpoint folder
-## git clone git@github.com:clovaai/aasist checkpoints/aasist
-
 import os
 import json
 import numpy as np
 import librosa
 import torch
 import sys
-sys.path.append("./checkpoints/aasist") # TODO: this need to be changed, currently a naive way to install aasist
+sys.path.append("./checkpoints/aasist") 
 from models.AASIST import Model as AASIST
 
 
@@ -38,7 +35,7 @@ def deepfake_detection_model_setup(
             model.load_state_dict(torch.load(model_path, map_location=device))
     else:
         if model_tag == "default":
-            model_root = "./checkpoints/aasist" # TODO: may need change
+            model_root = "./checkpoints/aasist" 
             model_config = os.path.join(model_root, "config/AASIST.conf")
             model_path = os.path.join(model_root, "models/weights/AASIST.pth")
 
