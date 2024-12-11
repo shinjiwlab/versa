@@ -6,3 +6,4 @@
 . ./install_warpq.sh
 . ./install_scoreq.sh
 . ./install_nomad.sh
+. ./install_pysepm.sh
