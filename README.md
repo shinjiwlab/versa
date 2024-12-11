@@ -141,6 +141,7 @@ We include x mark if the metric is auto-installed in versa.
 | 43 |   | Accompaniment Prompt Adherence (APA) | apa | apa | [Sony-audio-metrics](https://github.com/SonyCSLParis/audio-metrics) | [paper](https://arxiv.org/abs/2404.00775) |
 | 44 |   | Kullback-Leibler Divergence on Embedding Distribution | kl_embedding | kl_embedding | [Stability-AI](https://github.com/Stability-AI/stable-audio-metrics) |  |
 | 45 | x | PAM: Prompting Audio-Language Models for Audio Quality Assessment | pam | pam | [PAM](https://github.com/soham97/PAM/tree/main) | [Paper](https://arxiv.org/pdf/2402.00282)|
+| 46 | x | AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks | asvspoof_score | asvspoof_score | [AASIST](https://github.com/clovaai/aasist/tree/main) | [Paper](https://ieeexplore.ieee.org/document/9747766)|
 | A few more in verifying/progresss|
 
 
