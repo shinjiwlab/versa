@@ -1,0 +1,11 @@
+# codec example yaml config
+
+# pysepm related metrics
+# -- pysepm_fwsegsnr: frequency-weighted segmental SNR
+# -- pysepm_llr: Log likelihood ratio
+# -- pysepm_wss: weighted spectral slope
+# -- pysepm_cd: cepstral distance objective speech quality measure
+# -- pysepm_Csig, pysepm_Cbak, pysepm_Covl: composite objective speech quality
+# -- pysepm_csii_high, pysepm_csii_mid, pysepm_csii_low: coherence and speech intelligibility index 
+# -- pysepm_ncm: normalized-covariance measure
+- name: pysepm
