@@ -1,0 +1,9 @@
+# Speech Enhancement-based Metrics
+# model tag can be any ESPnet-SE huggingface repo
+# -- se_sdr: the SDR from a reference speech enhancement model
+# -- se_sar: the SAR from a reference speech enhancement model
+# -- se_ci_sdr: the CI-SDR from a reference speech enhancement model
+# -- se_si_snr: the SI-SNR from a rerference speech enhancement model
+- name: se_snr
+  model_tag: default
+
