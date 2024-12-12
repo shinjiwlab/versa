@@ -478,6 +478,23 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             }
             logging.info("Initiate pysepm successfully")
 
+        elif config["name"] == "srmr":
+            logging.info("Loadding srmr metrics with reference")
+            from versa import srmr_metric
+
+            score_modules["srmr"] = {
+                "module": srmr_metric,
+                "args": {
+                    "n_cochlear_filters": config.get("n_cochlear_filters", 23),
+                    "low_freq": config.get("low_freq", 125),
+                    "min_cf": config.get("min_cf", 128),
+                    "max_cf": config.get("max_cf", 128),
+                    "fast": config.get("fast", True),
+                    "norm": config.get("norm", False),
+                },
+            }
+            logging.info("Initiate srmr successfully")
+
     return score_modules
 
 
@@ -565,6 +582,9 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             )
         elif key == "pysepm":
             score = score_modules[key]["module"](gen_wav, gt_wav, fs=gen_sr)
+
+        elif key == "srmr":
+            score = score_modules[key]["module"](gen_wav, fs=gen_sr)
 
         else:
             raise NotImplementedError(f"Not supported {key}")
