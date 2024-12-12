@@ -7,3 +7,4 @@
 . ./install_scoreq.sh
 . ./install_nomad.sh
 . ./install_pysepm.sh
+. ./install_srmr.sh
