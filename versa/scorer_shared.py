@@ -61,7 +61,11 @@ def audio_loader_setup(audio, io):
 
 
 def check_all_same(array):
-    return np.all(array == array[0])
+    try:
+        return np.all(array == array[0])
+    except IndexError:
+        logging.warning("Detect an empty audio")
+        return True
 
 
 def wav_normalize(wave_array):
@@ -97,6 +101,10 @@ def check_minimum_length(length, key_info):
     if "sheet" in key_info:
         # NOTE(jiatong): check https://github.com/unilight/sheet/blob/main/hubconf.py#L13-L15
         if length < 0.065:
+            return False
+    if "squim_ref" in key_info or "squim_no_ref" in key_info:
+        # NOTE(jiatong): a fix related to kernel size
+        if length < 0.1:
             return False
     return True
 

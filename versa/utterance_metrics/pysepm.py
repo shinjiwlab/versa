@@ -11,9 +11,7 @@ try:
         "Using the pysepm package for evaluation"
     )  # Log a warning if pysepm is successfully imported
 except ImportError:
-    raise ImportError(
-        "pysepm is not installed. Please use `tools/install_pysepm.sh` to install"  # Error message if pysepm is not installed
-    )
+    logging.warning("pysepm is not installed. Please use `tools/install_pysepm.sh` to install")  # Error message if pysepm is not installed
 
 
 def fwsegsnr(pred_x, gt_x, fs, frame_len=0.03, overlap=0.75):

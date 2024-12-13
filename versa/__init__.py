@@ -14,7 +14,7 @@ except ImportError:
     )
 except RuntimeError:
     logging.warning(
-        "Issues detected in discrete speech metrics, please double check the environment."
+       "Issues detected in discrete speech metrics, please double check the environment."
     )
 
 from versa.utterance_metrics.pseudo_mos import pseudo_mos_metric, pseudo_mos_setup
