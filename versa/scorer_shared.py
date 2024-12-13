@@ -465,6 +465,21 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": {"model": pam_model},
             }
             logging.info("Initiate pam metric successfully.")
+        elif config["name"] == "vad":
+            logging.info("Loading vad metric without reference...")
+            from versa.utterance_metrics.vad import vad_metric, vad_model_setup
+            vad_model = vad_model_setup(
+                threshold=config.get("threshold", 0.5),
+                min_speech_duration_ms=config.get("min_speech_duration_ms", 250),
+                max_speech_duration_s=config.get("max_speech_duration_s", float('inf')),
+                min_silence_duration_ms=config.get("min_silence_duration_ms", 100),
+                speech_pad_ms=config.get("speech_pad_ms", 30),
+            )
+            score_modules["vad"] = {
+                "module": vad_metric,
+                "args": vad_model,
+            }
+            logging.info("Initiate vad metric successfully.")
 
 
     return score_modules
@@ -549,6 +564,12 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
         elif key == "pam":
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, fs=gen_sr
+            )
+        elif key == "vad":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"],
+                gen_wav,
+                gen_sr,
             )
         else:
             raise NotImplementedError(f"Not supported {key}")
@@ -651,7 +672,7 @@ def list_scoring(
 def load_summary(score_info):
     summary = {}
     for key in score_info[0].keys():
-        if "ref_text" in key or "hyp_text" in key or key == "key":
+        if "ref_text" in key or "hyp_text" in key or "vad" in key or key == "key":
             # NOTE(jiatong): skip text cases
             continue
         summary[key] = sum([score[key] for score in score_info])
