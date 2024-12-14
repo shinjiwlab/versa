@@ -15,7 +15,6 @@ from urllib.request import urlretrieve
 import torch.nn as nn
 
 sys.path.append("../../")
-sys.path.append("./checkpoints/Noresqa")
 
 try:
     import fairseq
@@ -38,8 +37,6 @@ except ImportError:
     )
     Noresqa = None
 
-sys.path.append("./checkpoints/Noresqa")
-
 
 def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
     if use_gpu:
@@ -49,12 +46,14 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
 
     if model_tag == "default":
 
-        if not os.path.isdir("./checkpoints/Noresqa"):
+        if not os.path.isdir("./checkpoints"):
             print("Creating checkpoints directory")
-            os.makedirs("./checkpoints/Noresqa")
+            os.makedirs("./checkpoints")
+
+        sys.path.append("./checkpoints")
 
         url_w2v = "https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_small.pt"
-        w2v_path = "./checkpoints/Noresqa/wav2vec_small.pt"
+        w2v_path = "./checkpoints/wav2vec_small.pt"
         if not os.path.isfile(w2v_path):
             print("Downloading wav2vec 2.0 started")
             urlretrieve(url_w2v, w2v_path)
