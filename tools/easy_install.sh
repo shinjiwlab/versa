@@ -8,3 +8,4 @@
 . ./install_nomad.sh
 . ./install_asvspoof.sh
 . ./install_pysepm.sh
+. ./install_srmr.sh

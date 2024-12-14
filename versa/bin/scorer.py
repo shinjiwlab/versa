@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env python3
 
 # Copyright 2024 Jiatong Shi
@@ -154,20 +156,20 @@ def main():
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 
-    # corpus_score_modules = load_corpus_modules(
-    #     score_config,
-    #     use_gpu=args.use_gpu,
-    #     cache_folder=args.cache_folder,
-    # )
-    # corpus_score_info = corpus_scoring(
-    #     gen_files,
-    #     corpus_score_modules,
-    #     gt_files,
-    #     text_info,
-    #     output_file=args.output_file + ".corpus",
-    #     io=args.io,
-    # )
-    # logging.info("Corpus Summary: {}".format(corpus_score_info))
+    corpus_score_modules = load_corpus_modules(
+        score_config,
+        use_gpu=args.use_gpu,
+        cache_folder=args.cache_folder,
+        io=args.io,
+    )
+    corpus_score_info = corpus_scoring(
+        gen_files,
+        corpus_score_modules,
+        gt_files,
+        text_info,
+        output_file=args.output_file + ".corpus",
+    )
+    logging.info("Corpus Summary: {}".format(corpus_score_info))
 
 
 if __name__ == "__main__":

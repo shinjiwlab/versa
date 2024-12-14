@@ -460,6 +460,21 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": {"model": pam_model},
             }
             logging.info("Initiate pam metric successfully.")
+        elif config["name"] == "vad":
+            logging.info("Loading vad metric without reference...")
+            from versa.utterance_metrics.vad import vad_metric, vad_model_setup
+            vad_model = vad_model_setup(
+                threshold=config.get("threshold", 0.5),
+                min_speech_duration_ms=config.get("min_speech_duration_ms", 250),
+                max_speech_duration_s=config.get("max_speech_duration_s", float('inf')),
+                min_silence_duration_ms=config.get("min_silence_duration_ms", 100),
+                speech_pad_ms=config.get("speech_pad_ms", 30),
+            )
+            score_modules["vad"] = {
+                "module": vad_metric,
+                "args": vad_model,
+            }
+            logging.info("Initiate vad metric successfully.")
 
         elif config["name"] == "asvspoof_score":
            
@@ -493,6 +508,23 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
         
         else:
             print(config["name"])
+
+        elif config["name"] == "srmr":
+            logging.info("Loadding srmr metrics with reference")
+            from versa import srmr_metric
+
+            score_modules["srmr"] = {
+                "module": srmr_metric,
+                "args": {
+                    "n_cochlear_filters": config.get("n_cochlear_filters", 23),
+                    "low_freq": config.get("low_freq", 125),
+                    "min_cf": config.get("min_cf", 128),
+                    "max_cf": config.get("max_cf", 128),
+                    "fast": config.get("fast", True),
+                    "norm": config.get("norm", False),
+                },
+            }
+            logging.info("Initiate srmr successfully")
 
     return score_modules
 
@@ -583,8 +615,17 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, fs=gen_sr
             )
+        elif key == "vad":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"],
+                gen_wav,
+                gen_sr,
+            )
         elif key == "pysepm":
             score = score_modules[key]["module"](gen_wav, gt_wav, fs=gen_sr)
+
+        elif key == "srmr":
+            score = score_modules[key]["module"](gen_wav, fs=gen_sr)
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -686,7 +727,7 @@ def list_scoring(
 def load_summary(score_info):
     summary = {}
     for key in score_info[0].keys():
-        if "ref_text" in key or "hyp_text" in key or key == "key":
+        if "ref_text" in key or "hyp_text" in key or "vad" in key or key == "key":
             # NOTE(jiatong): skip text cases
             continue
         summary[key] = sum([score[key] for score in score_info])
@@ -697,18 +738,20 @@ def load_summary(score_info):
 
 
 def load_corpus_modules(
-    score_config, cache_forlder=".cache", use_gpu=False, io="kaldi"
+    score_config, cache_folder=".cache", use_gpu=False, io="kaldi"
 ):
     score_modules = {}
     for config in score_config:
         if config["name"] == "fad":
             logging.info("Loading FAD evaluation with specific models...")
+            # TODO(jiatong): fad will automatically use cuda if detected
+            # need to sync to the same space
             from versa import fad_scoring, fad_setup
 
             fad_info = fad_setup(
-                fad_embedding=config.get("model", "default"),
-                baseline=config.get("baseline_audio", "default"),
-                cache_dir=config.get("cache_dir"),
+                fad_embedding=config.get("fad_embedding", "default"),
+                baseline=config.get("baseline_audio", "missing"),
+                cache_dir=config.get("cache_dir", cache_folder),
                 use_inf=config.get("use_inf", False),
                 io=io,
             )
@@ -732,6 +775,23 @@ def corpus_scoring(
     base_files=None,
     text_info=None,
     output_file=None,
-    io="kaldi",
 ):
-    pass
+    score_info = {}
+    for key in score_modules.keys():
+        if key.startswith("fad"):
+            fad_info = score_modules[key]["args"]
+            if base_files is not None:
+                fad_info["baseline"] = base_files
+            elif fad_info["baseline"] == "missing":
+                raise ValueError("Baseline audio not provided for FAD")
+            score_result = score_modules[key]["module"](
+                gen_files, score_modules[key]["args"]
+            )
+        elif key.startswith("kld"):
+            raise NotImplementedError("KLD not implemented")
+        score_info.update(score_result)
+    
+    if output_file is not None:
+        with open(output_file, "w") as f:
+            yaml.dump(score_info, f)
+    return score_info
