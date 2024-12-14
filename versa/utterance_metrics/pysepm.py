@@ -7,11 +7,14 @@ import numpy as np
 try:
     import pysepm  # Import the pysepm package for speech quality metrics
 
-    logging.warning(
+    logging.info(
         "Using the pysepm package for evaluation"
     )  # Log a warning if pysepm is successfully imported
 except ImportError:
-    logging.warning("pysepm is not installed. Please use `tools/install_pysepm.sh` to install")  # Error message if pysepm is not installed
+    logging.warning(
+        "pysepm is not installed. Please use `tools/install_pysepm.sh` to install"
+    )
+    pysepm = None
 
 
 def fwsegsnr(pred_x, gt_x, fs, frame_len=0.03, overlap=0.75):
@@ -162,6 +165,10 @@ def ncm(pred_x, gt_x, fs):
 
 
 def pysepm_metric(pred_x, gt_x, fs, frame_len=0.03, overlap=0.75):
+    if pysepm is None:
+        raise ImportError(
+              # Error message if pysepm is not installed
+        )
     fwsegsnr_score = fwsegsnr(pred_x, gt_x, fs, frame_len, overlap)
     llr_score = llr(pred_x, gt_x, fs, frame_len, overlap)
     wss_score = wss(pred_x, gt_x, fs, frame_len, overlap)

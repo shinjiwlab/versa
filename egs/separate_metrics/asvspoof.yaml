@@ -1,0 +1,4 @@
+# asvspoof related metrics
+# -- asvspoof_score: evaluate how the generated speech is likely to be classifiied by a deepfake classifier
+# We use a state-of-the-art classifier AASIST trained on ASVspoof
+- name: asvspoof_score
