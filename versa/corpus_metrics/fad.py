@@ -10,7 +10,7 @@ import librosa
 import numpy as np
 import torch
 from fadtk.fad_versa import FrechetAudioDistance
-from fadtk.model_loader import get_all_models
+from fadtk.model_loader import get_model
 from tqdm import tqdm
 
 from versa.scorer_shared import audio_loader_setup
@@ -25,10 +25,7 @@ def fad_setup(
 ):
 
     # get model
-    models = {m.name: m for m in get_all_models()}
-    if fad_embedding == "default":
-        fad_embedding = "clap-laion-audio"
-    model = models[fad_embedding]
+    model = get_model(fad_embedding)
 
     # setup fad object
     fad = FrechetAudioDistance(ml=model, load_model=True)
@@ -39,10 +36,11 @@ def fad_setup(
         "cache_dir": cache_dir,
         "use_inf": use_inf,
         "io": io,
+        "embedding": fad_embedding,
     }
 
 
-def fad_scoring(pred_x, fad_info):
+def fad_scoring(pred_x, fad_info, key_info="fad"):
 
     cache_dir = fad_info["cache_dir"]
 
@@ -71,10 +69,10 @@ def fad_scoring(pred_x, fad_info):
     # 2. Calculate FAD
     if use_inf:
         score = fad_info["module"].score_inf(baseline_files, eval_files, cache_dir)
-        return {"fad_overall": score.score, "fad_r2": score.r2}
+        return {"{}_overall".format(key_info): score.score, "{}_r2".format(key_info): score.r2}
     else:
         score = fad_info["module"].score(baseline_files, eval_files, cache_dir)
-        return {"fad_overall": score}
+        return {"{}_overall".format(key_info): score}
 
 
 if __name__ == "__main__":

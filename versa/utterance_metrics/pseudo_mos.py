@@ -179,6 +179,9 @@ def pseudo_mos_metric(pred, fs, predictor_dict, predictor_fs, use_gpu=False):
                 pred_singmos = pred
             pred_tensor = torch.from_numpy(pred_singmos).unsqueeze(0)
             length_tensor = torch.tensor([pred_tensor.size(1)]).int()
+            if use_gpu:
+                pred_tensor = pred_tensor.to("cuda")
+                length_tensor = length_tensor.to("cuda")
             score = predictor_dict["singmos"](pred_tensor.float(), length_tensor)[
                 0
             ].item()
