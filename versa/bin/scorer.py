@@ -74,6 +74,11 @@ def get_parser() -> argparse.Namespace:
         type=int,
         help="the overall rank in the batch processing, used to specify GPU rank",
     )
+    parser.add_argument(
+        "--no_match",
+        action="store_true",
+        help="Do not match the groundtruth and generated files.",
+    )
     return parser
 
 
@@ -144,17 +149,18 @@ def main():
         use_gpu=args.use_gpu,
     )
 
-    assert len(score_config) > 0, "no scoring function is provided"
-
-    score_info = list_scoring(
-        gen_files,
-        score_modules,
-        gt_files,
-        text_info,
-        output_file=args.output_file,
-        io=args.io,
-    )
-    logging.info("Summary: {}".format(load_summary(score_info)))
+    if len(score_modules) > 0:
+        score_info = list_scoring(
+            gen_files,
+            score_modules,
+            gt_files,
+            text_info,
+            output_file=args.output_file,
+            io=args.io,
+        )
+        logging.info("Summary: {}".format(load_summary(score_info)))
+    else:
+        logging.info("No utterance-level scoring function is provided.")
 
     corpus_score_modules = load_corpus_modules(
         score_config,
@@ -162,15 +168,19 @@ def main():
         cache_folder=args.cache_folder,
         io=args.io,
     )
-    corpus_score_info = corpus_scoring(
-        gen_files,
-        corpus_score_modules,
-        gt_files,
-        text_info,
-        output_file=args.output_file + ".corpus",
-    )
-    logging.info("Corpus Summary: {}".format(corpus_score_info))
-
+    assert len(corpus_score_modules) > 0 or len(score_modules) > 0, "no scoring function is provided"
+    if len(corpus_score_modules) > 0:
+        corpus_score_info = corpus_scoring(
+            args.pred,
+            corpus_score_modules,
+            args.gt,
+            text_info,
+            output_file=args.output_file + ".corpus",
+        )
+        logging.info("Corpus Summary: {}".format(corpus_score_info))
+    else:
+        logging.info("No corpus-level scoring function is provided.")
+        return
 
 if __name__ == "__main__":
     main()
