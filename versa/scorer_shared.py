@@ -478,7 +478,9 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": {"model": deepfake_detection_model},
             }
             logging.info("Initiate asvspoof score metric successfully.")
-
+        
+        else:
+            print(config["name"])
 
     return score_modules
 
