@@ -495,6 +495,28 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             }
             logging.info("Initiate srmr successfully")
 
+        elif config["name"] == "noresqa":
+            if not use_gt:
+                logging.warning("Cannot use noresqa because no gt audio is provided")
+                continue
+
+            logging.info("Loadding noresqa metrics with reference")
+
+            from versa.utterance_metrics.noresqa import (
+                noresqa_metric,
+                noresqa_model_setup,
+            )
+
+            noresqa_model = noresqa_model_setup(use_gpu=use_gpu)
+            score_modules["noresqa"] = {
+                "module": noresqa_metric,
+                "args": {
+                    "metric_type": config.get("metric_type", 0),
+                    "model": noresqa_model,
+                },
+            }
+            logging.info("Initiate noresqa score metric successfully.")
+
     return score_modules
 
 

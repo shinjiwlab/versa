@@ -8,3 +8,4 @@
 . ./install_nomad.sh
 . ./install_pysepm.sh
 . ./install_srmr.sh
+. ./install_noresqa.sh
