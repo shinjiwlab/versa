@@ -146,10 +146,13 @@ We include x mark if the metric is auto-installed in versa.
 | 48 |  | Weighted Spectral Slope (WSS) | pysepm | pysepm_wss | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://ecs.utdallas.edu/loizou/speech/obj_paper_jan08.pdf)|
 | 49 |  | Cepstrum Distance Objective Speech Quality Measure (CD) | pysepm | pysepm_cd | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://ieeexplore.ieee.org/document/407206)|
 | 50 |  | Composite Objective Speech Quality (composite) | pysepm | pysepm_Csig, pysepm_Cbak, pysepm_Covl | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://ecs.utdallas.edu/loizou/speech/obj_paper_jan08.pdf)|
+| 51 |  | Coherence and speech intelligibility index (CSII) | pysepm | pysepm_csii_high, pysepm_csii_mid, pysepm_csii_low | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://www.researchgate.net/profile/James-Kates-2/publication/7842209_Coherence_and_the_speech_intelligibility_index/links/546f5dab0cf2d67fc0310f88/Coherence-and-the-speech-intelligibility-index.pdf)|
+| 52 |  | Normalized-covariance measure (NCM) | pysepm | pysepm_ncm | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC3037773/pdf/JASMAN-000128-003715_1.pdf)|
 | 51 |  | Coherence and Speech Intelligibility Index (CSII) | pysepm | pysepm_csii_high, pysepm_csii_mid, pysepm_csii_low | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://www.researchgate.net/profile/James-Kates-2/publication/7842209_Coherence_and_the_speech_intelligibility_index/links/546f5dab0cf2d67fc0310f88/Coherence-and-the-speech-intelligibility-index.pdf)|
 | 52 |  | Normalized-Covariance Measure (NCM) | pysepm | pysepm_ncm | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC3037773/pdf/JASMAN-000128-003715_1.pdf)|
 | 53 |  | Speech-to-Reverberation Modulation energy Ratio (SRMR) | srmr | srmr | [SRMRpy](https://github.com/shimhz/SRMRpy.git) | [Paper](http://www.individual.utoronto.ca/falkt/falk/pdf/FalkChan_TASLP2010.pdf)|
 | 54 |  | Voice Activity Detection (VAD) | vad | vad_info | [SileroVAD](https://github.com/snakers4/silero-vad) | |
+| 55 | x | AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks | asvspoof_score | asvspoof_score | [AASIST](https://github.com/clovaai/aasist/tree/main) | [Paper](https://ieeexplore.ieee.org/document/9747766)|
 | A few more in verifying/progresss|
 
 
