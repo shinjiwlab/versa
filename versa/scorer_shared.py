@@ -718,18 +718,20 @@ def load_summary(score_info):
 
 
 def load_corpus_modules(
-    score_config, cache_forlder=".cache", use_gpu=False, io="kaldi"
+    score_config, cache_folder=".cache", use_gpu=False, io="kaldi"
 ):
     score_modules = {}
     for config in score_config:
         if config["name"] == "fad":
             logging.info("Loading FAD evaluation with specific models...")
+            # TODO(jiatong): fad will automatically use cuda if detected
+            # need to sync to the same space
             from versa import fad_scoring, fad_setup
 
             fad_info = fad_setup(
-                fad_embedding=config.get("model", "default"),
-                baseline=config.get("baseline_audio", "default"),
-                cache_dir=config.get("cache_dir"),
+                fad_embedding=config.get("fad_embedding", "default"),
+                baseline=config.get("baseline_audio", "missing"),
+                cache_dir=config.get("cache_dir", cache_folder),
                 use_inf=config.get("use_inf", False),
                 io=io,
             )
@@ -753,6 +755,23 @@ def corpus_scoring(
     base_files=None,
     text_info=None,
     output_file=None,
-    io="kaldi",
 ):
-    pass
+    score_info = {}
+    for key in score_modules.keys():
+        if key.startswith("fad"):
+            fad_info = score_modules[key]["args"]
+            if base_files is not None:
+                fad_info["baseline"] = base_files
+            elif fad_info["baseline"] == "missing":
+                raise ValueError("Baseline audio not provided for FAD")
+            score_result = score_modules[key]["module"](
+                gen_files, score_modules[key]["args"]
+            )
+        elif key.startswith("kld"):
+            raise NotImplementedError("KLD not implemented")
+        score_info.update(score_result)
+    
+    if output_file is not None:
+        with open(output_file, "w") as f:
+            yaml.dump(score_info, f)
+    return score_info

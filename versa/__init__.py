@@ -55,3 +55,4 @@ from versa.utterance_metrics.squim import squim_metric, squim_metric_no_ref
 from versa.utterance_metrics.se_snr import se_snr, se_snr_setup
 from versa.utterance_metrics.pysepm import pysepm_metric
 from versa.utterance_metrics.srmr import srmr_metric
+from versa.corpus_metrics.fad import fad_scoring, fad_setup
