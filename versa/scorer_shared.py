@@ -476,6 +476,19 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             }
             logging.info("Initiate vad metric successfully.")
 
+        elif config["name"] == "asvspoof_score":
+           
+            logging.info("Loading asvspoof score metric without reference...")
+            from versa.utterance_metrics.asvspoof_score import asvspoof_metric, deepfake_detection_model_setup
+            deepfake_detection_model = deepfake_detection_model_setup(
+                use_gpu=use_gpu
+            )
+            score_modules["asvspoof_score"] = {
+                "module": asvspoof_metric,
+                "args": {"model": deepfake_detection_model},
+            }
+            logging.info("Initiate asvspoof score metric successfully.")
+
         elif config["name"] == "pysepm":
             if not use_gt:
                 logging.warning("Cannot use pysepm because no gt audio is provided")
@@ -492,6 +505,9 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 },
             }
             logging.info("Initiate pysepm successfully")
+        
+        else:
+            print(config["name"])
 
         elif config["name"] == "srmr":
             logging.info("Loadding srmr metrics with reference")
@@ -592,6 +608,10 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
                 score_modules[key]["model"], gen_wav, gen_sr
             )
         elif key == "pam":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["model"], gen_wav, fs=gen_sr
+            )
+        elif key == "asvspoof_score":
             score = score_modules[key]["module"](
                 score_modules[key]["args"]["model"], gen_wav, fs=gen_sr
             )
