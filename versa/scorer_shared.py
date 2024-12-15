@@ -796,6 +796,24 @@ def load_corpus_modules(
             logging.info(
                 "Initiate {} calculation evaluation successfully.".format(fad_key)
             )
+        elif config["name"] == "kid":
+            logging.info("Loading KID evaluation with specific models...")
+            from versa import kid_scoring, kid_setup
+            
+            kid_info = kid_setup(
+                model_tag=config.get("model_tag", "default"),
+                model_path=config.get("model_path", None),
+                model_config=config.get("model_config", None),
+                use_gpu=use_gpu,
+            )
+            kid_key = "kid_{}".format(config.get("model", "default"))
+            score_modules[kid_key] = {
+                "module": kid_scoring,
+                "args": kid_info,
+            }
+            logging.info(
+                "Initiate {} calculation evaluation successfully.".format(kid_key)
+            )
 
     return score_modules
 
@@ -816,10 +834,19 @@ def corpus_scoring(
             elif fad_info["baseline"] == "missing":
                 raise ValueError("Baseline audio not provided for FAD")
             score_result = score_modules[key]["module"](
-                gen_files, score_modules[key]["args"]
+                gen_files, fad_info
             )
         elif key.startswith("kld"):
-            raise NotImplementedError("KLD not implemented")
+            kid_info = score_modules[key]["args"]
+            if base_files is not None:
+                kid_info["baseline"] = base_files
+            elif kid_info["baseline"] == "missing":
+                raise ValueError("Baseline audio not provided for FAD")
+            score_result = score_modules[key]["module"](
+                gen_files, kid_info
+            )
+        else:
+            raise NotImplementedError("Not supported {}".format(key))
         score_info.update(score_result)
     
     if output_file is not None:

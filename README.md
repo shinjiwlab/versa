@@ -154,6 +154,7 @@ We include x mark if the metric is auto-installed in versa.
 | 54 |  | Voice Activity Detection (VAD) | vad | vad_info | [SileroVAD](https://github.com/snakers4/silero-vad) | |
 | 55 | x | AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks | asvspoof_score | asvspoof_score | [AASIST](https://github.com/clovaai/aasist/tree/main) | [Paper](https://ieeexplore.ieee.org/document/9747766)|
 | 56 |  | NORESQA : A Framework for Speech Quality Assessment using Non-Matching References | noresqa | noresqa | [Noresqa](https://github.com/shimhz/Noresqa.git) | [Paper](https://proceedings.neurips.cc/paper/2021/file/bc6d753857fe3dd4275dff707dedf329-Paper.pdf)|
+| 57 |  | KID : Kernel Distance Metric for Audio/Music Quality | [KID](https://github.com/SonyCSLParis/audio-metrics/tree/main) | [Paper](https://arxiv.org/abs/1812.08466)|
 | A few more in verifying/progresss|
 
 
