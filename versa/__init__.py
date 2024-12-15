@@ -60,3 +60,4 @@ from versa.utterance_metrics.se_snr import se_snr, se_snr_setup
 from versa.utterance_metrics.pysepm import pysepm_metric
 from versa.utterance_metrics.srmr import srmr_metric
 from versa.corpus_metrics.fad import fad_scoring, fad_setup
+from versa.utterance_metrics.noresqa import noresqa_model_setup, noresqa_metric

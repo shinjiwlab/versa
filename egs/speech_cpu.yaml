@@ -52,3 +52,8 @@
   max_cf: 128
   fast: True
   norm: False
+
+# noresqa related metrics
+# -- noresqa: non-matching reference based speech quality assessment
+- name: noresqa
+  metric_type: 1 #0: NORESQA-score, 1: NORESQA-MOS
