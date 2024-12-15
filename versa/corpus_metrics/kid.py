@@ -47,6 +47,8 @@ def kid_scoring(pred_x, kid_info, key_info="kid"):
     # 1. Calculate embedding files for each dataset
     logging.info("[KID] caching baseline embeddings...")
     baseline_files = audio_loader_setup(kid_info["baseline"], kid_info["io"])
+    if len(baseline_files) < 2:
+        raise ValueError("KID requires at least 2 files to compare.")
     for key in tqdm(baseline_files.keys()):
         kid_info["module"].cache_embedding_file(
             key, baseline_files[key], cache_dir + "/baseline"
@@ -55,6 +57,8 @@ def kid_scoring(pred_x, kid_info, key_info="kid"):
 
     logging.info("[KID] caching eval embeddings...")
     eval_files = audio_loader_setup(pred_x, kid_info["io"])
+    if len(eval_files) < 2:
+        raise ValueError("KID requires at least 2 files to compare.")
     for key in tqdm(eval_files.keys()):
         kid_info["module"].cache_embedding_file(
             key, eval_files[key], cache_dir + "/eval"
