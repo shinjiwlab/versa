@@ -157,4 +157,5 @@ We include x mark if the metric is auto-installed in versa.
 | A few more in verifying/progresss|
 
 
-
+## Acknowledgement
+We sincerely thank all the open-source implementations listed in https://github.com/shinjiwlab/versa/tree/main#list-of-metrics 
