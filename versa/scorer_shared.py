@@ -514,9 +514,6 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             }
             logging.info("Initiate pysepm successfully")
         
-        else:
-            print(config["name"])
-
         elif config["name"] == "srmr":
             logging.info("Loadding srmr metrics with reference")
             from versa import srmr_metric
