@@ -55,7 +55,7 @@ def fad_scoring(pred_x, fad_info, key_info="fad"):
 
     logging.info("[FAD] caching eval embeddings...")
     eval_files = audio_loader_setup(pred_x, fad_info["io"])
-    for key in tqdm(baseline_files.keys()):
+    for key in tqdm(eval_files.keys()):
         fad_info["module"].cache_embedding_file(
             key, eval_files[key], cache_dir + "/eval"
         )
