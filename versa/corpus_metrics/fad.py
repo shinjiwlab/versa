@@ -9,11 +9,17 @@ import kaldiio
 import librosa
 import numpy as np
 import torch
-from fadtk.fad_versa import FrechetAudioDistance
-from fadtk.model_loader import get_model
 from tqdm import tqdm
 
 from versa.scorer_shared import audio_loader_setup
+
+try:
+    from fadtk.fad_versa import FrechetAudioDistance
+    from fadtk.model_loader import get_model
+except:
+    FrechetAudioDistance = None
+    get_model = None
+    logging.warning("FADTK is not installed. Please install it following `tools/install_fadtk.sh`")
 
 
 def fad_setup(
@@ -23,7 +29,8 @@ def fad_setup(
     use_inf=True,
     io="kaldi",
 ):
-
+    if get_model is None or FrechetAudioDistance is None:
+        raise ModuleNotFoundError("FADTK is not installed. Please install it following `tools/install_fadtk.sh`")
     # get model
     model = get_model(fad_embedding)
 
