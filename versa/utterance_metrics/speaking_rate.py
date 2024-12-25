@@ -24,7 +24,7 @@ TARGET_FS = 16000
 CHUNK_SIZE = 30  # seconds
 
 
-def whisper_wer_setup(
+def speaking_rate_model_setup(
     model_tag="default", beam_size=5, text_cleaner="whisper_basic", use_gpu=True
 ):
     if model_tag == "default":
@@ -39,8 +39,8 @@ def whisper_wer_setup(
     wer_utils = {"model": model, "cleaner": textcleaner, "beam_size": beam_size}
     return wer_utils
 
-def whisper_word_rate(wer_utils, pred_x, cache_text, fs=16000):
-    """Calculate the word rate from ASR results.
+def speaking_rate_metric(wer_utils, pred_x, cache_text=None, fs=16000, use_char=False):
+    """Calculate the speaking rate from ASR results.
 
     Args:
         wer_utils (dict): a utility dict for WER calculation.
@@ -49,6 +49,7 @@ def whisper_word_rate(wer_utils, pred_x, cache_text, fs=16000):
         pred_x (np.ndarray): test signal (time,)
         cache_text (string): transcription from cache (previous modules)
         fs (int): sampling rate in Hz
+        use_char (bool): whether to use character-level speaking rate
     Returns:
         ret (dict): ditionary containing the speaking word rate
     """
@@ -60,11 +61,16 @@ def whisper_word_rate(wer_utils, pred_x, cache_text, fs=16000):
             fs = TARGET_FS
         with torch.no_grad():
             inf_text = wer_utils["model"].transcribe(
-                pred_x, fs, chunk_size=CHUNK_SIZE, beam_size=wer_utils["beam_size"]
-            )
-    return {"speaking_word_rate": len(inf_text.split()) / (len(pred_x) / fs)}
+                torch.tensor(pred_x).float(), beam_size=wer_utils["beam_size"]
+            )["text"]
+
+    if use_char:
+        length = len(inf_text)
+    else:
+        length = len(inf_text.split())
+    return {"speaking_word_rate": length / (len(pred_x) / fs)}
 
 if __name__ == "__main__":
     a = np.random.random(16000)
-    wer_utils = whisper_wer_setup()
-    print("metrics: {}".format(whisper_word_rate(wer_utils, a, 16000)))
+    wer_utils = speaking_rate_model_setup()
+    print("metrics: {}".format(speaking_rate_metric(wer_utils, a, None, 16000)))

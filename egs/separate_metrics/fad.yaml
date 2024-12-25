@@ -1,6 +1,25 @@
 # Frechet Audio Distance (fad) metrics
 # --fad_overall: fad_score
 # --fad_r2: r2 estimation for fad_inf
+# Available embedding options:
+#   - default: default embedding ((clap-laion-audio))
+#   - clap-2023: clap embedding (clap--2023)
+#   - clap-laion-audio: clap-laion-audio embedding (clap-laion-audio)
+#   - clap-laion-music: clap-laion-music embedding (clap-laion-music)
+#   - vggish: vggish embedding (vggish)
+#   - mert-{layer_num}: mert embedding (mert-{layer_num}, layer_num: 1-12)
+#   - wav2vec2-base-{layer_num}: wav2vec2-base embedding (wav2vec2-base-{layer_num}, layer_num: 1-12)
+#   - wav2vec2-large-{layer_num}: wav2vec2-large embedding (wav2vec2-large-{layer_num}, layer_num: 1-24)
+#   - hubert-base-{layer_num}: hubert-base embedding (hubert-base-{layer_num}, layer_num: 1-12)
+#   - hubert-large-{layer_num}: hubert-large embedding (hubert-large-{layer_num}, layer_num: 1-24)
+#   - wavlm-base-{layer_num}: wavlm-base embedding (wavlm-base-{layer_num}, layer_num: 1-12)
+#   - wavlm-large-{layer_num}: wavlm-large embedding (wavlm-large-{layer_num}, layer_num: 1-24)
+#   - whisper-{size}: whisper embedding (whisper-{size}, size: tiny, small, base, medium, large)
+#   - dac: dac embedding (dac)
+#   - encodec-24k: encodec embedding (encodec-24khz)
+#   - encodec-48k: encodec embedding (encodec-48khz)
+#   - cdpam-acoustic: cdpam embedding (cdpam-acoustic)
+#   - cdpam-music: cdpam embedding (cdpam-music)
 - name: fad
   fad_embedding: default
   cache_dir: versa_cache/fad

@@ -357,14 +357,20 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Loadding whisper_wer metric with reference text")
             from versa import whisper_levenshtein_metric, whisper_wer_setup
 
-            score_modules["whisper_wer"] = {
-                "module": whisper_levenshtein_metric,
-                "args": whisper_wer_setup(
+            # Load whisper model if it is already loaded
+            if "speaking_rate" or "asr_matching" in score_modules.keys():
+                args_cache = score_modules["speaking_rate"]["args"]
+            else:
+                args_cache = whisper_wer_setup(
                     model_tag=config.get("model_tag", "default"),
                     beam_size=config.get("beam_size", 1),
                     text_cleaner=config.get("text_cleaner", "whisper_basic"),
                     use_gpu=use_gpu,
-                ),
+                )
+
+            score_modules["whisper_wer"] = {
+                "module": whisper_levenshtein_metric,
+                "args": args_cache,
             }
             logging.info("Initiate Whisper WER calculation successfully")
 
@@ -552,12 +558,35 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 },
             }
             logging.info("Initiate noresqa score metric successfully.")
+        
+        elif config["name"] == "speaking_rate":
+            logging.info("Loadding speaking rate metrics without reference")
+            from versa.utterance_metrics.speaking_rate import speaking_rate_metric, speaking_rate_model_setup
+
+            # Load whisper model if it is already loaded
+            if "whisper_wer" in score_modules.keys():
+                speaking_rate_model = score_modules["whisper_wer"]["args"]
+            else:
+                speaking_rate_model = speaking_rate_model_setup(
+                    model_tag=config.get("model_tag", "default"),
+                    beam_size=config.get("beam_size", 1),
+                    text_cleaner=config.get("text_cleaner", "whisper_basic"),
+                    use_gpu=use_gpu,
+                )
+
+            score_modules["speaking_rate"] = {
+                "module": speaking_rate_metric,
+                "args": speaking_rate_model,
+            }
+            logging.info("Initiate speaking rate metric successfully.")
 
     return score_modules
 
 
 def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
     utt_score = {}
+
+    # TODO(jiatong): set topology for speaker evaluation
     for key in score_modules.keys():
         if key == "mcd_f0":
             score = score_modules[key]["module"](
@@ -650,13 +679,20 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
             )
         elif key == "pysepm":
             score = score_modules[key]["module"](gen_wav, gt_wav, fs=gen_sr)
-
         elif key == "srmr":
             score = score_modules[key]["module"](gen_wav, fs=gen_sr)
-
         elif key == "noresqa":
             score = score_modules[key]["module"](gen_wav, gt_wav, fs=gen_sr)
-            
+        elif key == "speaking_rate":
+            cache_text = None
+            if utt_score.get("whisper_hyp_text", None) is not None:
+                cache_text = utt_score["whisper_hyp_text"]
+            score = score_modules[key]["module"](
+                score_modules[key]["args"],
+                gen_wav,
+                cache_text,
+                gen_sr,
+            )
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -834,7 +870,7 @@ def corpus_scoring(
             elif fad_info["baseline"] == "missing":
                 raise ValueError("Baseline audio not provided for FAD")
             score_result = score_modules[key]["module"](
-                gen_files, fad_info
+                gen_files, fad_info, key_info=key
             )
         elif key.startswith("kld"):
             kid_info = score_modules[key]["args"]
@@ -843,7 +879,7 @@ def corpus_scoring(
             elif kid_info["baseline"] == "missing":
                 raise ValueError("Baseline audio not provided for FAD")
             score_result = score_modules[key]["module"](
-                gen_files, kid_info
+                gen_files, kid_info, key_info=key
             )
         else:
             raise NotImplementedError("Not supported {}".format(key))
