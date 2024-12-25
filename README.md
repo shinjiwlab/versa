@@ -32,21 +32,21 @@ Simple usage case for a few samples.
 ```
 # direct usage
 python versa/bin/scorer.py \
-    --score_config egs/general.yaml \
+    --score_config egs/speech.yaml \
     --gt test/test_samples/test1 \
     --pred test/test_samples/test2 \
     --output_file test_result
 
 # with scp-style input
 python versa/bin/scorer.py \
-    --score_config egs/general.yaml \
+    --score_config egs/speech.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result
 
 # with kaldi-ark style
 python versa/bin/scorer.py \
-    --score_config egs/general.yaml \
+    --score_config egs/speech.yaml \
     --gt test/test_samples/test1.scp \
     --pred test/test_samples/test2.scp \
     --output_file test_result \
