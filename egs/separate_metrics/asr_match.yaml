@@ -1,0 +1,8 @@
+# ASR-match calculating
+# More model_tag can be from https://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages .
+# The default model is `large-v3`.
+# --speaking rate: correct matching words/character counts
+- name: asr_match
+  model_tag: default
+  beam_size: 5
+  text_cleaner: whisper_basic

@@ -309,8 +309,6 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             if not use_gt_text:
                 logging.warning("Cannot use espnet_wer because no gt text is provided")
                 continue
-                # TODO(jiatong): add case for ground truth speech
-                # (predict text for gt speech as well)
 
             logging.info("Loadding espnet_wer metric with reference text")
             from versa import espnet_levenshtein_metric, espnet_wer_setup
@@ -330,8 +328,6 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             if not use_gt_text:
                 logging.warning("Cannot use owsm_wer because no gt text is provided")
                 continue
-                # TODO(jiatong): add case for ground truth speech
-                # (predict text for gt speech as well)
 
             logging.info("Loadding owsm_wer metric with reference text")
             from versa import owsm_levenshtein_metric, owsm_wer_setup
@@ -351,8 +347,6 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             if not use_gt_text:
                 logging.warning("Cannot use whisper_wer because no gt text is provided")
                 continue
-                # TODO(jiatong): add case for ground truth speech
-                # (predict text for gt speech as well)
 
             logging.info("Loadding whisper_wer metric with reference text")
             from versa import whisper_levenshtein_metric, whisper_wer_setup
@@ -561,7 +555,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
         
         elif config["name"] == "speaking_rate":
             logging.info("Loadding speaking rate metrics without reference")
-            from versa.utterance_metrics.speaking_rate import speaking_rate_metric, speaking_rate_model_setup
+            from versa import speaking_rate_metric, speaking_rate_model_setup
 
             # Load whisper model if it is already loaded
             if "whisper_wer" in score_modules.keys():
@@ -579,6 +573,33 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": speaking_rate_model,
             }
             logging.info("Initiate speaking rate metric successfully.")
+        
+        elif config["name"] == "asr_match":
+            if not use_gt:
+                logging.warning("Cannot use asr_match because no gt audio is provided")
+                continue
+
+            logging.info("Loadding asr_match metric with reference text")
+            from versa import asr_match_metric, asr_match_setup
+
+            # Load whisper model if it is already loaded
+            if "whisper_wer" in score_modules.keys():
+                asr_model = score_modules["whisper_wer"]["args"]
+            elif "speaking_rate" in score_modules.keys():
+                asr_model = score_modules["speaking_rate"]["args"]
+            else:
+                asr_model = asr_match_setup(
+                    model_tag=config.get("model_tag", "default"),
+                    beam_size=config.get("beam_size", 1),
+                    text_cleaner=config.get("text_cleaner", "whisper_basic"),
+                    use_gpu=use_gpu,
+                )
+
+            score_modules["asr_match"] = {
+                "module": asr_match_metric,
+                "args": asr_model,
+            }
+            logging.info("Initiate asr_match metric successfully")
 
     return score_modules
 
@@ -693,6 +714,19 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
                 cache_text,
                 gen_sr,
             )
+        elif key == "asr_match":
+            cache_text = None
+            if utt_score.get("whisper_hyp_text", None) is not None:
+                cache_text = utt_score["whisper_hyp_text"]
+            elif utt_score.get("speaking_rate_text", None) is not None:
+                cache_text = utt_score["speaking_rate_text"]
+            score = score_modules[key]["module"](
+                score_modules[key]["args"],
+                gen_wav,
+                gt_wav,
+                cache_text,
+                gen_sr,
+            )
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -794,7 +828,7 @@ def list_scoring(
 def load_summary(score_info):
     summary = {}
     for key in score_info[0].keys():
-        if "ref_text" in key or "hyp_text" in key or "vad" in key or key == "key":
+        if "text" in key or "vad" in key or key == "key":
             # NOTE(jiatong): skip text cases
             continue
         summary[key] = sum([score[key] for score in score_info])

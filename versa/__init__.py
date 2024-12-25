@@ -61,3 +61,5 @@ from versa.utterance_metrics.pysepm import pysepm_metric
 from versa.utterance_metrics.srmr import srmr_metric
 from versa.corpus_metrics.fad import fad_scoring, fad_setup
 from versa.utterance_metrics.noresqa import noresqa_model_setup, noresqa_metric
+from versa.utterance_metrics.speaking_rate import speaking_rate_metric, speaking_rate_model_setup
+from versa.utterance_metrics.asr_matching import asr_match_metric, asr_match_setup
