@@ -12,7 +12,7 @@ from versa.scorer_shared import (
 )
 
 TEST_INFO = {
-    "speaking_word_rate": 4.0,
+    "speaking_rate": 4.0,
 }
 
 
