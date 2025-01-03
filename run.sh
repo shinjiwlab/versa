@@ -1,4 +1,4 @@
-stage=1
+stage=0
 
 # download data
 if [ $stage -eq 0 ]; then
@@ -17,19 +17,19 @@ if [ $stage -eq 0 ]; then
     fi
 
     # musdb
-    if [ ! -d data//musdb/test ]; then
+    if [ ! -d data/musdb/test ]; then
         wget https://zenodo.org/records/3338373/files/musdb18hq.zip -P data/
-        (cd data/ && unzip musdb18hq.zip -d ../musdb)
+        (cd data/ && unzip musdb18hq.zip -d ./musdb)
         rm data/musdb18hq.zip
     fi
 
-    if [ ! -d data//musdb/prepared ]; then
-        python scripts/prepare_musdb.py --main_directory data//musdb/ --output_dir data//musdb/prepared --chunk_length 5.0
+    if [ ! -d data/musdb/prepared ]; then
+        python scripts/prepare_musdb.py --main_directory data/musdb/ --output_dir data/musdb/prepared --chunk_length 5.0
     fi
 
     # audioset
-    if [ ! -d data//audioset ]; then
-        python scripts/prepare_audioset-test.py --output_dir data//audioset/
+    if [ ! -d data/audioset ]; then
+        python scripts/prepare_audioset-test.py --output_dir data/audioset
     fi
 
 fi

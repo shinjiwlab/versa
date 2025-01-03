@@ -8,7 +8,7 @@ api = HfApi()
 def main():
     # Set up argument parsing
     parser = argparse.ArgumentParser(description="Split 'mix.wav' files into chunks.")
-    parser.add_argument('--output-dir', type=str, help="Where AudioSet files will be saved.")
+    parser.add_argument('--output_dir', type=str, help="Where AudioSet files will be saved.")
     
     # Parse the arguments
     args = parser.parse_args()
