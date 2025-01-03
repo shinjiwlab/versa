@@ -1,18 +1,35 @@
-stage=2
+stage=1
 
 # download data
 if [ $stage -eq 0 ]; then
     echo stage $stage: Prepare data
 
-    if [ ! -d data/LibriSpeech/test-clean ]; then
-        mkdir -p data
-        wget http://www.openslr.org/resources/12/test-clean.tar.gz -P ./data
-        (cd ./data && tar -xvzf test-clean.tar.gz)
+    # librispeech
+    if [ ! -d data//LibriSpeech/test-clean ]; then
+        mkdir -p data/
+        wget http://www.openslr.org/resources/12/test-clean.tar.gz -P data/
+        (cd data/ && tar -xvzf test-clean.tar.gz)
         rm data/test-clean.tar.gz
     fi
 
-    if [ ! -d data/LibriSpeech/test-clean/prepared ]; then
-        python scripts/prepare_librispeech-test-clean.py --root_dir data/LibriSpeech/test-clean
+    if [ ! -d data//LibriSpeech/test-clean/prepared ]; then
+        python scripts/prepare_librispeech-test-clean.py --root_dir data//LibriSpeech/test-clean
+    fi
+
+    # musdb
+    if [ ! -d data//musdb/test ]; then
+        wget https://zenodo.org/records/3338373/files/musdb18hq.zip -P data/
+        (cd data/ && unzip musdb18hq.zip -d ../musdb)
+        rm data/musdb18hq.zip
+    fi
+
+    if [ ! -d data//musdb/prepared ]; then
+        python scripts/prepare_musdb.py --main_directory data//musdb/ --output_dir data//musdb/prepared --chunk_length 5.0
+    fi
+
+    # audioset
+    if [ ! -d data//audioset ]; then
+        python scripts/prepare_audioset-test.py --output_dir data//audioset/
     fi
 
 fi
@@ -20,19 +37,22 @@ fi
 # Evaluation
 pred_path=data/LibriSpeech/test-clean/prepared/ori.scp
 gt_path=data/LibriSpeech/test-clean/prepared/ori.scp
+tag=musdb_encodec_24k_12bps
+eval_sr=24000
 if [ $stage -eq 1 ]; then
-    result_path="test_result"
+    result_path="test_result_${tag}"
 
     echo stage $stage: Evaluation
     if test -f ${result_path}; then
         echo ${result_path} exists
     else
         python versa/bin/scorer.py \
-            --score_config egs/speech.yaml \
+            --score_config egs/general.yaml \
             --use_gpu True \
             --gt ${gt_path} \
             --pred ${pred_path} \
-            --output_file ${result_path}
+            --output_file ${result_path} \
+            --eval_sr ${eval_sr} \  # change in versa necessary!
     fi
 
     python scripts/average_result.py --file_path ${result_path} >> ${result_path}
