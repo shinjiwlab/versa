@@ -18,6 +18,11 @@ def get_parser() -> argparse.Namespace:
     """Get argument parser."""
     parser = argparse.ArgumentParser(description="Speech Evaluation Interface")
     parser.add_argument(
+        "--eval_sr",
+        type=int,
+        help="All wfs wil lbe resampeld to eval_sr prior to eval.",
+    )
+    parser.add_argument(
         "--pred",
         type=str,
         help="Wav.scp for generated waveforms.",
@@ -140,7 +145,6 @@ def main():
     )
 
     assert len(score_config) > 0, "no scoring function is provided"
-
     score_info = list_scoring(
         gen_files,
         score_modules,
@@ -148,6 +152,7 @@ def main():
         text_info,
         output_file=args.output_file,
         io=args.io,
+        eval_sr=args.eval_sr
     )
     logging.info("Summary: {}".format(load_summary(score_info)))
 

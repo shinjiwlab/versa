@@ -47,7 +47,7 @@ def audio_loader_setup(audio, io):
         audio_files = kaldiio.load_scp(audio)
     elif io == "dir":
         audio_files = find_files(audio)
-    elif io == "soundfile":
+    else:
         audio_files = {}
         with open(audio) as f:
             for line in f.readlines():
@@ -362,40 +362,6 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 ),
             }
             logging.info("Initiate Whisper WER calculation successfully")
-        
-        elif config["name"] == "scoreq_ref":
-            if not use_gt:
-                logging.warning("Cannot use scoreq_ref because no gt audio is provided")
-                continue
-
-            logging.info("Loadding scoreq metrics with reference")
-            from versa import scoreq_ref_setup, scoreq_ref
-            model = scoreq_ref_setup(
-                    data_domain=config.get("data_domain", "synthetic"),
-                    cache_dir=config.get("model_cache", "./scoreq_pt-models"),
-                    use_gpu=use_gpu,
-                )
-
-            score_modules["scoreq_ref"] = {
-                "module": scoreq_ref,
-                "model": model,
-            }
-            logging.info("Initiate scoreq (with reference) successfully")
-
-        elif config["name"] == "scoreq_nr":
-            logging.info("Loadding scoreq metrics without reference")
-            from versa import scoreq_nr_setup, scoreq_nr
-            model = scoreq_nr_setup(
-                    data_domain=config.get("data_domain", "synthetic"),
-                    cache_dir=config.get("model_cache", "./scoreq_pt-models"),
-                    use_gpu=use_gpu,
-                )
-
-            score_modules["scoreq_nr"] = {
-                "module": scoreq_nr,
-                "model": model,
-            }
-            logging.info("Initiate scoreq (with reference) successfully")
 
     return score_modules
 
@@ -451,14 +417,6 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
                 text,
                 gen_sr,
             )
-        elif key == "scoreq_ref":
-            score = score_modules[key]["module"](
-                score_modules[key]["model"],
-                gen_wav, gt_wav, gen_sr)
-        elif key == "scoreq_nr":
-            score = score_modules[key]["module"](
-                score_modules[key]["model"], 
-                gen_wav, gen_sr) 
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -474,6 +432,7 @@ def list_scoring(
     text_info=None,
     output_file=None,
     io="kaldi",
+    eval_sr=16_000
 ):
     if output_file is not None:
         f = open(output_file, "w", encoding="utf-8")
@@ -531,16 +490,16 @@ def list_scoring(
         else:
             text = None
 
-        if gt_sr is not None and gen_sr > gt_sr:
+        if gt_sr != eval_sr:
             logging.warning(
-                "Resampling the generated audio to match the ground truth audio"
+                "Resampling the ground truth audio to match the eval sr"
             )
-            gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
-        elif gt_sr is not None and gen_sr < gt_sr:
+            gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=eval_sr)  
+        if gen_sr != eval_sr:
             logging.warning(
-                "Resampling the ground truth audio to match the generated audio"
+                "Resampling the generated audio to match the eval sr"
             )
-            gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
+            gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=eval_sr)
 
         utt_score = {"key": key}
 
