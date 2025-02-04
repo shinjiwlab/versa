@@ -1,0 +1,5 @@
+# Emotion similarity calculated based on emo2vec
+# More info in https://github.com/glnmario/emo2vec
+
+# --emo2vec_similarity: the emotion similarity with emo2vec
+- name: emo2vec_similarity
