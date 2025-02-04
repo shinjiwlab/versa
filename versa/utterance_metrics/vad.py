@@ -11,14 +11,14 @@ import numpy as np
 
 
 def vad_model_setup(
-        threshold=0.5,
-        min_speech_duration_ms=250,
-        max_speech_duration_s=float('inf'),
-        min_silence_duration_ms=100,
-        speech_pad_ms=30,
+    threshold=0.5,
+    min_speech_duration_ms=250,
+    max_speech_duration_s=float("inf"),
+    min_silence_duration_ms=100,
+    speech_pad_ms=30,
 ):
-    
-    model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad', model='silero_vad')
+
+    model, utils = torch.hub.load(repo_or_dir="snakers4/silero-vad", model="silero_vad")
     (get_speech_ts, _, _, _, *_) = utils
     return {
         "module": model,
@@ -29,7 +29,6 @@ def vad_model_setup(
         "min_silence_duration_ms": min_silence_duration_ms,
         "speech_pad_ms": speech_pad_ms,
     }
-
 
 
 def vad_metric(model_info, pred_x, fs):
@@ -44,9 +43,9 @@ def vad_metric(model_info, pred_x, fs):
         fs = 8000
 
     speech_timestamps = get_speech_ts(
-        pred_x, 
-        model, 
-        sampling_rate=fs, 
+        pred_x,
+        model,
+        sampling_rate=fs,
         return_seconds=True,
         threshold=model_info["threshold"],
         min_speech_duration_ms=model_info["min_speech_duration_ms"],
@@ -58,7 +57,9 @@ def vad_metric(model_info, pred_x, fs):
 
 
 if __name__ == "__main__":
-    torch.hub.download_url_to_file('https://models.silero.ai/vad_models/en.wav', 'en_example.wav')
-    a, fs = librosa.load('en_example.wav', sr=None)
+    torch.hub.download_url_to_file(
+        "https://models.silero.ai/vad_models/en.wav", "en_example.wav"
+    )
+    a, fs = librosa.load("en_example.wav", sr=None)
     model_info = vad_model_setup()
     print("metrics: {}".format(vad_metric(model_info, a, 16000)))

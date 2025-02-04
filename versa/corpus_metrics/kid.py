@@ -65,7 +65,6 @@ def kid_scoring(pred_x, kid_info, key_info="kid"):
         )
     logging.info("[KID] Finished caching eval embeddings.")
 
-
     # 2. Calculate kid
     score = kid_info["module"].score_kid(baseline_files, eval_files, cache_dir)
     # update score key with key_info

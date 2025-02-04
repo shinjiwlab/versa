@@ -19,7 +19,6 @@ def info_update():
     # find files
     if os.path.isdir("test/test_samples/test2"):
         gen_files = find_files("test/test_samples/test2")
-    
 
     logging.info("The number of utterances = %d" % len(gen_files))
 

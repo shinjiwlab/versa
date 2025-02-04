@@ -12,7 +12,6 @@ from versa.scorer_shared import (
 )
 
 
-
 def info_update():
 
     # find files

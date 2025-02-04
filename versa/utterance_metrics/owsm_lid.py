@@ -10,9 +10,7 @@ import numpy as np
 from espnet2.bin.s2t_inference_language import Speech2Language
 
 
-def owsm_lid_model_setup(
-    model_tag="default", nbest=3, use_gpu=False
-):
+def owsm_lid_model_setup(model_tag="default", nbest=3, use_gpu=False):
     if use_gpu:
         device = "cuda"
     else:
@@ -32,7 +30,7 @@ def language_id(model, pred_x, fs):
     # NOTE(jiatong): only work for 16000 Hz
     if fs != 16000:
         pred_x = librosa.resample(pred_x, orig_sr=fs, target_sr=16000)
- 
+
     result = model(pred_x)
     return {"language": result}
 

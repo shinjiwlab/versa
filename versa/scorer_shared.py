@@ -471,10 +471,11 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
         elif config["name"] == "vad":
             logging.info("Loading vad metric without reference...")
             from versa.utterance_metrics.vad import vad_metric, vad_model_setup
+
             vad_model = vad_model_setup(
                 threshold=config.get("threshold", 0.5),
                 min_speech_duration_ms=config.get("min_speech_duration_ms", 250),
-                max_speech_duration_s=config.get("max_speech_duration_s", float('inf')),
+                max_speech_duration_s=config.get("max_speech_duration_s", float("inf")),
                 min_silence_duration_ms=config.get("min_silence_duration_ms", 100),
                 speech_pad_ms=config.get("speech_pad_ms", 30),
             )
@@ -485,12 +486,14 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate vad metric successfully.")
 
         elif config["name"] == "asvspoof_score":
-           
+
             logging.info("Loading asvspoof score metric without reference...")
-            from versa.utterance_metrics.asvspoof_score import asvspoof_metric, deepfake_detection_model_setup
-            deepfake_detection_model = deepfake_detection_model_setup(
-                use_gpu=use_gpu
+            from versa.utterance_metrics.asvspoof_score import (
+                asvspoof_metric,
+                deepfake_detection_model_setup,
             )
+
+            deepfake_detection_model = deepfake_detection_model_setup(use_gpu=use_gpu)
             score_modules["asvspoof_score"] = {
                 "module": asvspoof_metric,
                 "args": {"model": deepfake_detection_model},
@@ -513,7 +516,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 },
             }
             logging.info("Initiate pysepm successfully")
-        
+
         elif config["name"] == "srmr":
             logging.info("Loadding srmr metrics with reference")
             from versa import srmr_metric
@@ -552,7 +555,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 },
             }
             logging.info("Initiate noresqa score metric successfully.")
-        
+
         elif config["name"] == "speaking_rate":
             logging.info("Loadding speaking rate metrics without reference")
             from versa import speaking_rate_metric, speaking_rate_model_setup
@@ -573,7 +576,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": speaking_rate_model,
             }
             logging.info("Initiate speaking rate metric successfully.")
-        
+
         elif config["name"] == "asr_match":
             if not use_gt:
                 logging.warning("Cannot use asr_match because no gt audio is provided")
@@ -600,21 +603,21 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": asr_model,
             }
             logging.info("Initiate asr_match metric successfully")
- 
+
         elif config["name"] == "lid":
             logging.info("Loadding language identification metric")
             from versa import owsm_lid_model_setup, language_id
+
             owsm_model = owsm_lid_model_setup(
                 model_tag=config.get("model_tag", "default"),
                 nbest=config.get("nbest", 3),
                 use_gpu=use_gpu,
             )
-            
+
             score_modules["lid"] = {
                 "module": language_id,
                 "args": owsm_model,
             }
-
 
     return score_modules
 
@@ -859,9 +862,7 @@ def load_summary(score_info):
     return summary
 
 
-def load_corpus_modules(
-    score_config, cache_folder=".cache", use_gpu=False, io="kaldi"
-):
+def load_corpus_modules(score_config, cache_folder=".cache", use_gpu=False, io="kaldi"):
     score_modules = {}
     for config in score_config:
         if config["name"] == "fad":
@@ -890,7 +891,7 @@ def load_corpus_modules(
         elif config["name"] == "kid":
             logging.info("Loading KID evaluation with specific models...")
             from versa import kid_scoring, kid_setup
-            
+
             kid_info = kid_setup(
                 model_tag=config.get("model_tag", "default"),
                 model_path=config.get("model_path", None),
@@ -939,7 +940,7 @@ def corpus_scoring(
         else:
             raise NotImplementedError("Not supported {}".format(key))
         score_info.update(score_result)
-    
+
     if output_file is not None:
         with open(output_file, "w") as f:
             yaml.dump(score_info, f)
