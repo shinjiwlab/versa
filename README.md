@@ -120,6 +120,7 @@ We include x mark if the metric is auto-installed in versa.
 | 20 |  | Speaker Turn Taking (SPK-TT) |  |  |  |  |
 | 21 | x | Speaking Word/Character Rate (SWR) | speaking_rate  | speaking_rate | - | - |
 | 22 | x | Auti-spoofing Score (SpoofS) with AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks | asvspoof_score | asvspoof_score | [AASIST](https://github.com/clovaai/aasist/tree/main) | [Paper](https://ieeexplore.ieee.org/document/9747766)|
+| 23 | x | Language Identification | lid  | language | [ESPnet](https://github.com/espnet/espnet.git) | [Paper](https://arxiv.org/pdf/2401.16658) |
 
 ### Dependent Metrics
 |Number| Auto-Install | Metric Name  (Auto-Install)  | Key in config | Key in report |  Code Source                                                                                                     | References                                                                                       |
