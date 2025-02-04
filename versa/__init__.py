@@ -55,6 +55,7 @@ from versa.utterance_metrics.scoreq import (
 )
 from versa.utterance_metrics.nomad import nomad_setup, nomad
 from versa.utterance_metrics.emotion import emo2vec_setup, emo_sim
+from versa.utterance_metrics.owsm_lid import owsm_lid_model_setup, language_id
 from versa.utterance_metrics.sheet_ssqa import sheet_ssqa, sheet_ssqa_setup
 from versa.utterance_metrics.squim import squim_metric, squim_metric_no_ref
 from versa.utterance_metrics.se_snr import se_snr, se_snr_setup

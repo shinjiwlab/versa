@@ -600,6 +600,21 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": asr_model,
             }
             logging.info("Initiate asr_match metric successfully")
+ 
+        elif config["name"] == "lid":
+            logging.info("Loadding language identification metric")
+            from versa import owsm_lid_model_setup, language_id
+            owsm_model = owsm_lid_model_setup(
+                model_tag=config.get("model_tag", "default"),
+                nbest=config.get("nbest", 3),
+                use_gpu=use_gpu,
+            )
+            
+            score_modules["lid"] = {
+                "module": language_id,
+                "args": owsm_model,
+            }
+
 
     return score_modules
 
@@ -727,6 +742,12 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
                 cache_text,
                 gen_sr,
             )
+        elif key == "lid":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"],
+                gen_wav,
+                gen_sr,
+            )
         else:
             raise NotImplementedError(f"Not supported {key}")
 
@@ -828,7 +849,7 @@ def list_scoring(
 def load_summary(score_info):
     summary = {}
     for key in score_info[0].keys():
-        if "text" in key or "vad" in key or key == "key":
+        if "text" in key or "vad" in key or "language" in key or key == "key":
             # NOTE(jiatong): skip text cases
             continue
         summary[key] = sum([score[key] for score in score_info])
