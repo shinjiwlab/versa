@@ -51,10 +51,11 @@ def squim_metric_no_ref(pred_x, fs):
     https://pytorch.org/audio/main/tutorials/squim_tutorial.html
 
     """
+    pred_x = torch.from_numpy(pred_x)
     if fs != 16000:
         pred_x = F.resample(pred_x, fs, 16000)
 
-    pred_x = torch.from_numpy(pred_x).unsqueeze(0)
+    pred_x = pred_x.unsqueeze(0)
     pred_x = pred_x.float()
 
     objective_model = SQUIM_OBJECTIVE.get_model()
