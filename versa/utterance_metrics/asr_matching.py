@@ -13,7 +13,7 @@ from Levenshtein import opcodes
 try:
     import whisper
 except ImportError:
-    logging.warning(
+    logging.info(
         "Whisper is not properly installed. Please install following https://github.com/openai/whisper"
     )
     whisper = None
