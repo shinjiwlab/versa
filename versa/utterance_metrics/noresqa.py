@@ -21,7 +21,7 @@ sys.path.append("../../")
 try:
     import fairseq
 except ImportError:
-    logger.warning(
+    logger.info(
         "fairseq is not installed. Please use `tools/install_fairseq.sh` to install"
     )
 
@@ -34,7 +34,7 @@ try:
     from tools.Noresqa.model import NORESQA
 
 except ImportError:
-    logging.warning(
+    logger.info(
         "noresqa is not installed. Please use `tools/install_noresqa.sh` to install"
     )
     Noresqa = None
