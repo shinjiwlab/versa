@@ -4,6 +4,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+logger = logging.getLogger(__name__)
 
 import librosa
 import numpy as np
@@ -13,7 +14,7 @@ from Levenshtein import opcodes
 try:
     import whisper
 except ImportError:
-    logging.info(
+    logger.info(
         "Whisper is not properly installed. Please install following https://github.com/openai/whisper"
     )
     whisper = None
