@@ -3,6 +3,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+logger = logging.getLogger(__name__)
 
 import librosa
 import numpy as np
@@ -11,7 +12,7 @@ import torch
 try:
     from nomad_versa import Nomad
 except ImportError:
-    logging.warning(
+    logger.info(
         "nomad is not installed. Please use `tools/install_nomad.sh` to install"
     )
     Nomad = None
