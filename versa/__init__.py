@@ -9,11 +9,11 @@ try:
         discrete_speech_setup,
     )
 except ImportError:
-    logging.warning(
+    logging.info(
         "Please pip install git+https://github.com/ftshijt/DiscreteSpeechMetrics.git and retry"
     )
 except RuntimeError:
-    logging.warning(
+    logging.info(
         "Issues detected in discrete speech metrics, please double check the environment."
     )
 
@@ -22,22 +22,22 @@ from versa.utterance_metrics.pseudo_mos import pseudo_mos_metric, pseudo_mos_set
 try:
     from versa.utterance_metrics.pesq_score import pesq_metric
 except ImportError:
-    logging.warning("Please install pesq with `pip install pesq` and retry")
+    logging.info("Please install pesq with `pip install pesq` and retry")
 
 try:
     from versa.utterance_metrics.stoi import stoi_metric
 except ImportError:
-    logging.warning("Please install pystoi with `pip install pystoi` and retry")
+    logging.info("Please install pystoi with `pip install pystoi` and retry")
 
 try:
     from versa.utterance_metrics.speaker import speaker_metric, speaker_model_setup
 except ImportError:
-    logging.warning("Please install espnet with `pip install espnet` and retry")
+    logging.info("Please install espnet with `pip install espnet` and retry")
 
 try:
     from versa.utterance_metrics.visqol_score import visqol_metric, visqol_setup
 except ImportError:
-    logging.warning(
+    logging.info(
         "Please install visqol follow https://github.com/google/visqol and retry"
     )
 
