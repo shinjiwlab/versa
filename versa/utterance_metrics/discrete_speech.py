@@ -4,14 +4,13 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+logger = logging.getLogger(__name__)
 
 import librosa
 import numpy as np
 
 try:
     from discrete_speech_metrics import SpeechBERTScore, SpeechBLEU, SpeechTokenDistance
-
-    logging.warning("Using the discrete_speech_metrics package for evaluation")
 except ImportError:
     raise ImportError("Please install discrete_speech_metrics and retry")
 
