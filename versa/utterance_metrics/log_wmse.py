@@ -2,6 +2,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+logger = logging.getLogger(__name__)
 
 import librosa
 import numpy as np
@@ -12,7 +13,7 @@ try:
     import torchaudio.functional as F
     from torch_log_wmse import LogWMSE
 
-    logging.warning("Using the torch-log-wmse package for evaluation")
+    logger.info("Using the torch-log-wmse package for evaluation")
 except ImportError:
     raise ImportError("Please install torch-log-wmse and retry")
 
