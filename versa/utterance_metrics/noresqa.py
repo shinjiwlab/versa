@@ -11,6 +11,8 @@ import torch
 import sys
 
 import logging
+logger = logging.getLogger(__name__)
+
 from urllib.request import urlretrieve
 import torch.nn as nn
 
@@ -19,7 +21,7 @@ sys.path.append("../../")
 try:
     import fairseq
 except ImportError:
-    logging.warning(
+    logger.warning(
         "fairseq is not installed. Please use `tools/install_fairseq.sh` to install"
     )
 
