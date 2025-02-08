@@ -2,16 +2,13 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+logger = logging.getLogger(__name__)
 import numpy as np
 
 try:
     import pysepm  # Import the pysepm package for speech quality metrics
-
-    logging.info(
-        "Using the pysepm package for evaluation"
-    )  # Log a warning if pysepm is successfully imported
 except ImportError:
-    logging.warning(
+    logger.info(
         "pysepm is not installed. Please use `tools/install_pysepm.sh` to install"
     )
     pysepm = None
