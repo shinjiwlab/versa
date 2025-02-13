@@ -165,8 +165,8 @@ def owsm_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
             long_form=len(pred_x) > CHUNK_SIZE * fs,
         )
 
-    ref_text = wer_utils["cleaner"](ref_text)
-    pred_text = wer_utils["cleaner"](inf_txt)
+    ref_text = wer_utils["cleaner"](ref_text).strip()
+    pred_text = wer_utils["cleaner"](inf_txt).strip()
 
     # process wer
     ref_words = ref_text.strip().split()
