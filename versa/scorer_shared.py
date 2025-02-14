@@ -201,7 +201,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 )
                 continue
 
-            logging.info("Loadding pesq evaluation...")
+            logging.info("Loading pesq evaluation...")
             from versa import pesq_metric
 
             score_modules["pesq"] = {"module": pesq_metric}
@@ -287,7 +287,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use squim_ref because no gt audio is provided")
                 continue
 
-            logging.info("Loadding squim metrics with reference")
+            logging.info("Loading squim metrics with reference")
             from versa import squim_metric
 
             score_modules["squim_ref"] = {
@@ -297,7 +297,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
 
         elif config["name"] == "squim_no_ref":
 
-            logging.info("Loadding squim metrics with reference")
+            logging.info("Loading squim metrics with reference")
             from versa import squim_metric_no_ref
 
             score_modules["squim_no_ref"] = {
@@ -310,7 +310,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use espnet_wer because no gt text is provided")
                 continue
 
-            logging.info("Loadding espnet_wer metric with reference text")
+            logging.info("Loading espnet_wer metric with reference text")
             from versa import espnet_levenshtein_metric, espnet_wer_setup
 
             score_modules["espnet_wer"] = {
@@ -329,7 +329,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use owsm_wer because no gt text is provided")
                 continue
 
-            logging.info("Loadding owsm_wer metric with reference text")
+            logging.info("Loading owsm_wer metric with reference text")
             from versa import owsm_levenshtein_metric, owsm_wer_setup
 
             score_modules["owsm_wer"] = {
@@ -348,11 +348,11 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use whisper_wer because no gt text is provided")
                 continue
 
-            logging.info("Loadding whisper_wer metric with reference text")
+            logging.info("Loading whisper_wer metric with reference text")
             from versa import whisper_levenshtein_metric, whisper_wer_setup
 
             # Load whisper model if it is already loaded
-            if "speaking_rate" or "asr_matching" in score_modules.keys():
+            if "speaking_rate" in score_modules.keys() or "asr_matching" in score_modules.keys():
                 args_cache = score_modules["speaking_rate"]["args"]
             else:
                 args_cache = whisper_wer_setup(
@@ -373,7 +373,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use scoreq_ref because no gt audio is provided")
                 continue
 
-            logging.info("Loadding scoreq metrics with reference")
+            logging.info("Loading scoreq metrics with reference")
             from versa import scoreq_ref, scoreq_ref_setup
 
             model = scoreq_ref_setup(
@@ -389,7 +389,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate scoreq (with reference) successfully")
 
         elif config["name"] == "scoreq_nr":
-            logging.info("Loadding scoreq metrics without reference")
+            logging.info("Loading scoreq metrics without reference")
             from versa import scoreq_nr, scoreq_nr_setup
 
             model = scoreq_nr_setup(
@@ -405,7 +405,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate scoreq (with reference) successfully")
 
         elif config["name"] == "nomad":
-            logging.info("Loadding nomad metrics with reference")
+            logging.info("Loading nomad metrics with reference")
             from versa import nomad, nomad_setup
 
             model = nomad_setup(
@@ -426,7 +426,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 )
                 continue
 
-            logging.info("Loadding emo2vec metrics with reference")
+            logging.info("Loading emo2vec metrics with reference")
             from versa import emo2vec_setup, emo_sim
 
             model = emo2vec_setup(
@@ -442,7 +442,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate emo2vec successfully")
 
         elif config["name"] == "se_snr":
-            logging.info("Loadding se_snr metrics with reference")
+            logging.info("Loading se_snr metrics with reference")
             from versa import se_snr, se_snr_setup
 
             model = se_snr_setup(
@@ -505,7 +505,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use pysepm because no gt audio is provided")
                 continue
 
-            logging.info("Loadding pysepm metrics with reference")
+            logging.info("Loading pysepm metrics with reference")
             from versa import pysepm_metric
 
             score_modules["pysepm"] = {
@@ -518,7 +518,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate pysepm successfully")
 
         elif config["name"] == "srmr":
-            logging.info("Loadding srmr metrics with reference")
+            logging.info("Loading srmr metrics with reference")
             from versa import srmr_metric
 
             score_modules["srmr"] = {
@@ -539,7 +539,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use noresqa because no gt audio is provided")
                 continue
 
-            logging.info("Loadding noresqa metrics with reference")
+            logging.info("Loading noresqa metrics with reference")
 
             from versa.utterance_metrics.noresqa import (
                 noresqa_metric,
@@ -557,7 +557,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate noresqa score metric successfully.")
 
         elif config["name"] == "speaking_rate":
-            logging.info("Loadding speaking rate metrics without reference")
+            logging.info("Loading speaking rate metrics without reference")
             from versa import speaking_rate_metric, speaking_rate_model_setup
 
             # Load whisper model if it is already loaded
@@ -582,7 +582,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 logging.warning("Cannot use asr_match because no gt audio is provided")
                 continue
 
-            logging.info("Loadding asr_match metric with reference text")
+            logging.info("Loading asr_match metric with reference text")
             from versa import asr_match_metric, asr_match_setup
 
             # Load whisper model if it is already loaded
@@ -605,7 +605,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             logging.info("Initiate asr_match metric successfully")
 
         elif config["name"] == "lid":
-            logging.info("Loadding language identification metric")
+            logging.info("Loading language identification metric")
             from versa import owsm_lid_model_setup, language_id
 
             owsm_model = owsm_lid_model_setup(
