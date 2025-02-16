@@ -828,6 +828,7 @@ def list_scoring(
                 "Resampling the generated audio to match the ground truth audio"
             )
             gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
+            gen_sr = gt_sr
         elif gt_sr is not None and gen_sr < gt_sr:
             logging.warning(
                 "Resampling the ground truth audio to match the generated audio"
