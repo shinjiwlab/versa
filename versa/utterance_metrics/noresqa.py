@@ -17,9 +17,7 @@ from urllib.request import urlretrieve
 import torch.nn as nn
 
 
-# Get the absolute path of the NORESQA directory
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../tools/Noresqa"))
-# Temporarily add to sys.path for import
 sys.path.insert(0, base_path)
 
 
@@ -57,7 +55,6 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
             print("Creating checkpoints directory")
             os.makedirs("../../checkpoints")
 
-        #sys.path.append("../../checkpoints")
 
         url_w2v = "https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_small.pt"
         w2v_path = "../../checkpoints/wav2vec_small.pt"
@@ -69,11 +66,6 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
         model = NORESQA(
             output=40, output2=40, metric_type=metric_type, config_path=w2v_path
         )
-
-        # Loading checkpoint
-        cwd = os.getcwd()
-        print (cwd)
-        #exit()
         
         if metric_type == 0:
             model_checkpoint_path = "./Noresqa/models/model_noresqa.pth"
