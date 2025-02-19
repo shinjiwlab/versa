@@ -28,7 +28,7 @@ def nomad_setup(use_gpu=False, cache_dir="./nomad_pt-models"):
             "nomad is not installed. Please use `tools/install_nomad.sh` to install"
         )
 
-    return Nomad(device=device, cache_dir="./nomad_pt-models")
+    return Nomad(device=device)
 
 
 def nomad(model, pred_x, gt_x, fs):
