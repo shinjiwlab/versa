@@ -121,6 +121,7 @@ We include x mark if the metric is auto-installed in versa.
 | 21 | x | Speaking Word/Character Rate (SWR) | speaking_rate  | speaking_rate | - | - |
 | 22 | x | Auti-spoofing Score (SpoofS) with AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks | asvspoof_score | asvspoof_score | [AASIST](https://github.com/clovaai/aasist/tree/main) | [Paper](https://ieeexplore.ieee.org/document/9747766)|
 | 23 | x | Language Identification | lid  | language | [ESPnet](https://github.com/espnet/espnet.git) | [Paper](https://arxiv.org/pdf/2401.16658) |
+| 24 |   | Audiobox Aesthetics | audiobox_aesthetics  | {audiobox_aesthetics_CE, audiobox_aesthetics_CU, audiobox_aesthetics_PC, audiobox_aesthetics_PQ} | [Audiobox-Aesthetics](https://github.com/facebookresearch/audiobox-aesthetics) | [Paper](https://arxiv.org/abs/2502.05139) |
 
 ### Dependent Metrics
 |Number| Auto-Install | Metric Name  (Auto-Install)  | Key in config | Key in report |  Code Source                                                                                                     | References                                                                                       |
