@@ -352,7 +352,10 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             from versa import whisper_levenshtein_metric, whisper_wer_setup
 
             # Load whisper model if it is already loaded
-            if "speaking_rate" in score_modules.keys() or "asr_matching" in score_modules.keys():
+            if (
+                "speaking_rate" in score_modules.keys()
+                or "asr_matching" in score_modules.keys()
+            ):
                 args_cache = score_modules["speaking_rate"]["args"]
             else:
                 args_cache = whisper_wer_setup(
@@ -619,6 +622,25 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
                 "args": owsm_model,
             }
 
+        elif config["name"] == "audiobox_aesthetics":
+            logging.info("Loading audiobox aesthetics metric")
+            from versa import audiobox_aesthetics_score, audiobox_aesthetics_setup
+
+            audiobox_model = audiobox_aesthetics_setup(
+                model_path=config.get("model_path", None),
+                batch_size=config.get("batch_size", 1),
+                precision=config.get("precision", "bf16"),
+                cache_dir=config.get("cache_dir", "versa_cache/audiobox"),
+                use_huggingface=config.get("use_huggingface", True),
+                use_gpu=use_gpu,
+            )
+
+            score_modules["audiobox_aesthetics"] = {
+                "module": audiobox_aesthetics_score,
+                "args": {"model": audiobox_model},
+            }
+            logging.info("Initiate audiobox aesthetics metric successfully")
+
     return score_modules
 
 
@@ -748,6 +770,12 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
         elif key == "lid":
             score = score_modules[key]["module"](
                 score_modules[key]["args"],
+                gen_wav,
+                gen_sr,
+            )
+        elif key == "audiobox_aesthetics":
+            score = score_modules[key]["module"](
+                score_modules[key]["args"]["model"],
                 gen_wav,
                 gen_sr,
             )

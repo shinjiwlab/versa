@@ -3,6 +3,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import librosa
@@ -35,12 +36,12 @@ def nomad_setup(use_gpu=False, cache_dir="./nomad_pt-models"):
 def nomad(model, pred_x, gt_x, fs):
     """
     Reference:
-    A. Ragano, J. Skoglund and A. Hines, 
-    "NOMAD: Unsupervised Learning of Perceptual Embeddings For Speech Enhancement and Non-Matching Reference Audio Quality Assessment," 
+    A. Ragano, J. Skoglund and A. Hines,
+    "NOMAD: Unsupervised Learning of Perceptual Embeddings For Speech Enhancement and Non-Matching Reference Audio Quality Assessment,"
     ICASSP 2024 - 2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), Seoul, Korea, Republic of, 2024, pp. 1011-1015
     Codebase:
     https://github.com/alessandroragano/nomad
-    
+
     """
 
     # NOTE(hyejin): current model only have 16k options

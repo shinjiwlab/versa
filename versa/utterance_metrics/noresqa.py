@@ -11,13 +11,16 @@ import torch
 import sys
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 from urllib.request import urlretrieve
 import torch.nn as nn
 
 
-base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../tools/Noresqa"))
+base_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../tools/Noresqa")
+)
 sys.path.insert(0, base_path)
 
 
@@ -55,7 +58,6 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
             print("Creating checkpoints directory")
             os.makedirs("../../checkpoints")
 
-
         url_w2v = "https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_small.pt"
         w2v_path = "../../checkpoints/wav2vec_small.pt"
         if not os.path.isfile(w2v_path):
@@ -66,7 +68,7 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
         model = NORESQA(
             output=40, output2=40, metric_type=metric_type, config_path=w2v_path
         )
-        
+
         if metric_type == 0:
             model_checkpoint_path = "./Noresqa/models/model_noresqa.pth"
             state = torch.load(model_checkpoint_path, map_location="cpu")["state_base"]
@@ -77,10 +79,10 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
 
         pretrained_dict = {}
         for k, v in state.items():
-            if 'module' in k:
-                pretrained_dict[k.replace('module.','')]=v
+            if "module" in k:
+                pretrained_dict[k.replace("module.", "")] = v
             else:
-                pretrained_dict[k]=v
+                pretrained_dict[k] = v
         model_dict = model.state_dict()
         model_dict.update(pretrained_dict)
         model.load_state_dict(pretrained_dict)
@@ -99,7 +101,9 @@ def noresqa_model_setup(model_tag="default", metric_type=0, use_gpu=False):
 
 def noresqa_metric(model, gt_x, pred_x, fs, metric_type=1, device="cpu"):
     # NOTE(hyejin): only work for 16000 Hz
-    nmr_feat, test_feat = utils.feats_loading(pred_x, gt_x, noresqa_or_noresqaMOS=metric_type)
+    nmr_feat, test_feat = utils.feats_loading(
+        pred_x, gt_x, noresqa_or_noresqaMOS=metric_type
+    )
     test_feat = torch.from_numpy(test_feat).float().to(device).unsqueeze(0)
     nmr_feat = torch.from_numpy(nmr_feat).float().to(device).unsqueeze(0)
 

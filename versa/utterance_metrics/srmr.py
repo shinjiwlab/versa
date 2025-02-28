@@ -2,6 +2,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import numpy as np
@@ -9,9 +10,7 @@ import numpy as np
 try:
     from srmrpy import srmr  # Import the srmr package for speech quality metrics
 except ImportError:
-    logger.info(
-        "srmr is not installed. Please use `tools/install_srmr.sh` to install"
-    )
+    logger.info("srmr is not installed. Please use `tools/install_srmr.sh` to install")
     srmr = None
 
 

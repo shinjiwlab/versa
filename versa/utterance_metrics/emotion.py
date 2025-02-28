@@ -10,13 +10,16 @@ import librosa
 import numpy as np
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 try:
     import emo2vec_versa
     from emo2vec_versa.emo2vec_class import EMO2VEC
 except ImportError:
-    logger.info("emo2vec is not installed. Please install the package via `tools/install_emo2vec.sh`")
+    logger.info(
+        "emo2vec is not installed. Please install the package via `tools/install_emo2vec.sh`"
+    )
     EMO2VEC = None
 
 

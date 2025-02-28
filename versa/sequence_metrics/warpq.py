@@ -4,6 +4,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import librosa
@@ -37,7 +38,9 @@ def warpq_setup(
         "apply_vad": apply_vad,
     }
     if warpqMetric is None:
-        raise ImportError("Please install WARP-Q from <versa_root>/tools/install_warpq.sh, and retry after installation")
+        raise ImportError(
+            "Please install WARP-Q from <versa_root>/tools/install_warpq.sh, and retry after installation"
+        )
     model = warpqMetric(args)
     logger.info("Mapping model is not loaded for current implementation.")
     return model

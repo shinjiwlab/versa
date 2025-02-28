@@ -68,3 +68,7 @@ from versa.utterance_metrics.speaking_rate import (
     speaking_rate_model_setup,
 )
 from versa.utterance_metrics.asr_matching import asr_match_metric, asr_match_setup
+from versa.utterance_metrics.audiobox_aesthetics_score import (
+    audiobox_aesthetics_setup,
+    audiobox_aesthetics_score,
+)
