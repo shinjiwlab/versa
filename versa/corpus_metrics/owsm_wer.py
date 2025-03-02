@@ -94,8 +94,7 @@ def owsm_predict(
 
     # Detect language using the first 30s of speech
     if src_lang == "none":
-        from espnet2.bin.s2t_inference_language import \
-            Speech2Language as Speech2Lang
+        from espnet2.bin.s2t_inference_language import Speech2Language as Speech2Lang
 
         # default 30 seconds chunk for owsm training
         src_lang = model(
@@ -166,8 +165,8 @@ def owsm_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
             long_form=len(pred_x) > CHUNK_SIZE * fs,
         )
 
-    ref_text = wer_utils["cleaner"](ref_text)
-    pred_text = wer_utils["cleaner"](inf_txt)
+    ref_text = wer_utils["cleaner"](ref_text).strip()
+    pred_text = wer_utils["cleaner"](inf_txt).strip()
 
     # process wer
     ref_words = ref_text.strip().split()

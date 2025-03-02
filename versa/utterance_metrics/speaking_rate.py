@@ -5,6 +5,8 @@
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 import librosa
 import numpy as np
 import torch
@@ -12,7 +14,7 @@ import torch
 try:
     import whisper
 except ImportError:
-    logging.warning(
+    logger.info(
         "Whisper is not properly installed. Please install following https://github.com/openai/whisper"
     )
     whisper = None
@@ -38,6 +40,7 @@ def speaking_rate_model_setup(
     textcleaner = TextCleaner(text_cleaner)
     wer_utils = {"model": model, "cleaner": textcleaner, "beam_size": beam_size}
     return wer_utils
+
 
 def speaking_rate_metric(wer_utils, pred_x, cache_text=None, fs=16000, use_char=False):
     """Calculate the speaking rate from ASR results.
@@ -68,7 +71,11 @@ def speaking_rate_metric(wer_utils, pred_x, cache_text=None, fs=16000, use_char=
         length = len(inf_text)
     else:
         length = len(inf_text.split())
-    return {"speaking_rate": length / (len(pred_x) / fs), "speaking_rate_text": inf_text}
+    return {
+        "speaking_rate": length / (len(pred_x) / fs),
+        "speaking_rate_text": inf_text,
+    }
+
 
 if __name__ == "__main__":
     a = np.random.random(16000)

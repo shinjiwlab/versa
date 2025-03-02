@@ -5,6 +5,8 @@
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 import librosa
 import numpy as np
 import torch
@@ -13,7 +15,7 @@ from Levenshtein import opcodes
 try:
     import whisper
 except ImportError:
-    logging.warning(
+    logger.info(
         "Whisper is not properly installed. Please install following https://github.com/openai/whisper"
     )
     whisper = None
@@ -40,6 +42,7 @@ def asr_match_setup(
     wer_utils = {"model": model, "cleaner": textcleaner, "beam_size": beam_size}
     return wer_utils
 
+
 def asr_match_metric(wer_utils, pred_x, gt_x, cache_pred_text=None, fs=16000):
     """Calculate the speaking rate from ASR results.
 
@@ -65,7 +68,7 @@ def asr_match_metric(wer_utils, pred_x, gt_x, cache_pred_text=None, fs=16000):
             inf_text = wer_utils["model"].transcribe(
                 torch.tensor(pred_x).float(), beam_size=wer_utils["beam_size"]
             )["text"]
-    
+
     # Process the ground truth speech
     if fs != TARGET_FS:
         gt_x = librosa.resample(gt_x, orig_sr=fs, target_sr=TARGET_FS)
@@ -106,8 +109,13 @@ def asr_match_metric(wer_utils, pred_x, gt_x, cache_pred_text=None, fs=16000):
     )
     assert total == len(pred_chars), (total, len(pred_chars))
 
-    asr_match_error_rate = (result["asr_match_delete"] + result["asr_match_insert"] + result["asr_match_replace"]) / len(ref_chars)
+    asr_match_error_rate = (
+        result["asr_match_delete"]
+        + result["asr_match_insert"]
+        + result["asr_match_replace"]
+    ) / len(ref_chars)
     return {"asr_match_error_rate": asr_match_error_rate}
+
 
 if __name__ == "__main__":
     a = np.random.random(16000)

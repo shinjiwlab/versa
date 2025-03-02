@@ -19,7 +19,9 @@ try:
 except:
     FrechetAudioDistance = None
     get_model = None
-    logging.warning("FADTK is not installed. Please install it following `tools/install_fadtk.sh`")
+    logging.warning(
+        "FADTK is not installed. Please install it following `tools/install_fadtk.sh`"
+    )
 
 
 def fad_setup(
@@ -30,7 +32,9 @@ def fad_setup(
     io="kaldi",
 ):
     if get_model is None or FrechetAudioDistance is None:
-        raise ModuleNotFoundError("FADTK is not installed. Please install it following `tools/install_fadtk.sh`")
+        raise ModuleNotFoundError(
+            "FADTK is not installed. Please install it following `tools/install_fadtk.sh`"
+        )
     # get model
     model = get_model(fad_embedding)
 
@@ -76,7 +80,10 @@ def fad_scoring(pred_x, fad_info, key_info="fad"):
     # 2. Calculate FAD
     if use_inf:
         score = fad_info["module"].score_inf(baseline_files, eval_files, cache_dir)
-        return {"{}_overall".format(key_info): score.score, "{}_r2".format(key_info): score.r2}
+        return {
+            "{}_overall".format(key_info): score.score,
+            "{}_r2".format(key_info): score.r2,
+        }
     else:
         score = fad_info["module"].score(baseline_files, eval_files, cache_dir)
         return {"{}_overall".format(key_info): score}

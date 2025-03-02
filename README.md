@@ -118,8 +118,10 @@ We include x mark if the metric is auto-installed in versa.
 | 18 |  | Speech-to-Reverberation Modulation energy Ratio (SRMR) | srmr | srmr | [SRMRpy](https://github.com/shimhz/SRMRpy.git) | [Paper](http://www.individual.utoronto.ca/falkt/falk/pdf/FalkChan_TASLP2010.pdf)|
 | 19 | x | Voice Activity Detection (VAD) | vad | vad_info | [SileroVAD](https://github.com/snakers4/silero-vad) | |
 | 20 |  | Speaker Turn Taking (SPK-TT) |  |  |  |  |
-| 21 | x | SPeaker Word Rate (SWR) |   |  |  |  |
+| 21 | x | Speaking Word/Character Rate (SWR) | speaking_rate  | speaking_rate | - | - |
 | 22 | x | Auti-spoofing Score (SpoofS) with AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks | asvspoof_score | asvspoof_score | [AASIST](https://github.com/clovaai/aasist/tree/main) | [Paper](https://ieeexplore.ieee.org/document/9747766)|
+| 23 | x | Language Identification | lid  | language | [ESPnet](https://github.com/espnet/espnet.git) | [Paper](https://arxiv.org/pdf/2401.16658) |
+| 24 |   | Audiobox Aesthetics | audiobox_aesthetics  | {audiobox_aesthetics_CE, audiobox_aesthetics_CU, audiobox_aesthetics_PC, audiobox_aesthetics_PQ} | [Audiobox-Aesthetics](https://github.com/facebookresearch/audiobox-aesthetics) | [Paper](https://arxiv.org/abs/2502.05139) |
 
 ### Dependent Metrics
 |Number| Auto-Install | Metric Name  (Auto-Install)  | Key in config | Key in report |  Code Source                                                                                                     | References                                                                                       |
@@ -141,7 +143,7 @@ We include x mark if the metric is auto-installed in versa.
 | 15 |   | Speech Contrastive Regression for Quality Assessment with reference (ScoreQ) |  scoreq_ref | scoreq_ref |[ScoreQ](https://github.com/ftshijt/scoreq/tree/main) | [paper](https://arxiv.org/pdf/2410.06675) |
 | 16 |  | 2f-Model |   |  |  |  |
 | 17 | x | Log-Weighted Mean Square Error | log_wmse | log_wmse |[log_wmse](https://github.com/nomonosound/log-wmse-audio-quality) |
-| 18 | x | ASR-oriented Mismatch Error Rate (ASR-Mismatch) |  |  |  |  |
+| 18 | x | ASR-oriented Mismatch Error Rate (ASR-Mismatch) | asr_match | asr_match_error_rate | - | - |
 | 19 |   | Virtual Speech Quality Objective Listener (VISQOL)  | visqol | visqol | [google-visqol](https://github.com/google/visqol) | [paper](https://arxiv.org/abs/2004.09584) |
 | 20 |  | Frequency-Weighted SEGmental SNR (FWSEGSNR) | pysepm | pysepm_fwsegsnr | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://ecs.utdallas.edu/loizou/speech/obj_paper_jan08.pdf)|
 | 21 |  | Weighted Spectral Slope (WSS) | pysepm | pysepm_wss | [pysepm](https://github.com/shimhz/pysepm.git) | [Paper](https://ecs.utdallas.edu/loizou/speech/obj_paper_jan08.pdf)|

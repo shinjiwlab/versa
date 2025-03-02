@@ -61,8 +61,8 @@ def whisper_levenshtein_metric(wer_utils, pred_x, ref_text, fs=16000):
             torch.tensor(pred_x).float(), beam_size=wer_utils["beam_size"]
         )["text"]
 
-    ref_text = wer_utils["cleaner"](ref_text)
-    pred_text = wer_utils["cleaner"](inf_txt)
+    ref_text = wer_utils["cleaner"](ref_text).strip()
+    pred_text = wer_utils["cleaner"](inf_txt).strip()
 
     # process wer
     ref_words = ref_text.strip().split()

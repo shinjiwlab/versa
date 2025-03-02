@@ -4,17 +4,21 @@
 # Copyright 2024 Jiatong Shi
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import librosa
 import numpy as np
 import torch
-
-# import importlib
-# from types import SimpleNamespace
 
 try:
     import utmosv2
     from utmosv2.dataset.multi_spec import process_audio_only_versa
 except ImportError:
+    logger.info(
+        "utmosv2 is not installed, please install via `tools/install_utmosv2.sh`"
+    )
     utmosv2 = None
 
 

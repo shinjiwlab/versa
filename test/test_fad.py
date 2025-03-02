@@ -32,7 +32,10 @@ def info_update():
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = corpus_scoring(
-        "test/test_samples/test2", score_modules, "test/test_samples/test1", output_file=None
+        "test/test_samples/test2",
+        score_modules,
+        "test/test_samples/test1",
+        output_file=None,
     )
     print("Summary: {}".format(score_info), flush=True)
 
@@ -56,7 +59,10 @@ def info_update():
         io="kaldi",
     )
     score_info = corpus_scoring(
-        "test/test_samples/test2.scp", score_modules, "test/test_samples/test1.scp", output_file=None
+        "test/test_samples/test2.scp",
+        score_modules,
+        "test/test_samples/test1.scp",
+        output_file=None,
     )
     print("Summary: {}".format(score_info), flush=True)
 
@@ -80,7 +86,10 @@ def info_update():
         io="soundfile",
     )
     score_info = corpus_scoring(
-        "test/test_samples/test2.scp", score_modules, "test/test_samples/test1.scp", output_file=None
+        "test/test_samples/test2.scp",
+        score_modules,
+        "test/test_samples/test1.scp",
+        output_file=None,
     )
     print("Summary: {}".format(score_info), flush=True)
 
@@ -96,6 +105,7 @@ def info_update():
                 )
             )
     print("check Soundfile IO successful", flush=True)
+
 
 if __name__ == "__main__":
     info_update()

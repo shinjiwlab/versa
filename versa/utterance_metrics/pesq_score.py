@@ -5,14 +5,14 @@
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 import librosa
 import numpy as np
 from pesq import pesq
 
 try:
     from pesq import pesq
-
-    logging.warning("Using the PESQ package for evaluation")
 except ImportError:
     raise ImportError("Please install pesq and retry: pip install pesq")
 

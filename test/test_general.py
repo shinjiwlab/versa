@@ -39,7 +39,7 @@ TEST_INFO = {
     "torch_squim_mos": 3.948253870010376,
     "torch_squim_stoi": 0.6027805209159851,
     "torch_squim_pesq": 1.1683127880096436,
-    "torch_squim_si_sdr": -11.109052658081055
+    "torch_squim_si_sdr": -11.109052658081055,
 }
 
 

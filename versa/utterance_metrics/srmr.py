@@ -2,18 +2,15 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 import logging
+
+logger = logging.getLogger(__name__)
+
 import numpy as np
 
 try:
     from srmrpy import srmr  # Import the srmr package for speech quality metrics
-
-    logging.info(
-        "Using the srmr package for evaluation"
-    )  # Log a warning if srmr is successfully imported
 except ImportError:
-    logging.warning(
-        "srmr is not installed. Please use `tools/install_srmr.sh` to install"
-    )
+    logger.info("srmr is not installed. Please use `tools/install_srmr.sh` to install")
     srmr = None
 
 

@@ -11,7 +11,9 @@ from versa.scorer_shared import (
     load_summary,
 )
 
-TEST_INFO = {"pam_score": 0.01386283989995718}
+TEST_INFO = {
+    "emotion_similarity": 0.9984976053237915,
+}
 
 
 def info_update():
@@ -20,21 +22,25 @@ def info_update():
     if os.path.isdir("test/test_samples/test2"):
         gen_files = find_files("test/test_samples/test2")
 
+    # find reference file
+    if os.path.isdir("test/test_samples/test1"):
+        gt_files = find_files("test/test_samples/test1")
+
     logging.info("The number of utterances = %d" % len(gen_files))
 
-    with open("egs/separate_metrics/pam.yaml", "r", encoding="utf-8") as f:
+    with open("egs/separate_metrics/emo_similarity.yaml", "r", encoding="utf-8") as f:
         score_config = yaml.full_load(f)
 
     score_modules = load_score_modules(
         score_config,
-        use_gt=False,
+        use_gt=(True if gt_files is not None else False),
         use_gpu=False,
     )
 
     assert len(score_config) > 0, "no scoring function is provided"
 
     score_info = list_scoring(
-        gen_files, score_modules, output_file=None, io="soundfile"
+        gen_files, score_modules, gt_files, output_file=None, io="soundfile"
     )
     summary = load_summary(score_info)
     print("Summary: {}".format(load_summary(score_info)), flush=True)

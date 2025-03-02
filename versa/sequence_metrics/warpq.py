@@ -5,6 +5,8 @@
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 import librosa
 import numpy as np
 import torch
@@ -12,10 +14,11 @@ import torch
 try:
     from WARPQ.WARPQmetric import warpqMetric
 except ImportError:
-    raise ImportError(
+    logger.info(
         "Please install WARP-Q from <versa_root>/tools/install_warpq.sh"
         "and retry after installation"
     )
+    warpqMetric = None
 
 
 def warpq_setup(
@@ -34,8 +37,12 @@ def warpq_setup(
         "sigma": sigma,
         "apply_vad": apply_vad,
     }
+    if warpqMetric is None:
+        raise ImportError(
+            "Please install WARP-Q from <versa_root>/tools/install_warpq.sh, and retry after installation"
+        )
     model = warpqMetric(args)
-    logging.warning("Mapping model is not loaded for current implementation")
+    logger.info("Mapping model is not loaded for current implementation.")
     return model
 
 

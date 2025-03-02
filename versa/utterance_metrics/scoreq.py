@@ -5,6 +5,8 @@
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 import librosa
 import numpy as np
 import torch
@@ -12,7 +14,7 @@ import torch
 try:
     from scoreq_versa import Scoreq
 except ImportError:
-    logging.warning(
+    logger.info(
         "scoreq is not installed. Please use `tools/install_scoreq.sh` to install"
     )
     Scoreq = None

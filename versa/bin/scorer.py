@@ -1,5 +1,3 @@
-
-
 #!/usr/bin/env python3
 
 # Copyright 2024 Jiatong Shi
@@ -168,7 +166,9 @@ def main():
         cache_folder=args.cache_folder,
         io=args.io,
     )
-    assert len(corpus_score_modules) > 0 or len(score_modules) > 0, "no scoring function is provided"
+    assert (
+        len(corpus_score_modules) > 0 or len(score_modules) > 0
+    ), "no scoring function is provided"
     if len(corpus_score_modules) > 0:
         corpus_score_info = corpus_scoring(
             args.pred,
@@ -181,6 +181,7 @@ def main():
     else:
         logging.info("No corpus-level scoring function is provided.")
         return
+
 
 if __name__ == "__main__":
     main()
