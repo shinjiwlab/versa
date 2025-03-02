@@ -17,6 +17,12 @@ export PATH="$PATH:$HOME/.zshrc"
 1. add `build --linkopt=-lstdc++fs` after line 55 of `.bazelrc`
 2. replace the version to `5.1.0` in `.bazelversion`
 3. update `WORKSPACE` to new armadillo version as suggested in https://github.com/google/visqol/pull/119/files
+   - for additional note, 10.1.0 is also deprecated. You may consider using
+  ```
+    sha256 = "023242fd59071d98c75fb015fd3293c921132dc39bf46d221d4b059aae8d79f4",
+    strip_prefix = "armadillo-14.4.0",
+    urls = ["http://sourceforge.net/projects/arma/files/armadillo-14.4.0.tar.xz"],
+  ``` 
 4. compile with `bazel build :visqol -c opt`
 
 ### install in python 
