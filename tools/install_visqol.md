@@ -8,9 +8,9 @@
 wget https://github.com/bazelbuild/bazel/releases/download/5.1.0/bazel-5.1.0-installer-linux-x86_64.sh 
 chmod +x bazel-5.1.0-installer-linux-x86_64.sh
 ./bazel-version-installer-linux-x86_64.sh --user
-export PATH="$PATH:$HOME/bin
-export PATH="$PATH:$HOME/.bashrc
-export PATH="$PATH:$HOME/.zshrc
+export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/.bashrc"
+export PATH="$PATH:$HOME/.zshrc"
 ```
 
 ### revise compile config and compile. You may need 32G memory for this stage
