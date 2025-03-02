@@ -352,7 +352,7 @@ def load_score_modules(score_config, use_gt=True, use_gt_text=False, use_gpu=Fal
             from versa import whisper_levenshtein_metric, whisper_wer_setup
 
             # Load whisper model if it is already loaded
-            if "speaking_rate" or "asr_matching" in score_modules.keys():
+            if "speaking_rate" in score_modules.keys() or "asr_matching" in score_modules.keys():
                 args_cache = score_modules["speaking_rate"]["args"]
             else:
                 args_cache = whisper_wer_setup(
@@ -804,11 +804,16 @@ def list_scoring(
                 "Resampling the generated audio to match the ground truth audio"
             )
             gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=gt_sr)
+            gen_sr = gt_sr
         elif gt_sr is not None and gen_sr < gt_sr:
             logging.warning(
                 "Resampling the ground truth audio to match the generated audio"
             )
             gt_wav = librosa.resample(gt_wav, orig_sr=gt_sr, target_sr=gen_sr)
+
+        # temp fix jiatong
+        gen_wav = librosa.resample(gen_wav, orig_sr=gen_sr, target_sr=8000)
+        gen_sr, gt_sr = 8000, 8000
 
         utt_score = {"key": key}
 

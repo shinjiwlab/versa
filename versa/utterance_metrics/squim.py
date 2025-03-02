@@ -26,16 +26,15 @@ def squim_metric(pred_x, gt_x, fs):
     https://pytorch.org/audio/main/tutorials/squim_tutorial.html
 
     """
+    gt_x = torch.from_numpy(gt_x)
+    pred_x = torch.from_numpy(pred_x)
 
     if fs != 16000:
         gt_x = F.resample(gt_x, fs, 16000)
         pred_x = F.resample(pred_x, fs, 16000)
 
-    gt_x = torch.from_numpy(gt_x).unsqueeze(0)
-    gt_x = gt_x.float()
-
-    pred_x = torch.from_numpy(pred_x).unsqueeze(0)
-    pred_x = pred_x.float()
+    gt_x = gt_x.unsqueeze(0).float()
+    pred_x = pred_x.unsqueeze(0).float()
 
     subjective_model = SQUIM_SUBJECTIVE.get_model()
     torch_squim_mos = subjective_model(pred_x, gt_x)
@@ -51,11 +50,11 @@ def squim_metric_no_ref(pred_x, fs):
     https://pytorch.org/audio/main/tutorials/squim_tutorial.html
 
     """
+    pred_x = torch.from_numpy(pred_x)
     if fs != 16000:
         pred_x = F.resample(pred_x, fs, 16000)
 
-    pred_x = torch.from_numpy(pred_x).unsqueeze(0)
-    pred_x = pred_x.float()
+    pred_x = pred_x.unsqueeze(0).float()
 
     objective_model = SQUIM_OBJECTIVE.get_model()
     torch_squim_stoi, torch_squim_pesq, torch_squim_si_sdr = objective_model(pred_x)
