@@ -10,7 +10,7 @@ VERSA (Versatile Evaluation of Speech and Audio) is a toolkit dedicated to colle
 
 The base-installation is as easy as follows:
 ```
-git clone https://github.com/shinjiwlab/versa.git
+git clone https://github.com/wavlab-speech/versa.git
 cd versa
 pip install .
 ```
