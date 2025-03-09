@@ -654,7 +654,11 @@ def use_score_modules(score_modules, gen_wav, gt_wav, gen_sr, text=None):
                 gen_wav, gt_wav, gen_sr, **score_modules[key]["args"]
             )
         elif key == "signal_metric":
-            score = score_modules[key]["module"](gen_wav, gt_wav)
+            try:
+                score = score_modules[key]["module"](gen_wav, gt_wav)
+            except ValueError as e:
+                logging.warning("Value error in signal metric. Usually due to silence audio: {}".format(e))
+                continue
         elif key == "warpq":
             score = score_modules[key]["module"](
                 score_modules[key]["model"], gen_wav, gt_wav, gen_sr
